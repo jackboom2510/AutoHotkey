@@ -1,0 +1,38 @@
+{
+    "AutoHotkey Template": {
+        "prefix": "ahk",
+        "body": [
+            "#Include \"lib\\HelpGui.ahk\"",
+            "#Requires AutoHotkey v2.0",
+            "#SingleInstance Force",
+            "Persistent()",
+            "",
+            "$0InitTrayMenu()",
+            "$0ShowHelpUI($1)",
+            "",
+            "$0InitTrayMenu() {",
+            "    A_TrayMenu.Delete()",
+            "    A_TrayMenu.Add(\"Help\", (*) => $0ShowHelpUI())",
+            "    A_TrayMenu.Add(\"Open File Location\", (*) => Run(\"*open \" A_ScriptDir))",
+            "    A_TrayMenu.Add()",
+            "    A_TrayMenu.Add(\"Reload Script\", (*) => Reload",
+            "    A_TrayMenu.Add(\"Edit Script\", (*) => Edit())",
+            "    A_TrayMenu.Add()",
+            "    A_TrayMenu.Add(\"Suspend Hotkeys\", (*) => ToggleSuspend())",
+            "    A_TrayMenu.Add(\"Pause Script\", (*) => TogglePause())",
+            "    A_TrayMenu.Add(\"Exit\", (*) => ExitApp())",
+            "}",
+            "    A_TrayMenu.Default := \"Help\"",
+            "    A_TrayMenu.ClickCount := 1",
+            "}",
+            "",
+            "$0ShowHelpUI(hideTimer := 0) {",
+            "    sections := [",
+            "    ]",
+            "    ShowHelp(\"🧩 $0 Script Hotkey Help\", sections, hideTimer)",
+            "}",
+            "",
+        ],
+        "description": "AutoHotkey Template with Tray Menu and Help"
+    }
+}

@@ -1,0 +1,1 @@
+logFile := "C:\Users\jackb\Documents\AutoHotkey\log.txt"

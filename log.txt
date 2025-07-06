@@ -1,0 +1,53 @@
+﻿[Vùng] 2025-07-04 23:05:48
+1206:629	1451:629
+1206:656	1451:656
+1328:642
+
+[Điểm] 2025-07-04 23:08:07
+Cửa sổ: blank_writing_practice_sheet.pdf ‎- Drawboard PDF
+Đường dẫn tiến trình: C:\Windows\System32\ApplicationFrameHost.exe
+Cửa sổ vị trí: X=-8, Y=-8, W=1616, H=916
+*Mouse: 1308:646
+
+[Điểm] 2025-07-04 23:26:32
+Cửa sổ: blank_writing_practice_sheet.pdf ‎- Drawboard PDF
+Đường dẫn tiến trình: C:\Windows\System32\ApplicationFrameHost.exe
+Cửa sổ vị trí: X=-8, Y=-8, W=1616, H=916
+*Mouse: 1466:862
+
+[Vùng] 2025-07-04 23:29:14
+1467:865	1467:865
+1467:865	1467:865
+1467:865
+
+[Điểm] 2025-07-05 13:49:35
+Cửa sổ: Gui Object - Methods & Properties | AutoHotkey v2 - Google Chrome
+Đường dẫn tiến trình: C:\Program Files\Google\Chrome\Application\chrome.exe
+Cửa sổ vị trí: X=-8, Y=-8, W=1616, H=916
+*Mouse: 1269:85
+
+[Vùng] 2025-07-05 18:25:31
+355:448	357:448
+355:449	357:449
+356:448
+
+[Vùng] 2025-07-05 22:11:00
+285:86	285:86
+285:86	285:86
+285:86
+
+[Vùng] 2025-07-05 22:11:08
+255:84	255:84
+255:84	255:84
+255:84
+
+[Vùng] 2025-07-05 22:11:21
+195:82	195:82
+195:82	195:82
+195:82
+
+[Vùng] 2025-07-05 22:11:23
+167:81	167:81
+167:81	167:81
+167:81
+
