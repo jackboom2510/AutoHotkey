@@ -169,7 +169,7 @@ class ClickTracker {
     }
 
     static ExportToFile() {
-        filePath := "C:\Users\jackb\Documents\AutoHotkey\test.ahk"
+        filePath := "C:\Users\jackb\Documents\AutoHotkey\test\test.ahk"
         header := "#Requires AutoHotkey v2.0.18+" "`n" "#SingleInstance Force" "`n" "Persistent()" "`n`n"
         FileDelete filePath  ; xóa nếu file đã tồn tại
         FileAppend header, filePath  ; ghi header 3 dòng đầu
