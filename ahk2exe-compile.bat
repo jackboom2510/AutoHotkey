@@ -58,6 +58,12 @@ if errorlevel 1 (
 )
 
 echo [OK] Compilation complete: %OUT%
+echo.
+
+:: === Run the compiled .exe ===
+echo Launching compiled application...
+start "" "%OUT%"
+timeout /t 1 >nul
 
 :: === Create or update shortcut on Desktop ===
 set "SHORTCUT_NAME=%NAME%.lnk"
