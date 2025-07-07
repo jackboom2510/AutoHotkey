@@ -104,7 +104,7 @@ ConfigureDrawboardPDF(option, timer := 350, loopCnt := 24) {
     else if (option = 2) {
         loop loopCnt {
             ClickAndSleep(625, 850, timer)
-            ClickAndSleep(1000, 515, 3*timer)
+            ClickAndSleep(1000, 515, 3 * timer)
             Send "{Right}"
             Sleep(timer)
             MouseMove(centerX, centerY)
@@ -122,14 +122,16 @@ ConfigureOneNote(option) {
     WinActivate("ahk_exe ONENOTE.EXE")
     MouseGetPos(&mouseX, &mouseY)
     switch option {
+        case 1:
+            ClickAndSleep(267, 87, 0)
         case 2:
-            ClickAndSleep(265, 90, 0)
+            ClickAndSleep(297, 87, 0)
         case 3:
-            ClickAndSleep(205, 90, 0)
+            ClickAndSleep(327, 87, 0)
         case 4:
-            ClickAndSleep(175, 90, 0)
-        default:
-            ClickAndSleep(295, 90, 0)
+            ClickAndSleep(357, 87, 0)
+        case 5:
+            ClickAndSleep(377, 87, 0)
     }
     MouseMove(mouseX, mouseY)
 }

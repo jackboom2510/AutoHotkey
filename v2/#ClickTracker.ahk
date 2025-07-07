@@ -4,6 +4,9 @@
 #SingleInstance Force
 Persistent()
 
+;@Ahk2Exe-SetMainIcon C:\Users\jackb\Documents\AutoHotkey\icon\settings.ico
+;@Ahk2Exe-ExeName C:\Users\jackb\Documents\AutoHotkey\
+
 ClickTracker.Init()
 
 ; Phím tắt

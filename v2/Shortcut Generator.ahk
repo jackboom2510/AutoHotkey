@@ -4,6 +4,9 @@
 #SingleInstance Force
 Persistent()
 
+;@Ahk2Exe-SetMainIcon C:\Users\jackb\Documents\AutoHotkey\icon\internet.ico
+;@Ahk2Exe-ExeName C:\Users\jackb\Documents\AutoHotkey\test.exe
+
 ; ====== Hotkeys ======
 +!s::ShortcutTool.AddShortcut()
 +!x::ShortcutTool.ChangePath()

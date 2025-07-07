@@ -119,6 +119,22 @@ ToggleAndSend(idx, key1, key2) {
     SetTimer(HideToolTip, -1000)
 }
 
+ToggleAndExcute(idx, func1, func2) {
+    global toggleF
+    value := toggleF[idx]
+    value := !value
+    toggleF.RemoveAt(idx)
+    toggleF.InsertAt(idx, value)
+    
+    if (toggleF[idx]) {
+        func1()
+    } else {
+        func2()
+    }
+    
+    SetTimer(HideToolTip, -1000)
+}
+
 HideToolTip(*) {
     ToolTip()
 }

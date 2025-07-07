@@ -6,6 +6,9 @@
 Persistent()
 CoordMode "Mouse", "Client"
 
+;@Ahk2Exe-AddResource C:\Users\jackb\Documents\AutoHotkey\icon\settings.ico
+;@Ahk2Exe-ExeName C:\Users\jackb\Documents\AutoHotkey\%A_ScriptName%.exe
+
 ;   ====================================== Configurations ======================================
 +!1:: ConfigureMonitorSettings(2)
 +!2:: ConfigureMonitorSettings(3)
@@ -14,22 +17,28 @@ CoordMode "Mouse", "Client"
 +!e:: ConfigurePenSettings(2)
 ^!c:: ConfigureDrawboardPDF(1)
 ^!+c:: ConfigureDrawboardPDF(2)
-!1:: ConfigureOneNote(1)
-!2:: ConfigureOneNote(2)
-!3:: ConfigureOneNote(3)
-!4:: ConfigureOneNote(4)
 Pause:: Pause -1
 
 F20:: ToggleAndSend(20, "1", "2")
-F21:: ToggleAndSend(21, "!1", "!2")
+F21:: ToggleAndExcute(21, () => ConfigureOneNote(2), () => ConfigureOneNote(3))
 F22:: ToggleAndSend(22, "^+2", "^+3")
 F23:: ToggleAndSend(23, "{Space}", "{1}")
 F24:: ToggleAndSend(24, "v", "h")
 
 #HotIf (isScriptEnabled)
-F20:: ToggleAndSend(20, "1", "1")
+Space:: ToggleAndExcute(15, () => ConfigureOneNote(1), () => ConfigureOneNote(2))
+^Space:: ToggleAndExcute(15, () => ConfigureOneNote(1), () => ConfigureOneNote(5))
+1:: ConfigureOneNote(1)
+2:: ConfigureOneNote(2)
+3:: ConfigureOneNote(3)
+4:: ConfigureOneNote(4)
+
 ^!w:: Send("{PgUp}")
 ^!s:: Send("{PgDn}")
+!w:: Send("{WheelUp}")
+!s:: Send("{WheelDown}")
+!a:: Send("{WheelLeft}")
+!d:: Send("{WheelRight}")
 w:: Send "{Up}"
 a:: Send "{Left}"
 s:: Send "{Down}"
@@ -38,6 +47,8 @@ d:: Send "{Right}"
 !e:: Send "!{=}"
 ^q:: Send "^{-}"
 ^e:: Send "^{=}"
+^!q:: Send "^{WheelDown}"
+^!e:: Send "^{WheelUp}"
 #HotIf
 
 !F1:: {

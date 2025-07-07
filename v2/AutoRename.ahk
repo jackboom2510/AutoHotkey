@@ -2,6 +2,9 @@
 #SingleInstance Force
 Persistent()
 
+;@Ahk2Exe-AddResource C:\Users\jackb\Documents\AutoHotkey\icon\settings.ico
+;@Ahk2Exe-ExeName C:\Users\jackb\Documents\AutoHotkey\%A_ScriptName%.exe
+
 ; === Configuration ===
 global configFile := A_ScriptDir "\config.ini"
 global section := "AutoRename"

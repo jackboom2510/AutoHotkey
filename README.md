@@ -20,7 +20,7 @@
 
 ```bash
 # Clone a repository
-git clone https://github.com/your-username/your-repo.git
+git clone https://github.com/jackboom2510/AutoHotkey
 
 # Stage all changes
 git add .

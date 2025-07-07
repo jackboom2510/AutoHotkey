@@ -4,6 +4,9 @@
 #SingleInstance Force
 Persistent()
 
+;@Ahk2Exe-SetMainIcon C:\Users\jackb\Documents\AutoHotkey\icon\settings.ico
+;@Ahk2Exe-exePath C:\Users\jackb\Documents\AutoHotkey
+
 global isSelecting := false
 global startX := 0, startY := 0
 

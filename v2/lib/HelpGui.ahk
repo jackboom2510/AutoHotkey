@@ -1,7 +1,8 @@
 ; HelpGui.ahk - Thư viện hiển thị GUI trợ giúp phím tắt
 global isPaused := false
 global isSuspended := false
-ShowHelp(title := "🧩 Script Hotkey Help", sections := [], hideTimer := 0) {
+
+ShowHelp(title := "🧩 Script Hotkey Help", sections := [], hideTimer := 0, lineLimit := 4) {
     static helpGui := ""
 
     if IsObject(helpGui) {
@@ -20,9 +21,9 @@ ShowHelp(title := "🧩 Script Hotkey Help", sections := [], hideTimer := 0) {
 
     for section in sections {
         if (section.HasProp("lines")) {
-            AddSectionFromLines(helpGui, section.title, section.lines)
+            AddSectionFromLines(helpGui, section.title, section.lines, lineLimit)
         } else {
-            AddSection(helpGui, section.title, section.content)
+            AddSection(helpGui, section.title, section.content, lineLimit)
         }
     }
 
@@ -32,7 +33,7 @@ ShowHelp(title := "🧩 Script Hotkey Help", sections := [], hideTimer := 0) {
         SetTimer(() => helpGui.Hide(), -hideTimer*1000)
 }
 
-AddSection(gui, title, content) {
+AddSection(gui, title, content, lineLimit) {
     if (title != "") {
         gui.SetFont("s10 bold cGreen", "Segoe UI")
         gui.AddText("y+10", title)
@@ -40,19 +41,34 @@ AddSection(gui, title, content) {
 
     gui.SetFont("s10 cBlack", "Consolas")
     content := Trim(content, "`r`n")
-    lineCount := StrSplit(content, "`n").Length
-    gui.AddEdit(Format("w600 r{} ReadOnly -Wrap", lineCount), content)
+    
+    ; Split nội dung thành các dòng
+    lines := StrSplit(content, "`n")
+    lineCount := lines.Length
+
+    ; Nếu số dòng vượt quá giới hạn, cho phép cuộn dọc
+    if (lineCount > lineLimit) {
+        ; Thêm vùng cuộn (scrollable area) cho nội dung
+        gui.AddText("y+10", "Xem tiếp")
+        gui.AddEdit(Format("w600 h150 ReadOnly -Wrap -VScroll"), StrJoin("`n", lines))  ; h150 là chiều cao, có thể điều chỉnh
+    } else {
+        gui.AddEdit(Format("w600 r{} ReadOnly -Wrap", lineCount), content)
+    }
 }
 
-AddSectionFromLines(gui, title, linesArray) {
+AddSectionFromLines(gui, title, linesArray, lineLimit) {
     content := StrJoin("`n", linesArray*)
-    AddSection(gui, title, content)
+    AddSection(gui, title, content, lineLimit)
 }
 
 StrJoin(sep, args*) {
     out := ""
     for i, v in args {
-        out .= (i > 1 ? sep : "") . v
+        if args.Length {
+            out .= (i > 1 ? sep : "") . StrJoin(sep, v*)
+        } else {
+            out .= (i > 1 ? sep : "") . v
+        }
     }
     return out
 }
