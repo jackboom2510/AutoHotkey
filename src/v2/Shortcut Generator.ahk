@@ -40,9 +40,9 @@ ShortcutGen_ShowHelpUI(hideTimer := 0) {
         {
             title: "📜 Shortcut Tool Help",
             lines: [
-                HK(hotkeys["AddShortcut"]) " → Thêm Shortcut mới",
-                HK(hotkeys["ChangePath"]) " → Thay đổi đường dẫn của Shortcut",
-                HK(hotkeys["Toggle"]) " → Ẩn/Hiện tính năng của Shortcut Tool",
+                HotkeyExp(hotkeys["AddShortcut"]) " → Thêm Shortcut mới",
+                HotkeyExp(hotkeys["ChangePath"]) " → Thay đổi đường dẫn của Shortcut",
+                HotkeyExp(hotkeys["Toggle"]) " → Ẩn/Hiện tính năng của Shortcut Tool",
             ]
         },
         {

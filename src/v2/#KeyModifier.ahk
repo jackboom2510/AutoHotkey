@@ -10,32 +10,69 @@ CoordMode "Mouse", "Client"
 
 Pause:: Pause -1
 
-hotkeys := LoadHotkeys(, "#KeyModifier")
-AssignHotkey(hotkeys[])
-+!1:: ConfigureMonitorSettings(2)
-+!2:: ConfigureMonitorSettings(3)
-+!3:: ConfigureMonitorSettings(1)
-+!q:: ConfigurePenSettings(1)
-+!e:: ConfigurePenSettings(2)
-^!c:: ConfigureDrawboardPDF(1)
-^!+c:: ConfigureDrawboardPDF(2)
+AssignHotkey("#^c", CopyProcessDirectory)
+AssignHotkey("!F1", InputBoxForAutoSendToggle)
+; AssignHotkey("Pause", Pause , , ,Pause - 1)
+AssignHotkey("^!z", ToggleOverlayVisibility)
+AssignHotkey("^!x", ToggleScript)
 
-F21:: ToggleAndExcute(21, () => ConfigureOneNote(2), () => ConfigureOneNote(3))
-F20:: ToggleAndSend(20, "1", "2")
-F22:: ToggleAndSend(22, "^+2", "^+3")
-F23:: ToggleAndSend(23, "{Space}", "{1}")
-F24:: ToggleAndSend(24, "v", "h")
+AssignHotkey("^!c", ConfigureDrawboardPDF , , ,1)
+AssignHotkey("^!+c", ConfigureDrawboardPDF , , ,2)
+AssignHotkey("+!1", ConfigureMonitorSettings , , ,2)
+AssignHotkey("+!2", ConfigureMonitorSettings , , ,3)
+AssignHotkey("+!3", ConfigureMonitorSettings , , ,1)
+AssignHotkey("+!q", ConfigurePenSettings , , ,1)
+AssignHotkey("+!e", ConfigurePenSettings , , ,2)
+; +!1:: ConfigureMonitorSettings(2)
+; +!2:: ConfigureMonitorSettings(3)
+; +!3:: ConfigureMonitorSettings(1)
+; +!q:: ConfigurePenSettings(1)
+; +!e:: ConfigurePenSettings(2)
+; ^!c:: ConfigureDrawboardPDF(1)
+; ^!+c:: ConfigureDrawboardPDF(2)
+
+AssignHotkey("F21", ToggleAndExecute , , ,21,() => ConfigureOneNote(2),() => ConfigureOneNote(3))
+AssignHotkey("F20", ToggleAndSend , , ,20,1,2)
+AssignHotkey("F22", ToggleAndSend , , ,22,"^+2","^+3")
+AssignHotkey("F23", ToggleAndSend , , ,23,"{Space}","{1}")
+AssignHotkey("F24", ToggleAndSend , , ,24,"v","h")
+; F21:: ToggleAndExecute(21, () => ConfigureOneNote(2), () => ConfigureOneNote(3))
+; F20:: ToggleAndSend(20, "1", "2")
+; F22:: ToggleAndSend(22, "^+2", "^+3")
+; F23:: ToggleAndSend(23, "{Space}", "{1}")
+; F24:: ToggleAndSend(24, "v", "h")
 
 #HotIf (isScriptEnabled)
-Space:: ToggleAndExcute(15, () => ConfigureOneNote(1), () => ConfigureOneNote(2))
-^Space:: ToggleAndExcute(15, () => ConfigureOneNote(1), () => ConfigureOneNote(5))
+; AssignHotkey("Space", ToggleAndExecute , , ,15,() => ConfigureOneNote(1),() => ConfigureOneNote(2))
+; AssignHotkey("^Space", ToggleAndExecute , , ,15,() => ConfigureOneNote(1),() => ConfigureOneNote(5))
+Space:: ToggleAndExecute(15, () => ConfigureOneNote(1), () => ConfigureOneNote(2))
+^Space:: ToggleAndExecute(15, () => ConfigureOneNote(1), () => ConfigureOneNote(5))
+; AssignHotkey("1", ConfigureOneNote , , ,1)
+; AssignHotkey("2", ConfigureOneNote , , ,2)
+; AssignHotkey("3", ConfigureOneNote , , ,3)
+; AssignHotkey("4", ConfigureOneNote , , ,4)
 1:: ConfigureOneNote(1)
 2:: ConfigureOneNote(2)
 3:: ConfigureOneNote(3)
 4:: ConfigureOneNote(4)
 
+; AssignHotkey("^!w", Send , , ,"{PgUp}")
+; AssignHotkey("^!s", Send , , ,"{PgDn}")
 ^!w:: Send("{PgUp}")
 ^!s:: Send("{PgDn}")
+
+; AssignHotkey("!w", Send , , ,"{WheelUp}")
+; AssignHotkey("!s", Send , , ,"{WheelDown}")
+; AssignHotkey("!a", Send , , ,"{WheelLeft}")
+; AssignHotkey("!d", Send , , ,"{WheelRight}")
+; AssignHotkey("w", Send , , ,"{Up}")
+; AssignHotkey("a", Send , , ,"{Left}")
+; AssignHotkey("s", Send , , ,"{Down}")
+; AssignHotkey("d", Send , , ,"{Right}")
+; AssignHotkey("!q", Send , , ,"!{-}")
+; AssignHotkey("!e", Send , , ,"!{=}")
+; AssignHotkey("^q", Send , , ,"^{-}")
+; AssignHotkey("^e", Send , , ,"^{=}")
 !w:: Send("{WheelUp}")
 !s:: Send("{WheelDown}")
 !a:: Send("{WheelLeft}")
@@ -48,14 +85,16 @@ d:: Send "{Right}"
 !e:: Send "!{=}"
 ^q:: Send "^{-}"
 ^e:: Send "^{=}"
+; AssignHotkey("^!q", Send , , ,"^{WheelDown}")
+; AssignHotkey("^!e", Send , , ,"^{WheelUp}")
 ^!q:: Send "^{WheelDown}"
 ^!e:: Send "^{WheelUp}"
 #HotIf
 
-!F1:: InputBoxForAutoSendToggle
-#^c:: CopyProcessDirectory
-^!x:: overlay.ToggleScript
-^!z:: overlay.ToggleOverlayVisibility
+; !F1:: InputBoxForAutoSendToggle
+; #^c:: CopyProcessDirectory
+; ^!x:: overlay.ToggleScript
+; ^!z:: overlay.ToggleOverlayVisibility
 
 KeyMod_InitTrayMenu()
 KeyMod_ShowHelpUI(5)

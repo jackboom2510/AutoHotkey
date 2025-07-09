@@ -9,9 +9,10 @@ class StatusOverlay {
     bgColor1 := "Green"
     bgColor2 := "Red"
 
-    __New(guiTitle := "Status Overlay", guiWidth := this.guiWidth, guiHeight := this.guiHeight, xPos := this.xPos, yPos := this.yPos, bgColor1 :=
-       this.bgColor1, bgColor2 :=
-       this.bgColor2) {
+    __New(guiTitle := "Status Overlay", guiWidth := this.guiWidth, guiHeight := this.guiHeight, xPos := this.xPos, yPos :=
+        this.yPos, bgColor1 :=
+        this.bgColor1, bgColor2 :=
+        this.bgColor2) {
         this.guiTitle := guiTitle
         this.guiWidth := guiWidth
         this.guiHeight := guiHeight
@@ -19,21 +20,6 @@ class StatusOverlay {
         this.yPos := yPos
         this.bgColor1 := bgColor1
         this.Show()
-    }
-
-    ToggleScript() {
-        global isScriptEnabled := !isScriptEnabled
-        this.Show()
-    }
-
-    ToggleOverlayVisibility() {
-        global statusOverlayGui, isOverlayVisible, isOverlayVisible := !isOverlayVisible
-        if (isOverlayVisible) {
-            this.Show()
-        } else {
-            if IsSet(statusOverlayGui)
-                statusOverlayGui.Destroy()
-        }
     }
 
     Show() {
@@ -50,4 +36,20 @@ class StatusOverlay {
         statusOverlayGui.Show("x" this.xPos " y" this.yPos " NoActivate")
     }
 }
+
 overlay := StatusOverlay()
+
+ToggleScript() {
+    global isScriptEnabled := !isScriptEnabled
+    overlay.Show()
+}
+
+ToggleOverlayVisibility() {
+    global statusOverlayGui, isOverlayVisible, isOverlayVisible := !isOverlayVisible
+    if (isOverlayVisible) {
+        overlay.Show()
+    } else {
+        if IsSet(statusOverlayGui)
+            statusOverlayGui.Destroy()
+    }
+}

@@ -7,8 +7,6 @@
             "#SingleInstance Force",
             "Persistent()",
             "",
-            ";@Ahk2Exe-SetMainIcon C:\\Users\\jackb\\Documents\\AutoHotkey\\icon\\settings.ico",
-            ";@Ahk2Exe-exePath C:\\Users\\jackb\\Documents\\AutoHotkey",
 
             "$0InitTrayMenu()",
             "$0ShowHelpUI(5)",
@@ -37,5 +35,13 @@
             "",
         ],
         "description": "AutoHotkey Template with Tray Menu and Help"
+    },
+    "AutoHotkey Include": {
+        "prefix": "ahk",
+        "body": [
+            "#Requires AutoHotkey v2.0",
+            "#SingleInstance Force",
+            "Persistent()",
+        ]
     }
 }

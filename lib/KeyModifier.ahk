@@ -83,7 +83,7 @@ ToggleAndSend(idx, key1, key2) {
     SetTimer(ToolTip, -1000)
 }
 
-ToggleAndExcute(idx, func1, func2) {
+ToggleAndExecute(idx, func1, func2) {
     global toggleF
     value := toggleF[idx]
     value := !value

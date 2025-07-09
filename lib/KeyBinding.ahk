@@ -74,7 +74,7 @@ LoadHotkeys(filePath := "C:\Users\jackb\Documents\AutoHotkey\configs\hotkeys.ini
  * - Biểu thức hotkey có thể bao gồm các ký hiệu đặc biệt như `{+}`, `{^}`, `{!}`, `{#}` để chỉ các phím modifier.
  * 
  */
-HK(hotkey) {
+HotkeyExp(hotkey) {
     local explanation := ""
 
     ; Kiểm tra phím Shift (+)
@@ -121,8 +121,7 @@ HK(hotkey) {
     return explanation
 }
 
-AssignHotkey(KeyName, Callback, Options := "", Default := "") {
-
+AssignHotkey(KeyName, Function, Options := "", Default := "", FnArgs*) {
     if (KeyName = "" || Trim(KeyName) = "") {
         KeyName := Default
     }
@@ -132,13 +131,21 @@ AssignHotkey(KeyName, Callback, Options := "", Default := "") {
         return false
     }
 
+    if (Type(Function) = "String") {
+        Function := %Function%
+    }
+
+    if !IsObject(Function) || !Function.HasMethod("Call") {
+        TrayTip "❌ Callback không hợp lệ."
+        return false
+    }
     try Hotkey(KeyName, "Off")
 
     try {
-        Hotkey(KeyName, Callback, Options)
+        Hotkey(KeyName, (*) => Function(FnArgs*), Options)
         return true
-    } catch Error {
-        TrayTip "❌ Lỗi khi gán hotkey '" KeyName "':`n" Error.Message
+    } catch as e {
+        TrayTip "❌ Lỗi khi gán hotkey: " e.Message
         return false
     }
 }

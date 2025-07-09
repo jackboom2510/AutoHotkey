@@ -10,7 +10,7 @@ JsonToIni(jsonFile, iniFile) {
     jsonText := FileRead(jsonFile, "UTF-8")
     try {
         data := JSON.Parse(jsonText)  ; Phải có thư viện JSON v2 tương thích
-    } catch e {
+    } catch as e {
         MsgBox "❌ Không thể parse JSON: " e.Message
         return
     }

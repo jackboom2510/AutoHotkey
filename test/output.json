@@ -1,0 +1,177 @@
+{
+  "#KeyModifier": {
+    "ConfigureDrawboardPDF": {
+      "args": [
+        1,
+        2
+      ],
+      "description": "Configure settings for Drawboard PDF with two modes.",
+      "hotkeys": [
+        "^!c",
+        "^!+c"
+      ]
+    },
+    "ConfigureMonitorSettings": {
+      "args": [
+        2,
+        3,
+        1
+      ],
+      "description": "Configure monitor settings based on the argument value.",
+      "hotkeys": [
+        "+!1",
+        "+!2",
+        "+!3"
+      ]
+    },
+    "ConfigureOneNote": {
+      "args": [
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ],
+        [
+          5
+        ]
+      ],
+      "description": "Configure OneNote with different arguments (1 to 4). The Space and Ctrl+Space also work as toggles.",
+      "hotkeys": [
+        "Space",
+        "^Space",
+        "1",
+        "2",
+        "3",
+        "4"
+      ]
+    },
+    "ConfigurePenSettings": {
+      "args": [
+        1,
+        2
+      ],
+      "description": "Configure pen settings for two different modes.",
+      "hotkeys": [
+        "+!q",
+        "+!e"
+      ]
+    },
+    "CopyProcessDirectory": {
+      "description": "Copy the directory of the active process and display the path in the tooltip.",
+      "hotkeys": [
+        "#^c"
+      ]
+    },
+    "InputBoxForAutoSendToggle": {
+      "description": "Toggle auto-send feature for continuous key input based on user input in a dialog box.",
+      "hotkeys": [
+        "!F1"
+      ]
+    },
+    "Pause": {
+      "description": "Pause or resume the script.",
+      "hotkeys": [
+        "Pause"
+      ]
+    },
+    "Send": {
+      "args": [
+        "{PgUp}",
+        "{PgDn}",
+        "{WheelUp}",
+        "{WheelDown}",
+        "{WheelLeft}",
+        "{WheelRight}",
+        "{Up}",
+        "{Left}",
+        "{Down}",
+        "{Right}",
+        "!{-}",
+        "!{=}",
+        "^{-}",
+        "^{=}",
+        "^{WheelDown}",
+        "^{WheelUp}"
+      ],
+      "description": "Send key combinations for navigation, page control, and other actions using hotkeys.",
+      "hotkeys": [
+        "^!w",
+        "^!s",
+        "!w",
+        "!s",
+        "!a",
+        "!d",
+        "w",
+        "a",
+        "s",
+        "d",
+        "!q",
+        "!e",
+        "^q",
+        "^e",
+        "^!q",
+        "^!e"
+      ]
+    },
+    "ToggleAndExecute": {
+      "args": [
+        "() => ConfigureOneNote(2)",
+        "() => ConfigureOneNote(3)"
+      ],
+      "description": "Toggle and execute the corresponding ConfigureOneNote function with different arguments.",
+      "hotkeys": [
+        "F21"
+      ]
+    },
+    "ToggleAndSend": {
+      "args": [
+        [
+          20,
+          "1",
+          "2"
+        ],
+        [
+          22,
+          "^+2",
+          "^+3"
+        ],
+        [
+          23,
+          "{Space}",
+          "{1}"
+        ],
+        [
+          24,
+          "v",
+          "h"
+        ]
+      ],
+      "description": "Toggle between sending different key combinations based on the assigned arguments.",
+      "hotkeys": [
+        "F20",
+        "F22",
+        "F23",
+        "F24"
+      ]
+    },
+    "overlay.ToggleOverlayVisibility": {
+      "description": "Toggle the visibility of the status overlay for the script.",
+      "hotkeys": [
+        "^!z"
+      ]
+    },
+    "overlay.ToggleScript": {
+      "description": "Toggle the activation and deactivation of the script, enabling or disabling hotkeys.",
+      "hotkeys": [
+        "^!x"
+      ]
+    }
+  }
+}
