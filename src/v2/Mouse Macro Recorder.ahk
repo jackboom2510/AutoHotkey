@@ -1,5 +1,5 @@
-#Include "lib\log.ahk"
-#Include "lib\HelpGui.ahk"
+#Include <Log>
+#Include <HelpGUI>
 #Requires AutoHotkey v2.0
 #SingleInstance Force
 Persistent()

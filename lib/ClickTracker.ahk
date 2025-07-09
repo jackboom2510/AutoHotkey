@@ -30,7 +30,7 @@ class ClickTracker {
         this.btnExport := this.gui.Add("Button", "x+3 w100", "Export")
         this.btnTest2 := this.gui.Add("Button", "x+5 w100", "Test 2")
 
-        this.editBox := this.gui.Add("Edit", "xm y+10 w400 r12 -Wrap")  ; tăng chiều rộng editBox
+        this.editBox := this.gui.Add("Edit", "xm y+10 w400 r12 -Wrap")
 
         this.btnStart.OnEvent("Click", (*) => this.StartTracking())
         this.btnStop.OnEvent("Click", (*) => this.StopTracking())
@@ -42,25 +42,21 @@ class ClickTracker {
 
         this.gui.Show("AutoSize")
     }
-        
-    static Toggle()
-    {
-        if !this.gui
-        {
+
+    static Toggle() {
+        if !this.gui {
             this.Init()
             return
         }
 
         hwnd := this.gui.Hwnd
 
-        ; Kiểm tra cửa sổ có tồn tại hay không
-        if !WinExist("ahk_id " hwnd)
-        {
+        if !WinExist("ahk_id " hwnd) {
             this.gui.Show("AutoSize")
             return
         }
 
-        winState := WinGetMinMax("ahk_id " hwnd)  ; -1: hidden, 0: normal, 1: maximized
+        winState := WinGetMinMax("ahk_id " hwnd)
 
         if winState = -1
             this.gui.Show("AutoSize")
@@ -113,20 +109,18 @@ class ClickTracker {
     static UpdateEditBox() {
         code := ""
 
-        ; Hàm replay theo Test 1 (toạ độ tuyệt đối màn hình)
         code .= "ReplayTest1() {" "`n"
         if (this.targetWinTitle != "") {
             code .= Format('    WinActivate("ahk_exe {}")`n    Sleep(500)`n', this.targetWinExe)
             code .= '    screenW := ' A_ScreenWidth '`n    screenH := ' A_ScreenHeight '`n'
         }
         for pt in this.clicks {
-            posX := pt.x + this.targetWinPos.x  ; giả sử toạ độ lưu là tương đối cửa sổ, nên cộng cửa sổ
+            posX := pt.x + this.targetWinPos.x
             posY := pt.y + this.targetWinPos.y
             code .= Format("    ClickAndSleep({}, {})`n", posX, posY)
         }
         code .= "}`n`n"
 
-        ; Hàm replay theo Test 2 (toạ độ tương đối cửa sổ)
         code .= "ReplayTest2() {" "`n"
         if (this.targetWinTitle != "") {
             code .= Format('    WinActivate("ahk_exe {}")`n    Sleep(500)`n', this.targetWinExe)
@@ -138,13 +132,12 @@ class ClickTracker {
 
         }
         for pt in this.clicks {
-            posX := pt.x  ; toạ độ tương đối cửa sổ
+            posX := pt.x
             posY := pt.y
             code .= Format("    ClickAndSleep({}, {})`n", posX, posY)
         }
         code .= "}`n`n"
 
-        ; Hàm ClickAndSleep dùng chung
         code .= "ClickAndSleep(x, y, delay := 200) {" "`n"
         code .= "    Click(x, y)" "`n"
         code .= "    Sleep(delay)" "`n"
@@ -171,14 +164,14 @@ class ClickTracker {
     static ExportToFile() {
         filePath := "C:\Users\jackb\Documents\AutoHotkey\test\test.ahk"
         header := "#Requires AutoHotkey v2.0.18+" "`n" "#SingleInstance Force" "`n" "Persistent()" "`n`n"
-        FileDelete filePath  ; xóa nếu file đã tồn tại
-        FileAppend header, filePath  ; ghi header 3 dòng đầu
+        FileDelete filePath
+        FileAppend header, filePath
         FileAppend ClickTracker.editBox.Value, filePath
         TrayTip("Xuất file thành công", "File đã được lưu: " filePath, 2)
     }
 
     static RunTestAbsolute() {
-        ; Test theo toàn màn hình - overlay 1600x960 hoặc full màn hình
+
         screenWidth := A_ScreenWidth
         screenHeight := A_ScreenWidth
 
@@ -199,7 +192,7 @@ class ClickTracker {
     }
 
     static RunTestRelative() {
-        ; Test theo cửa sổ ban đầu - overlay nằm đúng vị trí cửa sổ đó
+
         win := this.targetWinID
         if !win {
             MsgBox "Chưa có thông tin cửa sổ!"
@@ -232,9 +225,9 @@ class ClickTracker {
             this.DrawSquare(gui, x + offset, y + offset, 2, color)
         for offset in this.Range(-size, size)
             this.DrawSquare(gui, x + offset, y - offset, 2, color)
-        ; Thêm text hiển thị tọa độ ngay bên phải dấu X
-        textX := x + size + 5  ; cách dấu X 5px theo chiều ngang
-        textY := y - 7         ; canh cho text nằm gần dấu X
+
+        textX := x + size + 5
+        textY := y - 7
 
         gui.Add("Text", Format("x{} y{} w100 h15", textX, textY), Format("({}, {})", x, y))
     }

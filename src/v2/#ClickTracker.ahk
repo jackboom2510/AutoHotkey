@@ -1,18 +1,18 @@
 #Requires AutoHotkey v2.0
-#Include "lib\ClickTracker.ahk"
-#Include "lib\HelpGui.ahk"
+#Include <ClickTracker>
+#Include <HelpGui>
+#Include <KeyBinding>
 #SingleInstance Force
 Persistent()
 
-;@Ahk2Exe-SetMainIcon C:\Users\jackb\Documents\AutoHotkey\icon\settings.ico
-;@Ahk2Exe-ExeName C:\Users\jackb\Documents\AutoHotkey\
+;@Ahk2Exe-SetMainIcon C:\Users\jackb\Documents\AutoHotkey\icon\click.ico
 
+hotkeys := LoadHotkeys(, "#ClickTracker")
 ClickTracker.Init()
 
-; Phím tắt
-!t:: ClickTracker.StartTracking()
-!b:: ClickTracker.StopTracking()
-MButton:: ClickTracker.OnMouseClick()
+AssignHotkey(hotkeys["StartTracking"], ClickTracker.StartTracking(), "!t")
+AssignHotkey(hotkeys["StopTracking"], ClickTracker.StopTracking(), "!b")
+AssignHotkey(hotkeys["OnMouseClick"], ClickTracker.OnMouseClick(), "MButton")
 
 ClickTracker_InitTrayMenu()
 ClickTracker_ShowHelpUI(5)

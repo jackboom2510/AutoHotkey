@@ -1,51 +1,20 @@
-global toggle := false
 global currentKey := ""
-global isScriptEnabled := false
-global isOverlayVisible := false
+global toggle := false
 global toggleF := []
 loop 25
     toggleF.Push(false)
 
-; ====== Hàm hiển thị và ẩn overlay =======
-ShowStatusOverlay(isOn) {
-    global statusOverlayGui
-
-    if IsSet(statusOverlayGui)
-        statusOverlayGui.Destroy()
-
-    statusOverlayGui := Gui("+AlwaysOnTop -Caption +ToolWindow")
-    statusOverlayGui.BackColor := isOn ? "Green" : "Red"
-    statusOverlayGui.SetFont("s10 Bold cWhite", "Segoe UI Emoji")
-
-    guiWidth := 15
-    guiHeight := 18
-    statusOverlayGui.Add("Text", "Center w" guiWidth " h" guiHeight " BackgroundTrans", isOn ? "✅" : "⛔")
-
-    screenHeight := A_ScreenHeight
-    yPos := 0  ; top of screen
-
-    statusOverlayGui.Show("x0 y" yPos " NoActivate")
-}
-
-HideStatusOverlay() {
-    global statusOverlayGui
-    if IsSet(statusOverlayGui)
-        statusOverlayGui.Destroy()
-}
-
-; ======= Hàm chuyển đổi phím và gửi tự động =======
 FormatSendKeys(keySpec) {
     mods := ""
     keys := ""
 
-    ; Danh sách các phím đặc biệt
     specialKeys := Map(
         "enter", 1, "tab", 1, "esc", 1, "escape", 1, "space", 1,
         "backspace", 1, "delete", 1, "insert", 1, "home", 1, "end", 1,
         "pgup", 1, "pgdn", 1, "up", 1, "down", 1, "left", 1, "right", 1
     )
-    ; Thêm các phím F1 đến F24 vào Map
-    Loop 24 {
+
+    loop 24 {
         key := "f" . A_Index
         specialKeys[key] := 1
     }
@@ -79,7 +48,7 @@ FormatSendKeys(keySpec) {
             }
         }
     } else {
-        ; Không có dấu + → tách modifier ra (nếu có)
+
         i := 1
         while i <= StrLen(keySpec) {
             c := SubStr(keySpec, i, 1)
@@ -93,7 +62,7 @@ FormatSendKeys(keySpec) {
 
         keyPart := SubStr(keySpec, i)
         keyLower := StrLower(keyPart)
-        if specialKeys.Has(keyLower) || RegExMatch(keyLower, "^f\d{1,2}$")  ; hỗ trợ f1-f24 kể cả chưa trong map
+        if specialKeys.Has(keyLower) || RegExMatch(keyLower, "^f\d{1,2}$")
             keys := FormatKey(keyLower)
         else if (StrLen(keyPart) = 1)
             keys := keyPart
@@ -104,11 +73,6 @@ FormatSendKeys(keySpec) {
     return mods . keys
 }
 
-AutoSendKey() {
-    global currentKey
-    Send(currentKey)
-}
-
 ToggleAndSend(idx, key1, key2) {
     global toggleF
     value := toggleF[idx]
@@ -116,7 +80,7 @@ ToggleAndSend(idx, key1, key2) {
     toggleF.RemoveAt(idx)
     toggleF.InsertAt(idx, value)
     Send(toggleF[idx] ? key1 : key2)
-    SetTimer(HideToolTip, -1000)
+    SetTimer(ToolTip, -1000)
 }
 
 ToggleAndExcute(idx, func1, func2) {
@@ -125,16 +89,31 @@ ToggleAndExcute(idx, func1, func2) {
     value := !value
     toggleF.RemoveAt(idx)
     toggleF.InsertAt(idx, value)
-    
+
     if (toggleF[idx]) {
         func1()
     } else {
         func2()
     }
-    
-    SetTimer(HideToolTip, -1000)
+
+    SetTimer(ToolTip, -1000)
 }
 
-HideToolTip(*) {
-    ToolTip()
+InputBoxForAutoSendToggle() {
+    global toggle, currentKey
+    toggle := !toggle
+    if toggle {
+        result := InputBox("Nhập phím bạn muốn gửi liên tục:", "Nhập phím", "w300 h150")
+        if result.Result != "OK" || result.Value = "" {
+            toggle := false
+            return
+        }
+        currentKey := FormatSendKeys(result.Value)
+        ToolTip("Gửi tự động phím: " . currentKey)
+        SetTimer(Send(currentKey), 1000)
+    } else {
+        ToolTip("Dừng gửi phím: " . currentKey)
+        SetTimer(Send(currentKey), 0)
+    }
+    SetTimer(ToolTip, -1500)
 }

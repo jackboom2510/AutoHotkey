@@ -1,72 +1,148 @@
-#Requires AutoHotkey v2.0
-#SingleInstance Force
-SetTitleMatchMode(2)
-Persistent()
-
 waitTime := 300
+CheckIfValueExists(arr, value) {
+    for idx, item in arr {
+        if (IsSet(item)) {
+            if (item = value)
+                return true
+        }
+    }
+    return false
+}
 
-class ShortcutTool
-{
-    static configFile := A_ScriptDir "\config.ini"
+class ShortcutTool {
+    static configFile := "C:\Users\jackb\Documents\AutoHotkey\configs\config.ini"
     static defaultPath := ""
     static gui := unset
     static pathLabel := ""
     static btnBrowse := ""
     static btnApply := ""
+    static btnInsertDdl := ""
+    static ddlPath := ""
+    static ddlOptions := []
     static transparency := 200
 
-    static CreateGui()
-    {
-        ShortcutTool.gui := Gui("+AlwaysOnTop -Caption +Resize", "Shortcut Tool")
-        ; ShortcutTool.gui.BackColor := "Fuchsia"
-        ShortcutTool.gui.SetFont("s10", "Segoe UI")
+    static pathMap := {
+        Desktop: "C:\Users\jackb\Desktop",
+        Documents: "C:\Users\jackb\Documents",
+        Downloads: "C:\Users\jackb\Downloads",
+        Music: "C:\Users\jackb\Music",
+        Pictures: "C:\Users\jackb\Pictures",
+        Videos: "C:\Users\jackb\Videos"
+    }
 
-        ; ShortcutTool.gui.Add("Text", , "Thư mục mặc định:")
+    static CreateGui() {
+        ShortcutTool.gui := Gui("+AlwaysOnTop -Caption +Resize", "Shortcut Tool")
+        ShortcutTool.gui.SetFont("s10", "Segoe UI")
+        ShortcutTool.gui.BackColor := "eaffff"
+        ShortcutTool.InitDefaultPath()
+        ShortcutTool.LoadDdlOptionsFromConfig()
+
+        ShortcutTool.ddlPath := ShortcutTool.gui.Add("DropDownList", "x10 y+5 w250 Choose" . ShortcutTool.ddlOptions.Length,
+            ShortcutTool.ddlOptions)
+        ShortcutTool.btnInsertDdl := ShortcutTool.gui.Add("Button", "x+5 yp w55", "Insert")
+        ShortcutTool.btnRemoveDdl := ShortcutTool.gui.Add("Button", "x+5 yp w50", "Del")
         ShortcutTool.pathLabel := ShortcutTool.gui.Add("Edit", "x10 y+5 w225", ShortcutTool.defaultPath)
-        ShortcutTool.btnBrowse := ShortcutTool.gui.Add("Button", "x+5 yp w30", "🗂")
+        ShortcutTool.btnApply := ShortcutTool.gui.Add("Button", "x+5 yp w30", "✅")
+        ShortcutTool.btnBrowse := ShortcutTool.gui.Add("Button", "xp+35 yp w30", "🗂")
         ShortcutTool.btnPaste := ShortcutTool.gui.Add("Button", "xp+35 yp w30", "📋")
         ShortcutTool.btnSetDefault := ShortcutTool.gui.Add("Button", "xp+35 yp w30", "💾")
-        ShortcutTool.btnHide := ShortcutTool.gui.Add("Button", "xp+35 yp w30", "👁️‍🗨")
-        ShortcutTool.btnReset := ShortcutTool.gui.Add("Button", "xp y+5 w30", "↩")
+        ShortcutTool.gui.Add("Button", "xp y+5 w30", "❌").OnEvent("Click", (*) => ExitApp())
         ShortcutTool.btnTransparentUp := ShortcutTool.gui.Add("Button", "xp-35 yp w30", "➕")
         ShortcutTool.btnTransparentDown := ShortcutTool.gui.Add("Button", "xp-35 yp w30", "➖")
-        ShortcutTool.btnApply := ShortcutTool.gui.Add("Button", "xp-35 yp w30", "✅")
+        ShortcutTool.btnReset := ShortcutTool.gui.Add("Button", "xp-35 yp w30", "↩")
         ShortcutTool.gui.Add("Button", "xm yp w120", "➕ Shortcut").OnEvent("Click", (*) => ShortcutTool.AddShortcut())
-        ShortcutTool.gui.Add("Button", "x+5 w100", "Exit").OnEvent("Click", (*) => ExitApp())
+        ShortcutTool.btnHide := ShortcutTool.gui.Add("Button", "x+5 w100", "Hide")
+
+        ShortcutTool.ddlPath.OnEvent("Change", (*) => ShortcutTool.OnDropdownChange())
+        ShortcutTool.btnInsertDdl.OnEvent("Click", (*) => ShortcutTool.AddPathToDdl())
+        ShortcutTool.btnRemoveDdl.OnEvent("Click", (*) => ShortcutTool.RemovePathFromDdl())
         ShortcutTool.btnSetDefault.OnEvent("Click", (*) => ShortcutTool.SetAsDefaultPath())
         ShortcutTool.btnTransparentDown.OnEvent("Click", (*) => ShortcutTool.DecreaseTransparency())
         ShortcutTool.btnTransparentUp.OnEvent("Click", (*) => ShortcutTool.IncreaseTransparency())
-        ShortcutTool.btnPaste.OnEvent("Click", (*) => ShortcutTool.PasteFromClipboard())  
+        ShortcutTool.btnPaste.OnEvent("Click", (*) => ShortcutTool.PasteFromClipboard())
         ShortcutTool.btnBrowse.OnEvent("Click", (*) => ShortcutTool.ChangePath())
         ShortcutTool.btnApply.OnEvent("Click", (*) => ShortcutTool.ApplyPathFromEdit())
         ShortcutTool.btnReset.OnEvent("Click", (*) => ShortcutTool.ResetPathToDefault())
         ShortcutTool.btnHide.OnEvent("Click", (*) => ShortcutTool.gui.Hide())
-        ShortcutTool.gui.OnEvent("Size", (*) => ShortcutTool.ResizeControls)
 
+        ShortcutTool.gui.OnEvent("Size", (*) => ShortcutTool.ResizeControls)
         ShortcutTool.gui.Show("x1200 y85 AutoSize")
-        WinSetTransparent 200, "Shortcut Tool"
+        WinSetTransColor ShortcutTool.gui.BackColor, "Shortcut Tool"
+        WinSetTransparent ShortcutTool.transparency, "Shortcut Tool"
     }
-    
-    static ResizeControls(guiObj, minMax, width, height)
-    {
+
+    static OnDropdownChange() {
+        selectedPath := ShortcutTool.ddlPath.Value
+        ShortcutTool.pathLabel.Value := ShortcutTool.ddlOptions[selectedPath]
+    }
+
+    static LoadDdlOptionsFromConfig() {
+        paths := ""
+        if FileExist(ShortcutTool.configFile) {
+            paths := IniRead(ShortcutTool.configFile, "DropdownOptions", "paths", "")
+        }
+        if (paths = "") {
+            paths := ShortcutTool.pathMap
+            IniWrite(ShortcutTool.defaultPath, ShortcutTool.configFile, "DropdownOptions", "paths")
+        }
+        loop parse, paths, "," {
+            ShortcutTool.ddlOptions.Push(A_LoopField)
+        }
+    }
+
+    static AddPathToDdl() {
+        if !(CheckIfValueExists(ShortcutTool.ddlOptions, ShortcutTool.defaultPath)) {
+            ShortcutTool.ddlOptions.Push(ShortcutTool.defaultPath)
+            ShortcutTool.ddlPath.Add([ShortcutTool.defaultPath])
+            ShortcutTool.ddlPath.Choose(ShortcutTool.defaultPath)
+            ShortcutTool.SaveDdlOptionsToConfig()
+            TrayTip(ShortcutTool.defaultPath, "✅ Đã thêm đường dẫn mới vào danh sách: ")
+        }
+        else {
+            TrayTip(ShortcutTool.defaultPath, "❌ Đã tồn tại phần tử đường dẫn trong danh sách" 16)
+
+        }
+    }
+
+    static RemovePathFromDdl() {
+        selectedPath := ShortcutTool.ddlPath.Value
+        if (selectedPath != 0) {
+            value := ShortcutTool.ddlOptions.RemoveAt(selectedPath)
+            ShortcutTool.ddlPath.Delete(selectedPath)
+            ShortcutTool.SaveDdlOptionsToConfig()
+            TrayTip("✅ Đã xóa phần tử " . value)
+        }
+        else {
+            TrayTip("❌ Danh sách trống.", "Lỗi", 16)
+        }
+    }
+
+    static SaveDdlOptionsToConfig() {
+        if (ShortcutTool.ddlOptions.Length != 0) {
+            paths := ""
+            for index, value in ShortcutTool.ddlOptions {
+                if (IsSet(value))
+                    paths .= value . ","
+            }
+            paths := RTrim(paths, ",")
+            IniWrite(paths, ShortcutTool.configFile, "DropdownOptions", "paths")
+        }
+    }
+
+    static ResizeControls(guiObj, minMax, width, height) {
         marginRight := 10
         spacing := 5
         btnW := 30
 
-        ; Tổng chiều rộng 6 nút: 6 nút + 5 khoảng spacing
         totalBtnWidth := 6 * btnW + 5 * spacing
 
-        ; Tính vị trí bắt đầu của nút đầu tiên (btnPaste) sao cho nút cuối cùng (btnApply) sát lề phải
         btnStartX := width - marginRight - totalBtnWidth
 
-        ; Lấy vị trí Y từ pathLabel
         x := y := w := h := 0
         ControlGetPos(&x, &y, &w, &h, ShortcutTool.pathLabel)
 
-        ; Resize Edit để chiếm phần còn lại bên trái
         ShortcutTool.pathLabel.Move(, , btnStartX - x - spacing)
 
-        ; Di chuyển các nút theo chiều ngang, từ phải sang trái
         ShortcutTool.btnPaste.Move(btnStartX + 0 * (btnW + spacing), y)
         ShortcutTool.btnBrowse.Move(btnStartX + 1 * (btnW + spacing), y)
         ShortcutTool.btnHide.Move(btnStartX + 2 * (btnW + spacing), y)
@@ -75,44 +151,36 @@ class ShortcutTool
         ShortcutTool.btnSetDefault.Move(btnStartX + 5 * (btnW + spacing), y)
     }
 
-    static UpdateTransparency()
-    {
+    static UpdateTransparency() {
         hwnd := ShortcutTool.gui.Hwnd
         if WinExist("ahk_id " hwnd)
             WinSetTransparent(ShortcutTool.transparency, "ahk_id " hwnd)
     }
 
-    static IncreaseTransparency()
-    {
+    static IncreaseTransparency() {
         ShortcutTool.transparency := Min(ShortcutTool.transparency + 25, 255)
         ShortcutTool.UpdateTransparency()
     }
 
-    static DecreaseTransparency()
-    {
+    static DecreaseTransparency() {
         ShortcutTool.transparency := Max(ShortcutTool.transparency - 25, 50)
         ShortcutTool.UpdateTransparency()
     }
 
-
-    static Toggle()
-    {
-        if !ShortcutTool.gui
-        {
+    static Toggle() {
+        if !ShortcutTool.gui {
             ShortcutTool.CreateGui()
             return
         }
 
         hwnd := ShortcutTool.gui.Hwnd
 
-        ; Kiểm tra cửa sổ có tồn tại hay không
-        if !WinExist("ahk_id " hwnd)
-        {
+        if !WinExist("ahk_id " hwnd) {
             ShortcutTool.gui.Show("x1200 y85 AutoSize")
             return
         }
 
-        winState := WinGetMinMax("ahk_id " hwnd)  ; -1: hidden, 0: normal, 1: maximized
+        winState := WinGetMinMax("ahk_id " hwnd)
 
         if winState = -1
             ShortcutTool.gui.Show("x1200 y85 AutoSize")
@@ -120,47 +188,39 @@ class ShortcutTool
             ShortcutTool.gui.Hide()
     }
 
-    static AddShortcut()
-    {
-        ; B1: Kiểm tra Chrome và lấy URL
+    static AddShortcut() {
+
         if !WinExist("ahk_exe chrome.exe") {
-            MsgBox("Không tìm thấy cửa sổ Chrome đang mở!", "Lỗi", 16)
+            TrayTip("Không tìm thấy cửa sổ Chrome đang mở!", "Lỗi", 16)
             return
         }
 
-        ; Lấy tiêu đề Chrome trước khi chuyển URL
         WinActivate("ahk_exe chrome.exe")
         winTitle := WinGetTitle("A")
 
-        ; B2: Lấy URL từ thanh địa chỉ
         Send("^l")
         Send("^c")
         Sleep 300
         if !ClipWait(2) || A_Clipboard = "" {
-            MsgBox("Clipboard trống hoặc không lấy được URL!", "Lỗi", 16)
+            TrayTip("Clipboard trống hoặc không lấy được URL!", "Lỗi", 16)
             return
         }
         url := A_Clipboard
 
-        ; B3: Tạo tiêu đề hợp lệ
-        title := StrReplace(winTitle, " - Google Chrome")              ; Xoá hậu tố Chrome
+        title := StrReplace(winTitle, " - Google Chrome")
         title := Trim(title)
 
-        ; B3.1: Thêm tiền tố và xử lý đặc biệt nếu là YouTube
         if InStr(url, "youtube.com") || InStr(url, "youtu.be") {
-            title := StrReplace(title, " - YouTube")                   ; Xoá hậu tố YouTube nếu có
+            title := StrReplace(title, " - YouTube")
             prefix := "(Y) "
         } else {
             prefix := "(L) "
         }
 
-        ; B3.2: Xoá ký tự không hợp lệ và thêm tiền tố
-        title := prefix . RegExReplace(title, "[\\/:*?" "<>|]", "")      ; Tên file hợp lệ
+        title := prefix . RegExReplace(title, "[\\/:*?" "<>|]", "")
 
-        ; B4: Tạo thư mục nếu chưa có
         DirCreate(ShortcutTool.defaultPath)
 
-        ; B5: Mở hoặc chuyển thư mục trong Explorer
         if WinExist("ahk_class CabinetWClass") {
             WinActivate("ahk_class CabinetWClass")
             Send("!d")
@@ -170,13 +230,12 @@ class ShortcutTool
         } else {
             Run("explorer.exe " . ShortcutTool.defaultPath)
             if !WinWaitActive("ahk_class CabinetWClass", , 3) {
-                MsgBox("Không thể mở File Explorer!", "Lỗi", 16)
+                TrayTip("Không thể mở File Explorer!", "Lỗi", 16)
                 return
             }
         }
         Sleep 300
 
-        ; B6: Mô phỏng tạo shortcut
         Send("{AppsKey}")
         Sleep(waitTime)
         Send("!w")
@@ -186,39 +245,30 @@ class ShortcutTool
         Send("s")
         Sleep(waitTime)
 
-        ; B7: Nhập URL
         SendText(url)
         Send("{Enter}")
         Sleep(waitTime)
 
-        ; B8: Nhập tiêu đề đã xử lý
         SendText(title)
         Send("{Enter}")
         Sleep(waitTime)
 
         TrayTip("✅ Shortcut đã được tạo với tiêu đề:`n" . title, "Hoàn tất")
     }
-    
-    static InitDefaultPath()
-    {
-        ; Nếu file tồn tại, đọc giá trị
-        if FileExist(ShortcutTool.configFile)
-        {
+
+    static InitDefaultPath() {
+        if FileExist(ShortcutTool.configFile) {
             ShortcutTool.defaultPath := IniRead(ShortcutTool.configFile, "ShortcutTool", "defaultPath", "")
         }
-
-        ; Nếu không có giá trị (lần đầu), dùng giá trị mặc định
         if ShortcutTool.defaultPath = ""
             ShortcutTool.defaultPath := "D:\5. Jack\#Learn\Language\Japan"
     }
 
-    static SaveDefaultPath()
-    {
+    static SaveDefaultPath() {
         IniWrite(ShortcutTool.defaultPath, ShortcutTool.configFile, "ShortcutTool", "defaultPath")
     }
 
-    static SetAsDefaultPath()
-    {
+    static SetAsDefaultPath() {
         newPath := ShortcutTool.pathLabel.Value
         if newPath != "" && DirExist(newPath) {
             ShortcutTool.defaultPath := newPath
@@ -229,8 +279,7 @@ class ShortcutTool
         }
     }
 
-    static ChangePath()
-    {
+    static ChangePath() {
         newPath := DirSelect(ShortcutTool.defaultPath, 1, "Chọn thư mục lưu shortcut")
         if newPath {
             ShortcutTool.defaultPath := newPath
@@ -241,27 +290,24 @@ class ShortcutTool
         }
     }
 
-    static ResetPathToDefault()
-    {
+    static ResetPathToDefault() {
         ShortcutTool.pathLabel.Value := ShortcutTool.defaultPath
         TrayTip("🔁 Đã hoàn tác về đường dẫn mặc định.")
     }
 
-    static PasteFromClipboard()
-    {
-        if A_Clipboard != ""
-        {
+    static PasteFromClipboard() {
+        if A_Clipboard != "" {
             ShortcutTool.pathLabel.Value := A_Clipboard
             TrayTip("📋 Đã dán từ clipboard.")
         }
-        else
-        {
+        else {
             TrayTip("❌ Clipboard đang trống.")
         }
     }
 
-    static ApplyPathFromEdit()
-    {
+    static ApplyPathFromEdit() {
+        if (ShortcutTool.pathLabel.Value = "Desktop")
+            ShortcutTool.pathLabel.Value := A_Desktop
         newPath := ShortcutTool.pathLabel.Value
         if newPath != "" && DirExist(newPath) {
             ShortcutTool.defaultPath := newPath

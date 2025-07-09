@@ -1,21 +1,20 @@
-﻿#Include "lib\ShortcutTool.ahk"
-#Include "lib\HelpGui.ahk"
+﻿#Include <ShortcutTool>
+#Include <HelpGui>
+#Include <KeyBinding>
 #Requires AutoHotkey v2.0
 #SingleInstance Force
 Persistent()
 
 ;@Ahk2Exe-SetMainIcon C:\Users\jackb\Documents\AutoHotkey\icon\internet.ico
-;@Ahk2Exe-ExeName C:\Users\jackb\Documents\AutoHotkey\test.exe
 
 ; ====== Hotkeys ======
-+!s::ShortcutTool.AddShortcut()
-+!x::ShortcutTool.ChangePath()
-+!g::ShortcutTool.Toggle()
+hotkeys := LoadHotkeys(, "ShortcutGenerator")
+AssignHotkey(hotkeys["AddShortcut"], ShortcutTool.AddShortcut)
+AssignHotkey(hotkeys["ChangePath"], ShortcutTool.ChangePath)
+AssignHotkey(hotkeys["Toggle"], ShortcutTool.Toggle)
 
 ; ====== Start ====
-ShortcutTool.InitDefaultPath()
 ShortcutTool.CreateGui()
-
 ShortcutGen_InitTrayMenu()
 ShortcutGen_ShowHelpUI(5)
 
@@ -41,9 +40,9 @@ ShortcutGen_ShowHelpUI(hideTimer := 0) {
         {
             title: "📜 Shortcut Tool Help",
             lines: [
-                "Shift + Alt + S → Thêm Shortcut mới",
-                "Shift + Alt + X → Thay đổi đường dẫn của Shortcut",
-                "Shift + Alt + G → Ẩn/Hiện tính năng của Shortcut Tool",
+                HK(hotkeys["AddShortcut"]) " → Thêm Shortcut mới",
+                HK(hotkeys["ChangePath"]) " → Thay đổi đường dẫn của Shortcut",
+                HK(hotkeys["Toggle"]) " → Ẩn/Hiện tính năng của Shortcut Tool",
             ]
         },
         {

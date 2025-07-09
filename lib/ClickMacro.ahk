@@ -1,5 +1,3 @@
-#Include "log.ahk"
-
 RunIfNotExist(exePathOrShellCmd, exeName, isUWP := false) {
     if !WinExist("ahk_exe " exeName) {
         Run(isUWP ? "explorer shell:AppsFolder\" exePathOrShellCmd : exePathOrShellCmd)
@@ -11,42 +9,21 @@ RunIfNotExist(exePathOrShellCmd, exeName, isUWP := false) {
     return true
 }
 
-;	=== Mouse Move ===
 ClickAndSleep(x, y, clickDelay := 200) {
     Click(x, y)
     Sleep(clickDelay)
 }
 
-logClick(x, y, clickDelay := 200, label := "") {
-    ToolTip("➡️ Moving to: " label " (X: " x ", Y: " y ")")
-    MouseMove(x, y, 50)
-    Sleep(clickDelay * 10)
-    Click(x, y)
-    ToolTip("✅ Clicked: " label " (X: " x ", Y: " y ")")
-    Sleep(clickDelay)  ; Adjust for the log wait time
-    ToolTip()
-    log("Clicked at: " label " (" x ", " y ") with delay: " clickDelay)
-}
-
-log(text) {
-    timestamp := FormatTime(, "yyyy-MM-dd HH:mm:ss")
-    FileAppend "[" timestamp "] " text "`n", logFile
-}
-
-;	=== Configuration ===
 ConfigureMonitorSettings(option) {
     MouseGetPos(&mouseX, &mouseY)
 
-    ; Mở phần mềm nếu chưa mở
     RunIfNotExist("C:\Program Files\XPPen\PenTablet.exe", "PenTablet.exe")
     WinActivate("ahk_exe PenTablet.exe")
 
-    ; Click các vị trí cơ bản mà không cần Sleep sau click
     ClickAndSleep(55, 135)
     ClickAndSleep(515, 530)
     ClickAndSleep(285, 445)
 
-    ; Chọn Option với Sleep sau click
     if (option = 1) {
         ClickAndSleep(285, 490)
     }
@@ -57,7 +34,6 @@ ConfigureMonitorSettings(option) {
         ClickAndSleep(285, 565)
     }
 
-    ; Quay lại và đóng ứng dụng
     ClickAndSleep(150, 100, 100)
     WinClose("ahk_exe PenTablet.exe")
     MouseMove(mouseX, mouseY)
@@ -66,20 +42,17 @@ ConfigureMonitorSettings(option) {
 ConfigurePenSettings(option) {
     MouseGetPos(&mouseX, &mouseY)
 
-    ; Mở phần mềm nếu chưa mở
     RunIfNotExist("C:\Program Files\XPPen\PenTablet.exe", "PenTablet.exe")
     WinActivate("ahk_exe PenTablet.exe")
 
-    ; Click vào "Pen Settings"
     ClickAndSleep(60, 230)
 
-    ; Tùy chọn Window Ink hoặc Mouse Mod
     if (option = 1) {
-        ; Chọn Window Ink (685:320)
+
         ClickAndSleep(685, 320)
     }
     else if (option = 2) {
-        ; Chọn Mouse Mod (685:360)
+
         ClickAndSleep(685, 360)
         ClickAndSleep(60, 230)
     }
@@ -134,4 +107,25 @@ ConfigureOneNote(option) {
             ClickAndSleep(377, 87, 0)
     }
     MouseMove(mouseX, mouseY)
+}
+
+CopyProcessDirectory() {
+    hwnd := WinActive("A")
+    if !hwnd {
+        MsgBox("Không tìm thấy cửa sổ đang hoạt động.", "Lỗi", 48)
+        return
+    }
+
+    pid := WinGetPID(hwnd)
+
+    try {
+        exePath := ProcessGetPath(pid)
+        SplitPath exePath, , &dir
+        A_Clipboard := dir
+        ToolTip("Đã copy: " . dir)
+    } catch {
+        MsgBox("Không thể lấy đường dẫn tiến trình.", "Lỗi", 48)
+    }
+
+    SetTimer(() => ToolTip, -1500)
 }

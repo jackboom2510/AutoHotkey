@@ -2,7 +2,7 @@
     "AutoHotkey Template": {
         "prefix": "ahk",
         "body": [
-            "#Include \"lib\\HelpGui.ahk\"",
+            "#Include <HelpGUI>",
             "#Requires AutoHotkey v2.0",
             "#SingleInstance Force",
             "Persistent()",
@@ -11,7 +11,7 @@
             ";@Ahk2Exe-exePath C:\\Users\\jackb\\Documents\\AutoHotkey",
 
             "$0InitTrayMenu()",
-            "$0ShowHelpUI($1)",
+            "$0ShowHelpUI(5)",
             "",
             "$0InitTrayMenu() {",
             "    A_TrayMenu.Delete()",

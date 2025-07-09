@@ -1,0 +1,10 @@
+[
+  {
+    "Pause": {
+      "hotkeys": [
+        "Pause"
+      ],
+      "description": "Pause or resume the script."
+    }
+  }
+]

@@ -1,0 +1,14 @@
+[
+  "abc",
+  123,
+  {
+    "true": 1,
+    "false": 0,
+    "null": ""
+  },
+  [
+    true,
+    false,
+    null
+  ]
+]

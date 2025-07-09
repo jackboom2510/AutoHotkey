@@ -1,0 +1,10 @@
+{
+  "General": {
+    "Theme": "Dark",
+    "FontSize": 14
+  },
+  "Shortcuts": {
+    "Save": "Ctrl+S",
+    "Open": "Ctrl+O"
+  }
+}
