@@ -8,7 +8,9 @@ Persistent()
 ;@Ahk2Exe-SetMainIcon C:\Users\jackb\Documents\AutoHotkey\icon\internet.ico
 
 ; ====== Hotkeys ======
+
 ; BindingScript("ShortcutGenerator")
+
 
 ; ====== Start ====
 ShortcutGen_InitTrayMenu()

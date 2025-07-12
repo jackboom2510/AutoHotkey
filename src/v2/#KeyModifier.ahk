@@ -10,8 +10,9 @@ CoordMode "Mouse", "Client"
 #Include <KeyModifier>
 #Include <StatusOverlay>
 
-;  @Ahk2Exe-SetMainIcon C:\Users\jackb\Documents\AutoHotkey\icon\settings.ico
-;  @Ahk2Exe-ExeName C:\Users\jackb\Documents\AutoHotkey\src\v2
+;@Ahk2Exe-SetMainIcon C:\Users\jackb\Documents\AutoHotkey\icon\settings.ico
+;@Ahk2Exe-ExeName C:\Users\jackb\Documents\AutoHotkey\build
+
 Pause:: Pause -1
 
 BindingScript("#KeyModifier", GetScriptStatus)
