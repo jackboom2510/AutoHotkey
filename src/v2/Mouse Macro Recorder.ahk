@@ -1,5 +1,5 @@
 #Include <Log>
-#Include <HelpGUI>
+#Include <HelpGui>
 #Requires AutoHotkey v2.0
 #SingleInstance Force
 Persistent()
@@ -13,7 +13,7 @@ global startX := 0, startY := 0
 ; CTRL + ALT + R → Ghi tọa độ chuột hiện tại
 ^!r:: 
 {
-    global logFile
+    global globalLogFile
     MouseGetPos &x, &y, &hwnd
     timestamp := FormatTime(, "yyyy-MM-dd HH:mm:ss")
     
@@ -32,7 +32,7 @@ global startX := 0, startY := 0
         . "Cửa sổ: " title "`n"
         . "Đường dẫn tiến trình: " exePath "`n"
         . "Cửa sổ vị trí: X=" winX ", Y=" winY ", W=" width ", H=" height "`n"
-        . "*Mouse: " x ":" y "`n`n", logFile
+        . "*Mouse: " x ":" y "`n`n", globalLogFile
     
     TrayTip "Vị trí đã lưu", 
         "Chuột: X=" x ", Y=" y "`n"
@@ -66,8 +66,8 @@ global startX := 0, startY := 0
         y4 := Max(startY, endY)
         xa := (x1+x4)//2
         ya := (y1+y4)//2
-        FileAppend "[Vùng] " timestamp "`n", logFile
-        FileAppend "" x1 ":" y1 "`t" x2 ":" y2 "`n" x3 ":" y3 "`t" x4 ":" y4 "`n" xa ":" ya "`n`n", logFile
+        FileAppend "[Vùng] " timestamp "`n", globalLogFile
+        FileAppend "" x1 ":" y1 "`t" x2 ":" y2 "`n" x3 ":" y3 "`t" x4 ":" y4 "`n" xa ":" ya "`n`n", globalLogFile
 
         TrayTip "Vùng đã lưu", "Từ (" x1 "," y1 ") đến (" x4 "," y4 ")`nTrọng tâm: " xa ":" ya
         isSelecting := false

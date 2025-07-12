@@ -1,36 +1,113 @@
-LoadHotkeys(filePath := "C:\Users\jackb\Documents\AutoHotkey\configs\hotkeys.ini", section := "") {
-    hotkeys := Map()
-    if (FileExist(filePath)) {
-        if (section != "") {
-            sectionData := IniRead(filePath, section)
+#Include <JSON>
+hotkeysJSON := "C:\Users\jackb\Documents\AutoHotkey\configs\hotkeys.json"
+hotkeys := JSON.LoadFile(hotkeysJSON)
 
-            if (sectionData != "") {
-                lines := StrSplit(sectionData, "`n")
-                for line in lines {
-                    if (line != "" && !RegExMatch(line, "^\s*;")) {
-                        parts := StrSplit(line, "=")
-                        if (parts.Length = 2) {
-                            hotkeys[parts[1]] := parts[2]
-                        }
+BindingAll(citeria := "") {
+    for script_id, script in hotkeys {
+        BindingScript(script, citeria)
+    }
+}
+
+BindingScript(script, citeria := "") {
+    notification := ""
+    for fn_id, fn in hotkeys[script] {
+        if (fn.has("isMethod") && fn["isMethod"] = true) {
+            fullFn := StrSplit(fn_id, '.')
+            try {
+                fn_id := ObjBindMethod(%fullFn[1]%, fullFn[2])
+            }
+            catch as Err {
+                TrayTip "❌ Error running when running " fullFn[1] '.' fullFn[2] ': ' Err.Message
+                FileOpen("C:\Users\jackb\Documents\AutoHotkey\configs\error_log.txt", 'a').Write(
+                    "Error writing to file: " Err.Message "`n")
+            }
+        }
+        if (fn.has("args")) {
+            for args_id, args in fn["args"] {
+                hk := fn["hotkeys"][args_id]
+                if (IsObject(args)) {
+                    if (IsObject(hk)) {
+                        notification .= hk[1] "`t-> " fn_id "("  ")" "`n"
+                        HotIf citeria
+                        AssignHotkey(hk[1], fn_id, , , args*)
+                        HotIf
+                    }
+                    else {
+                        notification .= hk "`t-> " fn_id "`n"
+                        AssignHotkey(hk, fn_id, , , args*)
                     }
                 }
-            } else {
-                TrayTip("Section does not exist!")
+                else {
+                    hk := fn["hotkeys"][args_id]
+                    if (IsObject(hk)) {
+                        notification .= hk[1] "`t-> " fn_id "`n"
+                        HotIf citeria
+                        AssignHotkey(hk[1], fn_id, , , args)
+                        HotIf
+                    }
+                    else {
+                        notification .= hk "`t-> " fn_id "`n"
+                        AssignHotkey(hk, fn_id, , , args)
+                    }
+                }
             }
         }
         else {
-            sections := IniRead(filePath)
-            if (sections != "") {
-                return sections
-            } else {
-                TrayTip("No sections found in the .ini file!")
+            hk := fn["hotkeys"][1]
+            if (IsObject(hk)) {
+                notification .= hk[1] "`t-> " fn_id "`n"
+                HotIf citeria
+                AssignHotkey(hk[1], fn_id)
+                HotIf
+            }
+            else {
+                notification .= hk "`t-> " fn_id "`n"
+                AssignHotkey(hk, fn_id)
             }
         }
-    } else {
-        TrayTip("INI file not found!")
+    }
+    MsgBox(notification)
+    return hotkeys[script]
+}
+
+AssignHotkey(KeyName, Function, Options := "", Default := "!t", FnArgs*) {
+    if (KeyName = "" || Trim(KeyName) = "") {
+        KeyName := Default
     }
 
-    return hotkeys
+    if (KeyName = "" || Trim(KeyName) = "") {
+        TrayTip "⚠️ Không thể gán hotkey vì không có KeyName hợp lệ."
+        return false
+    }
+
+    if (Type(Function) = "String") {
+        Function := %Function%
+    }
+
+    if !IsObject(Function) || !Function.HasMethod("Call") {
+        TrayTip "❌ Callback không hợp lệ."
+        return false
+    }
+    try Hotkey(KeyName, "Off")
+
+    try {
+        Hotkey(KeyName, (*) => Function.Call(FnArgs*), Options)
+        return true
+    } catch as e {
+        TrayTip "❌ Lỗi khi gán hotkey `"" KeyName "`" cho `"" Function.Name "`": " e.Message
+        return false
+    }
+}
+
+FnCall(Function, args*) {
+    if (Type(Function) = "String")
+        Function := %Function%
+    try Function.Call(args*)
+    catch as Err {
+        MsgBox A_ScriptFullPath "`n`n❌ Error calling function: `"" Function.Name "`"`n" Type(Err) ": " Err.Message
+        FileAppend "❌ [" A_ScriptFullPath "]`n`t- " Type(Err) ": " Err.Message "`n",
+        "C:\Users\jackb\Documents\AutoHotkey\configs\error_log.txt"
+    }
 }
 
 /**
@@ -121,31 +198,37 @@ HotkeyExp(hotkey) {
     return explanation
 }
 
-AssignHotkey(KeyName, Function, Options := "", Default := "", FnArgs*) {
-    if (KeyName = "" || Trim(KeyName) = "") {
-        KeyName := Default
+LoadHotkeys(filePath := "C:\Users\jackb\Documents\AutoHotkey\configs\hotkeys.ini", section := "") {
+    hotkeys := Map()
+    if (FileExist(filePath)) {
+        if (section != "") {
+            sectionData := IniRead(filePath, section)
+
+            if (sectionData != "") {
+                lines := StrSplit(sectionData, "`n")
+                for line in lines {
+                    if (line != "" && !RegExMatch(line, "^\s*;")) {
+                        parts := StrSplit(line, "=")
+                        if (parts.Length = 2) {
+                            hotkeys[parts[1]] := parts[2]
+                        }
+                    }
+                }
+            } else {
+                TrayTip("Section does not exist!")
+            }
+        }
+        else {
+            sections := IniRead(filePath)
+            if (sections != "") {
+                return sections
+            } else {
+                TrayTip("No sections found in the .ini file!")
+            }
+        }
+    } else {
+        TrayTip("INI file not found!")
     }
 
-    if (KeyName = "" || Trim(KeyName) = "") {
-        TrayTip "⚠️ Không thể gán hotkey vì không có KeyName hợp lệ."
-        return false
-    }
-
-    if (Type(Function) = "String") {
-        Function := %Function%
-    }
-
-    if !IsObject(Function) || !Function.HasMethod("Call") {
-        TrayTip "❌ Callback không hợp lệ."
-        return false
-    }
-    try Hotkey(KeyName, "Off")
-
-    try {
-        Hotkey(KeyName, (*) => Function(FnArgs*), Options)
-        return true
-    } catch as e {
-        TrayTip "❌ Lỗi khi gán hotkey: " e.Message
-        return false
-    }
+    return hotkeys
 }

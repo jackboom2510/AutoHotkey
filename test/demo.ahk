@@ -1,50 +1,31 @@
-#Requires AutoHotkey v2.0
+#Requires AutoHotkey v2.0.18+
 #SingleInstance Force
-Persistent()
+CoordMode "Mouse", "Screen"
+Persistent
+endl := '`n'
 
-obj := {
-    KeyModifier: {
-        ToggleAndSend: {
-            args: [
-                [
-                    20,
-                    "1",
-                    "2"
-                ],
-                [
-                    22,
-                    "^+2",
-                    "^+3"
-                ],
-                [
-                    23,
-                    "{Space}",
-                    "{1}"
-                ],
-                [
-                    24,
-                    "v",
-                    "h"
-                ]
-            ],
-            description: "Toggle between sending different key combinations based on the assigned arguments.",
-            hotkeys: [
-                "F20",
-                "F22",
-                "F23",
-                "F24"
-            ]
-        },
-    }
-}
-MsgBox obj.KeyModifier.ToggleAndSend.hotkeys.length
-for idx, hk in obj.KeyModifier.ToggleAndSend.hotkeys {
-    if (IsObject(obj.KeyModifier.ToggleAndSend.args[idx])) {
-        out := "("
-        for idx2, var in obj.KeyModifier.ToggleAndSend.args[idx] {
-            out .= var . ', '
-        }
-        out := out . ")"
-        MsgBox out
-    }
-}
+#Include <Log>
+
+MyGui := Gui("+AlwaysOnTop +Resize -DPIScale", "Simple Tab GUI")
+MyGui.SetFont("s10", "Segoe UI")
+
+; Thêm control Tab
+tabs := MyGui.Add("Tab3", "w400 h250", ["Tab 1", "Tab 2"])
+
+; ===== Tab 1 =====
+MyGui.UseTab(1)
+MyGui.Add("Text", "x+10 yp+30", "Đây là Tab 1")
+MyGui.Add("Edit", "w300", "Nội dung cho Tab 1")
+
+; ===== Tab 2 =====
+MyGui.UseTab(2)
+MyGui.Add("Text", , "Đây là Tab 2")
+MyGui.Add("Button", "w150", "Nhấn vào đây")
+
+; Quay lại mặc định (không tab nào)
+MyGui.UseTab(1)
+
+; Hiển thị GUI
+MyGui.Show("w420 h300")
+
+FileObj.Close()

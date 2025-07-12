@@ -83,7 +83,7 @@ ToggleAndSend(idx, key1, key2) {
     SetTimer(ToolTip, -1000)
 }
 
-ToggleAndExecute(idx, func1, func2) {
+ToggleAndExecute(idx, func1, func2, args1, args2) {
     global toggleF
     value := toggleF[idx]
     value := !value
@@ -91,9 +91,25 @@ ToggleAndExecute(idx, func1, func2) {
     toggleF.InsertAt(idx, value)
 
     if (toggleF[idx]) {
-        func1()
+        if (Type(func1) = "String") {
+            func1 := %func1%
+        }
+        try func1(args1*)
+        catch as Err {
+            MsgBox A_ScriptFullPath "`n`n❌ Error calling function: `"" func1.Name "`"`n" Type(Err) ": " Err.Message
+            FileAppend "❌ [" A_ScriptFullPath "]`n`t- " Type(Err) ": " Err.Message "`n",
+            "C:\Users\jackb\Documents\AutoHotkey\configs\error_log.txt"
+        }
     } else {
-        func2()
+        if (Type(func2) = "String") {
+            func2 := %func2%
+        }
+        try func2(args2*)
+        catch as Err {
+            MsgBox A_ScriptFullPath "`n`n❌ Error calling function: `"" func2.Name "`"`n" Type(Err) ": " Err.Message
+            FileAppend "❌ [" A_ScriptFullPath "]`n`t- " Type(Err) ": " Err.Message "`n",
+            "C:\Users\jackb\Documents\AutoHotkey\configs\error_log.txt"
+        }
     }
 
     SetTimer(ToolTip, -1000)

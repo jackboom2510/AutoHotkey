@@ -1,40 +1,16 @@
 #Requires AutoHotkey v2.0
 #SingleInstance Force
+#Include <StatusOverlay>
+#Include <KeyBinding>
+#Include <Log>
+; #in
 Persistent()
 
-args := [
-    [
-        20,
-        "1",
-        "2"
-    ],
-    [
-        22,
-        "^+2",
-        "^+3"
-    ],
-    [
-        23,
-        "{Space}",
-        "{1}"
-    ],
-    [
-        24,
-        "v",
-        "h"
-    ]
-]
+; fn := "ClickTracker.ClickAndSleep"
+; fullFn := StrSplit(fn, '.')
 
-MsgBox args[2][1]
+; typo(ObjBindMethod(%fullFn[1]%, fullFn[2]))
 
-; MsgBox obj.KeyModifier.ToggleAndSend.hotkeys.length
-; for idx, hk in obj.KeyModifier.ToggleAndSend.hotkeys {
-;     if (IsObject(obj.KeyModifier.ToggleAndSend.args[idx])) {
-;         out := "("
-;         for var in obj.KeyModifier.ToggleAndSend.args[idx] {
-;             out .= var . ', '
-;         }
-;         out := ")"
-;         MsgBox out
-;     }
-; }
+Send("{RButton}")
+
+FileObj.Close()

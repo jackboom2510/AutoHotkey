@@ -39,6 +39,10 @@ class StatusOverlay {
 
 overlay := StatusOverlay()
 
+GetScriptStatus(*) {
+    return isScriptEnabled
+}
+
 ToggleScript() {
     global isScriptEnabled := !isScriptEnabled
     overlay.Show()

@@ -17,92 +17,92 @@ class ClickTracker {
     static targetWinExe := ""
     static targetWinPos := { x: 0, y: 0, w: 0, h: 0 }
 
-    static Init() {
-        this.gui := Gui("+AlwaysOnTop -Resize", "Mouse Click Tracker")
-        this.gui.BackColor := "E0FFFF"
-        this.gui.SetFont("s12", "Segoe UI")
+    __New() {
+        ClickTracker.gui := Gui("+AlwaysOnTop -Resize -DPIScale", "Mouse Click Tracker")
+        ClickTracker.gui.BackColor := "E0FFFF"
+        ClickTracker.gui.SetFont("s12", "Segoe UI")
 
-        this.btnStart := this.gui.Add("Button", "x15 y5 w150", "Bắt đầu")
-        this.btnStop := this.gui.Add("Button", "x+5 w150 Hidden", "Kết thúc")
-        this.btnTest1 := this.gui.Add("Button", "x+5 w100", "Test 1")
-        this.btnDefault := this.gui.Add("Button", "xm y+10 w100", "Default")
-        this.btnCopy := this.gui.Add("Button", "x+3 yp w100", "Copy")
-        this.btnExport := this.gui.Add("Button", "x+3 w100", "Export")
-        this.btnTest2 := this.gui.Add("Button", "x+5 w100", "Test 2")
+        ClickTracker.btnStart := ClickTracker.gui.Add("Button", "x15 y5 w150", "Bắt đầu")
+        ClickTracker.btnStop := ClickTracker.gui.Add("Button", "x+5 w150 Hidden", "Kết thúc")
+        ClickTracker.btnTest1 := ClickTracker.gui.Add("Button", "x+5 w100", "Test 1")
+        ClickTracker.btnDefault := ClickTracker.gui.Add("Button", "xm y+10 w100", "Default")
+        ClickTracker.btnCopy := ClickTracker.gui.Add("Button", "x+3 yp w100", "Copy")
+        ClickTracker.btnExport := ClickTracker.gui.Add("Button", "x+3 w100", "Export")
+        ClickTracker.btnTest2 := ClickTracker.gui.Add("Button", "x+5 w100", "Test 2")
 
-        this.editBox := this.gui.Add("Edit", "xm y+10 w400 r12 -Wrap")
+        ClickTracker.editBox := ClickTracker.gui.Add("Edit", "xm y+10 w400 r12 -Wrap")
 
-        this.btnStart.OnEvent("Click", (*) => this.StartTracking())
-        this.btnStop.OnEvent("Click", (*) => this.StopTracking())
-        this.btnCopy.OnEvent("Click", (*) => this.CopyCode())
-        this.btnExport.OnEvent("Click", (*) => this.ExportToFile())
-        this.btnTest1.OnEvent("Click", (*) => this.RunTestAbsolute())
-        this.btnTest2.OnEvent("Click", (*) => this.RunTestRelative())
-        this.btnDefault.OnEvent("Click", (*) => this.RestoreDefault())
+        ClickTracker.btnStart.OnEvent("Click", (*) => ClickTracker.StartTracking())
+        ClickTracker.btnStop.OnEvent("Click", (*) => ClickTracker.StopTracking())
+        ClickTracker.btnCopy.OnEvent("Click", (*) => ClickTracker.CopyCode())
+        ClickTracker.btnExport.OnEvent("Click", (*) => ClickTracker.ExportToFile())
+        ClickTracker.btnTest1.OnEvent("Click", (*) => ClickTracker.RunTestAbsolute())
+        ClickTracker.btnTest2.OnEvent("Click", (*) => ClickTracker.RunTestRelative())
+        ClickTracker.btnDefault.OnEvent("Click", (*) => ClickTracker.RestoreDefault())
 
-        this.gui.Show("AutoSize")
+        ClickTracker.gui.Show("AutoSize")
     }
 
     static Toggle() {
-        if !this.gui {
-            this.Init()
+        if !ClickTracker.gui {
+            ClickTracker()
             return
         }
 
-        hwnd := this.gui.Hwnd
+        hwnd := ClickTracker.gui.Hwnd
 
         if !WinExist("ahk_id " hwnd) {
-            this.gui.Show("AutoSize")
+            ClickTracker.gui.Show("AutoSize")
             return
         }
 
         winState := WinGetMinMax("ahk_id " hwnd)
 
         if winState = -1
-            this.gui.Show("AutoSize")
+            ClickTracker.gui.Show("AutoSize")
         else
-            this.gui.Hide()
+            ClickTracker.gui.Hide()
     }
 
     static StartTracking() {
-        this.clicks := []
-        this.isTracking := true
-        this.targetWinTitle := ""
-        this.targetWinID := 0
-        this.targetWinPos := { x: 0, y: 0, w: 0, h: 0 }
-        this.btnStart.Visible := false
-        this.btnStop.Visible := true
-        this.gui.Minimize()
+        ClickTracker.clicks := []
+        ClickTracker.isTracking := true
+        ClickTracker.targetWinTitle := ""
+        ClickTracker.targetWinID := 0
+        ClickTracker.targetWinPos := { x: 0, y: 0, w: 0, h: 0 }
+        ClickTracker.btnStart.Visible := false
+        ClickTracker.btnStop.Visible := true
+        ClickTracker.gui.Minimize()
     }
 
     static StopTracking() {
-        this.isTracking := false
-        this.btnStart.Visible := true
-        this.btnStop.Visible := false
-        this.UpdateEditBox()
+        ClickTracker.isTracking := false
+        ClickTracker.btnStart.Visible := true
+        ClickTracker.btnStop.Visible := false
+        ClickTracker.UpdateEditBox()
         TrayTip("Đã dừng", "Quá trình theo dõi đã kết thúc.", 2)
-        this.gui.Show()
-        WinActivate(this.gui.Hwnd)
+        ClickTracker.gui.Show()
+        WinActivate(ClickTracker.gui.Hwnd)
     }
 
     static OnMouseClick() {
-        if !this.isTracking
+        if !ClickTracker.isTracking
             return
 
         MouseGetPos &x, &y, &winHwnd
 
-        if this.clicks.Length = 0 {
+        if ClickTracker.clicks.Length = 0 {
             title := WinGetTitle(Format("ahk_id {}", winHwnd))
             wx := wy := ww := wh := 0
             WinGetPos(&wx, &wy, &ww, &wh, Format("ahk_id {}", winHwnd))
 
-            this.targetWinExe := WinGetProcessName(Format("ahk_id {}", winHwnd))
-            this.targetWinTitle := title
-            this.targetWinID := winHwnd
-            this.targetWinPos := { x: wx, y: wy, w: ww, h: wh }
+            ClickTracker.targetWinExe := WinGetProcessName(Format("ahk_id {}", winHwnd))
+            ClickTracker.targetWinTitle := title
+            ClickTracker.targetWinID := winHwnd
+            ClickTracker.targetWinPos := { x: wx, y: wy, w: ww, h: wh }
         }
 
-        this.clicks.Push({ x: x, y: y })
+        ClickTracker.clicks.Push({ x: x, y: y })
         SoundBeep 800
     }
 
@@ -110,28 +110,28 @@ class ClickTracker {
         code := ""
 
         code .= "ReplayTest1() {" "`n"
-        if (this.targetWinTitle != "") {
-            code .= Format('    WinActivate("ahk_exe {}")`n    Sleep(500)`n', this.targetWinExe)
+        if (ClickTracker.targetWinTitle != "") {
+            code .= Format('    WinActivate("ahk_exe {}")`n    Sleep(500)`n', ClickTracker.targetWinExe)
             code .= '    screenW := ' A_ScreenWidth '`n    screenH := ' A_ScreenHeight '`n'
         }
-        for pt in this.clicks {
-            posX := pt.x + this.targetWinPos.x
-            posY := pt.y + this.targetWinPos.y
+        for pt in ClickTracker.clicks {
+            posX := pt.x + ClickTracker.targetWinPos.x
+            posY := pt.y + ClickTracker.targetWinPos.y
             code .= Format("    ClickAndSleep({}, {})`n", posX, posY)
         }
         code .= "}`n`n"
 
         code .= "ReplayTest2() {" "`n"
-        if (this.targetWinTitle != "") {
-            code .= Format('    WinActivate("ahk_exe {}")`n    Sleep(500)`n', this.targetWinExe)
+        if (ClickTracker.targetWinTitle != "") {
+            code .= Format('    WinActivate("ahk_exe {}")`n    Sleep(500)`n', ClickTracker.targetWinExe)
             code .= '    screenW := ' A_ScreenWidth '`n    screenH := ' A_ScreenHeight '`n'
-            code .= '    windowX := ' this.targetWinPos.x '`n'
-            code .= '    windowY := ' this.targetWinPos.y '`n'
-            code .= '    windowW := ' this.targetWinPos.w '`n'
-            code .= '    windowH := ' this.targetWinPos.h '`n'
+            code .= '    windowX := ' ClickTracker.targetWinPos.x '`n'
+            code .= '    windowY := ' ClickTracker.targetWinPos.y '`n'
+            code .= '    windowW := ' ClickTracker.targetWinPos.w '`n'
+            code .= '    windowH := ' ClickTracker.targetWinPos.h '`n'
 
         }
-        for pt in this.clicks {
+        for pt in ClickTracker.clicks {
             posX := pt.x
             posY := pt.y
             code .= Format("    ClickAndSleep({}, {})`n", posX, posY)
@@ -143,12 +143,12 @@ class ClickTracker {
         code .= "    Sleep(delay)" "`n"
         code .= "}"
 
-        this.editBox.Value := code
-        this.lastCode := code
+        ClickTracker.editBox.Value := code
+        ClickTracker.lastCode := code
     }
 
     static CopyCode() {
-        A_Clipboard := this.editBox.Value
+        A_Clipboard := ClickTracker.editBox.Value
         TrayTip("Đã sao chép!", "Mã mô phỏng đã được copy vào clipboard.", 1)
     }
 
@@ -180,11 +180,11 @@ class ClickTracker {
         WinSetTransparent(150)
         testGui.Show("x0 y0 w" screenWidth " h" screenHeight)
 
-        for click in this.clicks {
-            posX := click.x + this.targetWinPos.x
-            posY := click.y + this.targetWinPos.y
-            this.DrawRedX(testGui, posX, posY)
-            this.ClickAndSleep(posX, posY, 300)
+        for click in ClickTracker.clicks {
+            posX := click.x + ClickTracker.targetWinPos.x
+            posY := click.y + ClickTracker.targetWinPos.y
+            ClickTracker.DrawRedX(testGui, posX, posY)
+            ClickTracker.ClickAndSleep(posX, posY, 300)
         }
 
         Sleep(1000)
@@ -193,25 +193,25 @@ class ClickTracker {
 
     static RunTestRelative() {
 
-        win := this.targetWinID
+        win := ClickTracker.targetWinID
         if !win {
             MsgBox "Chưa có thông tin cửa sổ!"
             return
         }
 
-        x := this.targetWinPos.x, y := this.targetWinPos.y
-        w := this.targetWinPos.w, h := this.targetWinPos.h
+        x := ClickTracker.targetWinPos.x, y := ClickTracker.targetWinPos.y
+        w := ClickTracker.targetWinPos.w, h := ClickTracker.targetWinPos.h
 
         testGui := Gui("-Caption +AlwaysOnTop +ToolWindow +LastFound", "Test Overlay (Window Based)")
         testGui.BackColor := "White"
         WinSetTransparent(150)
         testGui.Show("x" x " y" y " w" w " h" h)
 
-        for click in this.clicks {
+        for click in ClickTracker.clicks {
             relX := click.x
             relY := click.y
-            this.DrawRedX(testGui, relX, relY)
-            this.ClickAndSleep(relX, relY, 300)
+            ClickTracker.DrawRedX(testGui, relX, relY)
+            ClickTracker.ClickAndSleep(relX, relY, 300)
         }
 
         Sleep(1000)
@@ -221,10 +221,10 @@ class ClickTracker {
     static DrawRedX(gui, x, y) {
         color := "Red"
         size := 3
-        for offset in this.Range(-size, size)
-            this.DrawSquare(gui, x + offset, y + offset, 2, color)
-        for offset in this.Range(-size, size)
-            this.DrawSquare(gui, x + offset, y - offset, 2, color)
+        for offset in ClickTracker.Range(-size, size)
+            ClickTracker.DrawSquare(gui, x + offset, y + offset, 2, color)
+        for offset in ClickTracker.Range(-size, size)
+            ClickTracker.DrawSquare(gui, x + offset, y - offset, 2, color)
 
         textX := x + size + 5
         textY := y - 7
@@ -233,8 +233,8 @@ class ClickTracker {
     }
 
     static DrawSquare(gui, cx, cy, halfSize, color) {
-        for dx in this.Range(-halfSize, halfSize) {
-            for dy in this.Range(-halfSize, halfSize) {
+        for dx in ClickTracker.Range(-halfSize, halfSize) {
+            for dy in ClickTracker.Range(-halfSize, halfSize) {
                 gui.Add("Text", Format("x{} y{} w1 h1 Background{}", cx + dx, cy + dy, color))
             }
         }
@@ -252,5 +252,5 @@ class ClickTracker {
         Click(x, y)
         Sleep(clickDelay)
     }
-
 }
+ClickTracker
