@@ -1,21 +1,5 @@
-#Requires AutoHotkey v2.0.18+
-#SingleInstance Force
-CoordMode "Mouse", "Screen"
-Persistent
-endl := '`n'
-
 #Include <Log>
 waitTime := 300
-
-CheckIfValueExists(arr, value) {
-    for idx, item in arr {
-        if (IsSet(item)) {
-            if (item = value)
-                return true
-        }
-    }
-    return false
-}
 
 OnMessage(0x0200, On_WM_MOUSEMOVE)
 OnMessage(0x4E, ObjBindMethod(ShortcutTool, "WM_NOTIFY"))
@@ -348,4 +332,13 @@ class ShortcutTool {
     }
 
 }
-FileObj.Close()
+
+CheckIfValueExists(arr, value) {
+    for idx, item in arr {
+        if (IsSet(item)) {
+            if (item = value)
+                return true
+        }
+    }
+    return false
+}

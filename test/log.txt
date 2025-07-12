@@ -1,11 +1,14 @@
+Testing file: test.ahk 
 #Requires AutoHotkey v2.0+
 #SingleInstance Force
 CoordMode "Mouse", "Screen"
 Persistent
 
-ui()  ; Khởi tạo object trước
+ui() 
 
-OnMessage(0x4E, ObjBindMethod(ui, "WM_NOTIFY"))  ; Đăng ký callback sau khi object đã có
+;Comment
+;@Ahk2Exe-SetMainIcon C:\Users\jackb\Documents\AutoHotkey\icon\bookmark.ico
+OnMessage(0x4E, ObjBindMethod(ui, "WM_NOTIFY"))
 
 class ui {
     static gui := unset
@@ -59,4 +62,6 @@ class ui {
             return true
         }
     }
-}
+} 
+ICON = C:\Users\jackb\Documents\AutoHotkey\icon\bookmark.ico 
+OUT  =  

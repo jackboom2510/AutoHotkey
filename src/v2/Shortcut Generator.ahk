@@ -8,7 +8,7 @@ Persistent()
 ;@Ahk2Exe-SetMainIcon C:\Users\jackb\Documents\AutoHotkey\icon\internet.ico
 
 ; ====== Hotkeys ======
-BindingScript("ShortcutGenerator")
+; BindingScript("ShortcutGenerator")
 
 ; ====== Start ====
 ShortcutGen_InitTrayMenu()
@@ -19,7 +19,7 @@ ShortcutGen_InitTrayMenu() {
     A_TrayMenu.Add()
     A_TrayMenu.Add("Reload Script", (*) => Reload())
     A_TrayMenu.Add("Edit Script", (*) => Edit())
-    A_TrayMenu.Add()
+    A_TrayMenu.Add("Open Script Location", (*) => Run("*open " A_ScriptDir))
     A_TrayMenu.Add("Suspend Hotkeys", (*) => ToggleSuspend())
     A_TrayMenu.Add("Pause Script", (*) => TogglePause())
 	A_TrayMenu.Add("Show/Hide", (*) => ShortcutTool.Toggle())
