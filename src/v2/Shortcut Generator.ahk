@@ -9,7 +9,7 @@ Persistent()
 
 ; ====== Hotkeys ======
 
-; BindingScript("ShortcutGenerator")
+BindingScript("ShortcutGenerator")
 
 
 ; ====== Start ====

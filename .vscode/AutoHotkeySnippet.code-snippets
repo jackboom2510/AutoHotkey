@@ -1,44 +1,4 @@
 {
-    "AutoHotkey TrayMenu Setup": {
-        "prefix": ["ahk", "ahk_traymenu"],
-        "body": [
-            "#Requires AutoHotkey v2.0.18+",
-            "#SingleInstance Force",
-            "CoordMode \"Mouse\", \"Screen\"",
-            "Persistent",
-            "endl := '`n'",
-            "",
-            "#Include <HelpGUI>",
-            "#Include <Log>",
-            "",
-            "$0InitTrayMenu()",
-            "$0InitTrayMenu() {",
-            "    A_TrayMenu.Delete()",
-            "    A_TrayMenu.Add()",
-            "    A_TrayMenu.Add(\"Reload Script\", (*) => Reload())",
-            "    A_TrayMenu.Add(\"Edit Script\", (*) => Edit())",
-            "    A_TrayMenu.Add()",
-            "    A_TrayMenu.Add(\"Suspend Hotkeys\", (*) => ToggleSuspend())",
-            "    A_TrayMenu.Add(\"Pause Script\", (*) => TogglePause())",
-            "    A_TrayMenu.Add()",
-            "    A_TrayMenu.Add(\"Open File Location\", (*) => Run(\"*open \" A_ScriptDir))",
-            "    A_TrayMenu.Add(\"Help\", (*) => $0ShowHelpUI())",
-            "    A_TrayMenu.Add(\"Exit\", (*) => ExitApp())",
-            "",
-            "    A_TrayMenu.Default := \"Reload Script\"",
-            "    A_TrayMenu.ClickCount := 1",
-            "}",
-            "",
-            "$0ShowHelpUI(5)",
-            "$0ShowHelpUI(hideTimer := 0) {",
-            "    sections := [",
-            "    ]",
-            "    ShowHelp(\"🧩 $0 Script Hotkey Help\", sections, hideTimer)",
-            "}",
-            "FileObj.Close()",
-        ],
-        "description": "AutoHotkey Template with Tray Menu and Help"
-    },
     "AutoHotkey Include": {
         "prefix": ["ahk", "ahk_include"],
         "body": [
@@ -49,11 +9,7 @@
             "endl := '`n'",
             "",
             "#Include <Log>",
-            "$1",
-            "",
             "$0",
-            "",
-            "FileObj.Close()",
         ]
     },
     "AutoHotkey UI": {
@@ -180,7 +136,6 @@
             "    }",
             "}",
             "",
-            "FileObj.Close()",
         ]
     }
 }

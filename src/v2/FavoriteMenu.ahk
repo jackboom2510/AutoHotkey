@@ -23,8 +23,10 @@
 ; favorite while an unsupported window type is active, a new
 ; Explorer window will be opened to display the contents of that
 ; folder.
+
+#Include <KeyBinding>
 g_Hotkey := "!MButton"
-;@Ahk2Exe-SetMainIcon C:\Users\jackb\Documents\AutoHotkey\icon\bookmark.ico
+;@Ahk2Exe-SetMainIcon bookmark.ico
 
 ; CONFIG: CHOOSE YOUR FAVORITES
 ; Update the special commented section below to list your favorite
@@ -63,8 +65,10 @@ Hotkey g_Hotkey, DisplayMenu
 if SubStr(g_Hotkey, 1, 1) = "~"  ; Show menu only for certain window types.
     g_AlwaysShowMenu := false
 
-if A_IsCompiled  ; Read the menu items from an external file.
-    FavoritesFile := "C:\Users\jackb\Documents\AutoHotkey\configs\Favorites.ini"
+if A_IsCompiled {  ; Read the menu items from an external file. 
+    FavoritesFile := "C:\Users\jackb\Documents\AutoHotkey\configs\favorites.ini"
+    Run(FavoritesFile)
+}
 else  ; Read the menu items directly from this script file.
     FavoritesFile := A_ScriptFullPath
 
@@ -227,10 +231,28 @@ InitTrayMenu() {
     A_TrayMenu.Add()
     A_TrayMenu.Add("Suspend Hotkeys", (*) => ToggleSuspend())
     A_TrayMenu.Add("Pause Script", (*) => TogglePause())
+    A_TrayMenu.Add("Favorites", (*) => DisplayMenu())
     A_TrayMenu.Add()
+    A_TrayMenu.SetIcon("Favorites", "C:\Windows\System32\shell32.dll", 44)
+    A_TrayMenu.Add("Help", (*) => ShowHelp("🗂️ Favorite Menu Help", [
+        {
+            title: "🖱️ Hotkeys",
+            lines: [
+                "Middle Button`t→ Hiển thị menu yêu thích",
+                "Alt+Middle Button`t→ Hiển thị menu yêu thích (bỏ qua các loại cửa sổ)"
+            ]
+        }, {
+            title: "📂 Favorites",
+            lines: [
+                "Chọn một mục trong menu để mở thư mục tương ứng."
+            ]
+        }
+    ], 5))
+    A_TrayMenu.SetIcon("Help", "C:\Windows\System32\shell32.dll", 24)
     A_TrayMenu.Add("Open File Location", (*) => Run("*open " A_ScriptDir))
+    A_TrayMenu.SetIcon("Open File Location", "C:\Windows\System32\shell32.dll", 4)
     A_TrayMenu.Add("Exit", (*) => ExitApp())
 
-    A_TrayMenu.Default := "Reload Script"
+    A_TrayMenu.Default := "Favorites"
     A_TrayMenu.ClickCount := 1
 }

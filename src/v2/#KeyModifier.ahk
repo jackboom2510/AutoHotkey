@@ -2,59 +2,18 @@
 #SingleInstance Force
 Persistent()
 CoordMode "Mouse", "Client"
-#Include <KeyBinding>
+; #Include <KeyBinding>
 #Include <HelpGui>
-#Include <Log>
 
 #Include <ClickMacro>
 #Include <KeyModifier>
 #Include <StatusOverlay>
 
-;@Ahk2Exe-SetMainIcon C:\Users\jackb\Documents\AutoHotkey\icon\settings.ico
-;@Ahk2Exe-ExeName C:\Users\jackb\Documents\AutoHotkey\build
-
-Pause:: Pause -1
-
-BindingScript("#KeyModifier", GetScriptStatus)
-
-Ins:: Send "HelpUI"
-#HotIf isScriptEnabled
-    ^!w:: Send("{PgUp}")
-    ^!s:: Send("{PgDn}")
-    !w:: Send("{WheelUp}")
-    !s:: Send("{WheelDown}")
-    !a:: Send("{WheelLeft}")
-    !d:: Send("{WheelRight}")
-    w:: Send "{Up}"
-    a:: Send "{Left}"
-    s:: Send "{Down}"
-    d:: Send "{Right}"
-    !q:: Send "!{-}"
-    !e:: Send "!{=}"
-    ^q:: Send "^{-}"
-    ^e:: Send "^{=}"
-    ^!q:: Send "^{WheelDown}"
-    ^!e:: Send "^{WheelUp}"
-#HotIf
-
-KeyMod_InitTrayMenu()
-KeyMod_ShowHelpUI(5)
-
-KeyMod_InitTrayMenu() {
-    A_TrayMenu.Delete()
-    A_TrayMenu.Add("Help", (*) => KeyMod_ShowHelpUI())
-    A_TrayMenu.Add("Open File Location", (*) => Run("*open " A_ScriptDir))
-    A_TrayMenu.Add()
-    A_TrayMenu.Add("Reload Script", (*) => Reload())
-    A_TrayMenu.Add("Edit Script", (*) => Edit())
-    A_TrayMenu.Add()
-    A_TrayMenu.Add("Suspend Hotkeys", (*) => ToggleSuspend())
-    A_TrayMenu.Add("Pause Script", (*) => TogglePause())
-    A_TrayMenu.Add("Exit", (*) => ExitApp())
-
-    A_TrayMenu.Default := "Help"
-    A_TrayMenu.ClickCount := 1
-}
+; BindingScript("#KeyModifier", GetScriptStatus)
++Space:: Send("_")
+XButton1:: Send("{F10}")
+XButton2:: Send("{F11}")
+KeyMod_ShowHelpUI()
 
 KeyMod_ShowHelpUI(hideTimer := 0) {
     sections := [{

@@ -1,17 +1,9 @@
-CoordMode "Mouse", "Screen"
 class ClickTracker {
     static clicks := []
     static isTracking := false
     static gui := ""
     static lastCode := ""
     static editBox := ""
-    static btnStart := ""
-    static btnStop := ""
-    static btnCopy := ""
-    static btnDefault := ""
-    static btnExport := ""
-    static btnTest1 := ""
-    static btnTest2 := ""
     static targetWinTitle := ""
     static targetWinID := 0
     static targetWinExe := ""
@@ -34,15 +26,14 @@ class ClickTracker {
 
         ClickTracker.btnStart.OnEvent("Click", (*) => ClickTracker.StartTracking())
         ClickTracker.btnStop.OnEvent("Click", (*) => ClickTracker.StopTracking())
-        ClickTracker.btnCopy.OnEvent("Click", (*) => ClickTracker.CopyCode())
-        ClickTracker.btnExport.OnEvent("Click", (*) => ClickTracker.ExportToFile())
+        ClickTracker.btnCopy.OnEvent("Click", (*) => ClickTracker.CopyScript())
+        ClickTracker.btnExport.OnEvent("Click", (*) => ClickTracker.ExportScript())
         ClickTracker.btnTest1.OnEvent("Click", (*) => ClickTracker.RunTestAbsolute())
         ClickTracker.btnTest2.OnEvent("Click", (*) => ClickTracker.RunTestRelative())
-        ClickTracker.btnDefault.OnEvent("Click", (*) => ClickTracker.RestoreDefault())
+        ClickTracker.btnDefault.OnEvent("Click", (*) => ClickTracker.RestoreScript())
 
         ClickTracker.gui.Show("AutoSize")
     }
-
     static Toggle() {
         if !ClickTracker.gui {
             ClickTracker()
@@ -64,28 +55,38 @@ class ClickTracker {
             ClickTracker.gui.Hide()
     }
 
+    static ToggleTracking() {
+        if ClickTracker.isTracking = true {
+            ClickTracker.StopTracking()
+        } else {
+            ClickTracker.StartTracking()
+        }
+    }
+
     static StartTracking() {
+        ClickTracker.isTracking := !ClickTracker.isTracking
         ClickTracker.clicks := []
-        ClickTracker.isTracking := true
         ClickTracker.targetWinTitle := ""
         ClickTracker.targetWinID := 0
         ClickTracker.targetWinPos := { x: 0, y: 0, w: 0, h: 0 }
         ClickTracker.btnStart.Visible := false
         ClickTracker.btnStop.Visible := true
+        TrayTip("Start", "Start Tracking .", 2)
         ClickTracker.gui.Minimize()
     }
 
     static StopTracking() {
-        ClickTracker.isTracking := false
+        ClickTracker.isTracking := !ClickTracker.isTracking
         ClickTracker.btnStart.Visible := true
         ClickTracker.btnStop.Visible := false
         ClickTracker.UpdateEditBox()
-        TrayTip("Đã dừng", "Quá trình theo dõi đã kết thúc.", 2)
+        TrayTip("Stop", "Stop Tracking.", 2)
         ClickTracker.gui.Show()
         WinActivate(ClickTracker.gui.Hwnd)
     }
 
-    static OnMouseClick() {
+
+    static Track() {
         if !ClickTracker.isTracking
             return
 
@@ -112,7 +113,7 @@ class ClickTracker {
         code .= "ReplayTest1() {" "`n"
         if (ClickTracker.targetWinTitle != "") {
             code .= Format('    WinActivate("ahk_exe {}")`n    Sleep(500)`n', ClickTracker.targetWinExe)
-            code .= '    screenW := ' A_ScreenWidth '`n    screenH := ' A_ScreenHeight '`n'
+            code .= '    screenW := ' SysGet(78) '`n    screenH := ' SysGet(79) '`n'
         }
         for pt in ClickTracker.clicks {
             posX := pt.x + ClickTracker.targetWinPos.x
@@ -147,12 +148,12 @@ class ClickTracker {
         ClickTracker.lastCode := code
     }
 
-    static CopyCode() {
+    static CopyScript() {
         A_Clipboard := ClickTracker.editBox.Value
         TrayTip("Đã sao chép!", "Mã mô phỏng đã được copy vào clipboard.", 1)
     }
 
-    static RestoreDefault() {
+    static RestoreScript() {
         if (ClickTracker.lastCode != "") {
             ClickTracker.editBox.Value := ClickTracker.lastCode
             TrayTip("Đã phục hồi", "Đã trở về code lúc kết thúc theo dõi.", 2)
@@ -161,7 +162,7 @@ class ClickTracker {
         }
     }
 
-    static ExportToFile() {
+    static ExportScript() {
         filePath := "C:\Users\jackb\Documents\AutoHotkey\test\test.ahk"
         header := "#Requires AutoHotkey v2.0.18+" "`n" "#SingleInstance Force" "`n" "Persistent()" "`n`n"
         FileDelete filePath
@@ -172,10 +173,10 @@ class ClickTracker {
 
     static RunTestAbsolute() {
 
-        screenWidth := A_ScreenWidth
-        screenHeight := A_ScreenWidth
+        screenWidth := SysGet(78)
+        screenHeight := SysGet(79)
 
-        testGui := Gui("-Caption +AlwaysOnTop +ToolWindow +LastFound", "Test Overlay")
+        testGui := Gui("+AlwaysOnTop +ToolWindow +LastFound -DPIScale", "Test Overlay")
         testGui.BackColor := "White"
         WinSetTransparent(150)
         testGui.Show("x0 y0 w" screenWidth " h" screenHeight)
@@ -202,7 +203,7 @@ class ClickTracker {
         x := ClickTracker.targetWinPos.x, y := ClickTracker.targetWinPos.y
         w := ClickTracker.targetWinPos.w, h := ClickTracker.targetWinPos.h
 
-        testGui := Gui("-Caption +AlwaysOnTop +ToolWindow +LastFound", "Test Overlay (Window Based)")
+        testGui := Gui("+AlwaysOnTop +ToolWindow +LastFound -DPIScale", "Test Overlay (Window Based)")
         testGui.BackColor := "White"
         WinSetTransparent(150)
         testGui.Show("x" x " y" y " w" w " h" h)

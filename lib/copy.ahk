@@ -5,11 +5,100 @@
 hotkeysJSON := "C:\Users\jackb\Documents\AutoHotkey\configs\test_hotkeys.json"
 scripts := JSON.LoadFile(hotkeysJSON, "UTF-8")
 
-test
-test() {
-    NormalizeHotkeys
-    test_ShowScriptHotkeysUI
-    Save
+test_ShowScriptHotkeysUI
+
+Save
+
+GroupHotkeysAdvanced(script) {
+    sectionGroups := Map()
+
+    for fn_id, fn in script {
+        if (fn_id = "Send") {
+            ; for hk_id, val in fn["hotkeys"] {
+            ;     entries := IsObject(val) ? val : [val]
+            ;     for i, v in entries {
+            ;         hotkeyStr := hkexp(hk_id)
+            ;         display := IsObject(v) ? v["key"] : v
+            ;         line := TextAlign(hotkeyStr) " → " hkexp(display)
+            ;         section := (IsObject(v) ; && v.Has("condition");
+            ;         ) ? "⚙️ HOTKEYS CONDITIONED BY SCRIPT STATUS" : fn["section"]
+            ;         if !sectionGroups.Has(section)
+            ;             sectionGroups[section] := []
+            ;         sectionGroups[section].Push(line)
+            ;     }
+            ; }
+            continue
+        }
+
+        section := fn["section"]
+        if !sectionGroups.Has(section)
+            sectionGroups[section] := []
+
+        name := fn.Has("description") ? fn["description"] : fn_id
+        hasSimilar := fn.Has("hasSimilarReturn") && fn["hasSimilarReturn"]
+
+        if hasSimilar {
+            entries := []
+            for hkEntry in fn["hotkeys"] {
+                key := IsObject(hkEntry) ? hkEntry["key"] : hkEntry
+                entries.Push(hkexp(key))
+            }
+            argsText := fn.Has("args") ? JoinArgs(", ", fn["args"]*) : ""
+            sectionGroups[section].Push(TextAlign(JoinArgs(" / ", entries*)) " → " name (argsText ? " (" argsText ")" :""))
+        } else {
+            for i, hkEntry in fn["hotkeys"] {
+                key := IsObject(hkEntry) ? hkEntry["key"] : hkEntry
+                cond := (IsObject(hkEntry) && hkEntry.Has("condition"))
+                effectiveSection := cond ? "⚙️ HOTKEYS CONDITIONED BY SCRIPT STATUS" : section
+
+                argText := fn.Has("args") ? (
+                    IsObject(fn["args"][i]) ? 
+                        JoinArgs(", ", fn["args"][i]*) : 
+                        fn["args"][i]
+                ) : ""
+                sectionGroups[effectiveSection].Push(TextAlign(hkexp(key)) " → " name (argText ? " (" argText ")" : ""))
+            }
+        }
+    }
+
+    return sectionGroups
+}
+
+
+GroupHotkeysBySection(script) {
+    sectionGroups := Map()
+
+    for fn_id, fn in script {
+        if (fn_id = "Send") {
+            if !sectionGroups.Has("Other")
+                sectionGroups["Other"] := []
+            for hk_id, hk in fn["hotkeys"] {
+                display := IsObject(hk) ? hk[1] : hk
+                sectionGroups["Other"].Push(TextAlign(hkexp(hk_id)) " → " hkexp(display))
+            }
+            continue
+        }
+
+        section := fn["section"]
+        if !sectionGroups.Has(section)
+            sectionGroups[section] := []
+
+        name := fn.Has("description") ? fn["description"] : fn_id
+        if fn.Has("args") {
+            for i, args in fn["args"] {
+                hk := fn["hotkeys"][i]
+                hotkeyStr := IsObject(hk) ? hk[1] : hk
+                argText := IsObject(args) ? JoinArgs(", ", args*) : args
+                sectionGroups[section].Push(TextAlign(hkexp(hotkeyStr)) " → " name " (" argText ")")
+            }
+        } else {
+            hk := fn["hotkeys"]
+            hotkeyStr := IsObject(hk) ? hk[1] : hk
+            sectionGroups[section].Push(TextAlign(hkexp(hotkeyStr)) " → " name)
+        }
+    }
+
+    return sectionGroups
 }
 
 test_ShowScriptHotkeysUI(script_id := "#KeyModifier", hideTimer := 0, lineLimit := 10) {
@@ -43,67 +132,6 @@ test_ShowScriptHotkeysUI(script_id := "#KeyModifier", hideTimer := 0, lineLimit 
     }
 
     ShowHelp("🧩 Hotkeys cho script: " script_id, sections, hideTimer, lineLimit)
-}
-
-GroupHotkeysAdvanced(script) {
-    sectionGroups := Map()
-    sectionGroups["⚙️ HOTKEYS CONDITIONED BY SCRIPT STATUS"] := []
-    sectionGroups["Other"] := []
-    
-    for fn_id, fn in script {
-        if (fn_id = "Send") {
-            ; for hk_id, val in fn["hotkeys"] {
-            ;     entries := IsObject(val) ? val : [val]
-            ;     for i, v in entries {
-            ;         hotkeyStr := hkexp(hk_id)
-            ;         display := IsObject(v) ? v["key"] : v
-            ;         line := TextAlign(hotkeyStr) " → " hkexp(display)
-            ;         section := (IsObject(v) ; && v.Has("condition");
-            ;         ) ? "⚙️ HOTKEYS CONDITIONED BY SCRIPT STATUS" : fn["section"]
-            ;         if !sectionGroups.Has(section)
-            ;             sectionGroups[section] := []
-            ;         sectionGroups[section].Push(line)
-            ;     }
-            ; }
-            continue
-        }
-
-        section := fn["section"]
-        if !sectionGroups.Has(section)
-            sectionGroups[section] := []
-
-        name := fn.Has("description") ? fn["description"] : fn_id
-        hasSimilar := fn.Has("hasSimilarReturn") && fn["hasSimilarReturn"]
-
-        if (hasSimilar = 1) {
-            entries := []
-            for hkEntry in fn["hotkeys"] {
-                key := IsObject(hkEntry) ? hkEntry["key"] : hkEntry
-                entries.Push(hkexp(key))
-            }
-            argsText := fn.Has("args") ? (
-                JoinArgs(", ", fn["args"]*)
-            ) : ""
-            sectionGroups[section].Push(
-                TextAlign(JoinArgs(" / ", entries*)) " → " name (argsText ? " (" argsText ")" : "")
-            )
-        } else {
-            for i, hkEntry in fn["hotkeys"] {
-                key := IsObject(hkEntry) ? hkEntry["key"] : hkEntry
-                cond := (IsObject(hkEntry) && hkEntry.Has("condition"))
-                effectiveSection := cond ? "⚙️ HOTKEYS CONDITIONED BY SCRIPT STATUS" : section
-
-                argText := fn.Has("args") ? (
-                    IsObject(fn["args"][i]) ? 
-                        JoinArgs(", ", fn["args"][i]*) : 
-                        fn["args"][i]
-                ) : ""
-                sectionGroups[effectiveSection].Push(TextAlign(hkexp(key)) " → " name (argText ? " (" argText ")" : ""))
-            }
-        }
-    }
-
-    return sectionGroups
 }
 
 Save(inputJSON := hotkeysJSON, outputJSON := hotkeysJSON) {
@@ -288,47 +316,6 @@ GroupHotkeysByDisplayGroup(script) {
     return groupMap
 }
 
-GroupHotkeysBySection(script) {
-    sectionGroups := Map()
-
-    for fn_id, fn in script {
-        if (fn_id = "Send") {
-            if !sectionGroups.Has("Other")
-                sectionGroups["Other"] := []
-            for hk_id, hk in fn["hotkeys"] {
-                display := IsObject(hk) ? hk[1] : hk
-                sectionGroups["Other"].Push(TextAlign(hkexp(hk_id)) " → " hkexp(display))
-            }
-            continue
-        }
-
-        section := fn["section"]
-        if !sectionGroups.Has(section)
-            sectionGroups[section] := []
-
-        name := fn.Has("description") ? fn["description"] : fn_id
-        if fn.Has("args") {
-            for i, args in fn["args"] {
-                hk := fn["hotkeys"][i]
-                hotkeyStr := IsObject(hk) ? hk[1] : hk
-                argText := IsObject(args) ? JoinArgs(", ", args*) : args
-                sectionGroups[section].Push(TextAlign(hkexp(hotkeyStr)) " → " name " (" argText ")")
-            }
-        } else {
-            hk := fn["hotkeys"]
-            hotkeyStr := IsObject(hk) ? hk[1] : hk
-            sectionGroups[section].Push(TextAlign(hkexp(hotkeyStr)) " → " name)
-        }
-    }
-
-    return sectionGroups
-}
-
-ShowAllHotkeysUI(hideTimer := 0, lineLimit := 5) {
-    for script_id, script in scripts {
-        ShowScriptHotkeysUI(script_id)
-    }
-}
 
 ShowScriptHotkeysUI(script_id, hideTimer := 0, lineLimit := 10) {
     if !scripts.Has(script_id) {
@@ -365,4 +352,10 @@ ShowScriptHotkeysUI(script_id, hideTimer := 0, lineLimit := 10) {
 
     sections := [{ title: "📄 Script: " script_id, lines: lines }]
     ShowHelp("🧩 Hotkeys cho script: " script_id, sections, hideTimer, lineLimit)
+}
+
+ShowAllHotkeysUI(hideTimer := 0, lineLimit := 5) {
+    for script_id, script in scripts {
+        ShowScriptHotkeysUI(script_id)
+    }
 }

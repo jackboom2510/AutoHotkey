@@ -6,8 +6,5 @@ endl := '`n'
 
 #Include <Log>
 
-class ui {
-    HelpTool 
-}
 
 FileObj.Close()

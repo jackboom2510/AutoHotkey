@@ -1,4 +1,4 @@
-{
+﻿{
     "#ClickTracker": {
         "ClickTracker.ToggleTracking": {
             "description": "Initializes tracking by clearing previous data, setting tracking flags, and minimizing the GUI window.",
@@ -29,12 +29,7 @@
         "ConfigureOneNote": {
             "args": [1, 2, 3, 4],
             "description": "Configure OneNote with different arguments (1 to 4). The Space and Ctrl+Space also work as toggles.",
-            "hotkeys": [
-                ["1"]
-                ["2"]
-                ["3"]
-                ["4"]
-            ],
+            "hotkeys": [["1"], ["2"], ["3"], ["4"]],
             "section": "Other"
         },
         "ConfigurePenSettings": {
@@ -77,43 +72,16 @@
         },
         "ToggleAndExecute": {
             "args": [
-                [
-                    21,
-                    "ConfigureOneNote",
-                    "ConfigureOneNote",
-                    [2],
-                    [3]
-                ],
-                [
-                    15,
-                    "ConfigureOneNote",
-                    "ConfigureOneNote",
-                    [1],
-                    [2]
-                ],
-                [
-                    16,
-                    "ConfigureOneNote",
-                    "ConfigureOneNote",
-                    [1],
-                    [5]
-                ]
+                [21, "ConfigureOneNote", "ConfigureOneNote", [2], [3]],
+                [15, "ConfigureOneNote", "ConfigureOneNote", [1], [2]],
+                [16, "ConfigureOneNote", "ConfigureOneNote", [1], [5]]
             ],
             "description": "Toggle and execute the corresponding ConfigureOneNote function with different arguments.",
-            "hotkeys": [
-                "F21",
-                ["Space"],
-                ["^Space"]
-            ],
+            "hotkeys": ["F21", ["Space"], ["^Space"]],
             "section": "Other"
         },
         "ToggleAndSend": {
-            "args": [
-                [20, "1", "2"]
-                [22, "^+2", "^+3"]
-                [23, "{Space}", "{1}"]
-                [24, "v", "h"]
-            ],
+            "args": [[20, "1", "2"], [22, "^+2", "^+3"], [23, "{Space}", "{1}"], [24, "v", "h"]],
             "description": "Toggle between sending different key combinations based on the assigned arguments.",
             "hotkeys": ["F20", "F22", "F23", "F24"],
             "section": "Other"

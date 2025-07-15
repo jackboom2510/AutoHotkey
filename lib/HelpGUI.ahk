@@ -1,87 +1,59 @@
-global isPaused := false
-global isSuspended := false
-ShowHelp(title := "🧩 Script Hotkey Help", sections := [], hideTimer := 0, lineLimit := 0) {
-    static helpGUI := ""
+#Include <Log>
 
-    if IsObject(helpGUI) {
-        helpGUI.Show()
-        return
-    }
+class HelpGui {
+    __New(title := "🧩 Script Hotkey Help", sections := [], hideTimer := 0, lineLimit := 0) {
+        this.gui := Gui("+AlwaysOnTop +Resize -DPIScale", title)
+        this.gui.MarginX := 20
+        this.gui.MarginY := 10
+        this.gui.SetFont("s11 bold cBlue", "Segoe UI")
 
-    helpGUI := Gui("+AlwaysOnTop +Resize -Caption", title)
-    helpGUI.MarginX := 20
-    helpGUI.MarginY := 10
-    helpGUI.SetFont("s11 bold cBlue", "Segoe UI")
+        if (title != "") {
+            this.gui.AddText(, title)
+        }
 
-    if (title != "") {
-        helpGUI.AddText(, title)
-    }
+        for section in sections {
+            if (section.HasProp("lines")) {
+                this.AddSectionFromLines(section.title, section.lines, lineLimit)
+            } else {
+                this.AddSection(section.title, section.content, lineLimit)
+            }
+        }
 
-    for section in sections {
-        if (section.HasProp("lines")) {
-            AddSectionFromLines(helpGUI, section.title, section.lines, lineLimit)
-        } else {
-            AddSection(helpGUI, section.title, section.content, lineLimit)
+        this.gui.AddButton("w100", "Đóng").OnEvent("Click", (*) => this.gui.Hide())
+
+        if (hideTimer != 0) {
+            SetTimer(this.gui.Hide.Bind(this.gui), -hideTimer * 1000)
         }
     }
 
-    helpGUI.AddButton("Default w100", "Đóng").OnEvent("Click", (*) => helpGUI.Hide())
-    helpGUI.Show()
-    if (hideTimer != 0)
-        SetTimer(() => helpGUI.Hide(), -hideTimer * 1000)
-}
-
-AddSection(gui, title, content, lineLimit := 0) {
-    if (title != "") {
-        gui.SetFont("s10 bold cGreen", "Segoe UI")
-        gui.AddText("y+10", title)
+    Show() {
+        this.gui.Show()
     }
 
-    gui.SetFont("s10 cBlack", "Consolas")
-    content := Trim(content, "`r`n")
-    if (lineLimit > 0)
-        lineCount := Min(lineLimit, StrSplit(content, "`n").Length)
-    else
-        lineCount := StrSplit(content, "`n").Length
-    gui.AddEdit(Format("w600 r{} ReadOnly -Wrap", lineCount), content)
-}
+    AddSection(title, content, lineLimit := 5) {
+        if (title != "") {
+            this.gui.SetFont("s10 bold cGreen", "Segoe UI")
+            this.gui.AddText("y+10", title)
+        }
 
-AddSectionFromLines(gui, title, linesArray, lineLimit := 0) {
-    content := StrJoin("`n", linesArray*)
-    AddSection(gui, title, content, lineLimit)
-}
-
-StrJoin(sep, args*) {
-    out := ""
-    for i, v in args {
-        out .= (i > 1 ? sep : "") . v
+        this.gui.SetFont("s10 cBlack", "Consolas")
+        content := Trim(content, "`r`n")
+        if (lineLimit > 0)
+            lineCount := Min(lineLimit, StrSplit(content, "`n").Length)
+        else
+            lineCount := StrSplit(content, "`n").Length
+        this.gui.AddEdit("w800 ReadOnly -Wrap r" lineCount, content)
     }
-    return out
+
+    AddSectionFromLines(title, linesArray, lineLimit := 5) {
+        linesArray := SortStringArrayByLength(linesArray)
+        content := _Format(linesArray, 0, "o")
+        this.AddSection(title, content, lineLimit)
+    }
 }
 
-ToggleSuspend() {
-    global isSuspended
-    Suspend()
-    isSuspended := !isSuspended
-    UpdateTrayChecks()
-}
-
-TogglePause() {
-    global isPaused
-    Pause()
-    isPaused := !isPaused
-    UpdateTrayChecks()
-}
-
-UpdateTrayChecks() {
-    global isPaused, isSuspended
-    if isSuspended
-        A_TrayMenu.Check("Suspend Hotkeys")
-    else
-        A_TrayMenu.Uncheck("Suspend Hotkeys")
-
-    if isPaused
-        A_TrayMenu.Check("Pause Script")
-    else
-        A_TrayMenu.Uncheck("Pause Script")
+ShowHelp(title := "🧩 Script Hotkey Help", sections := [], hideTimer := 0, lineLimit := 0) {
+    help := HelpGui(title, sections, hideTimer, lineLimit)
+    help.Show()
+    return help.gui  ; Trả về instance GUI để sử dụng nếu cần
 }

@@ -2,20 +2,30 @@
 #SingleInstance Force
 Persistent()
 CoordMode "Mouse", "Screen"
+
 #Include <ClickMacro>
 #Include <HelpGui>
 #Include <KeyBinding>
+#Include <Log>
+;@Ahk2Exe-SetMainIcon dictionary.ico
+
 LookUp.CreateGui()
+
+BindingScript("LookUp")
+
+LookUp_ShowHelpUI(5)
+LookUp_ShowHelpUI(hideTimer := 0) {
+    sections := [{
+        title: "🔍 LOOKUP TOOL",
+        lines: [
+            "Alt+F`t→ Tìm kiếm từ trong clipboard",
+            "Ctrl+Alt+F`t→ Tìm kiếm từ đã nhập"
+        ]
+    }]
+    ShowHelp("LookUp Tool Help", sections, hideTimer)
+}
+
 LookUp_InitTrayMenu()
-!f:: LookUp.SearchFromClipBoard()
-!^f:: LookUp.Toggle()
-/*
-LookUp Tool
-ahk_class AutoHotkeyGUI
-ahk_exe AutoHotkey64.exe
-ahk_pid 3500
-ahk_id 1902388
-*/
 LookUp_InitTrayMenu() {
     A_TrayMenu.Delete()
     A_TrayMenu.Add("Reload Script", (*) => Reload())
@@ -25,7 +35,8 @@ LookUp_InitTrayMenu() {
     A_TrayMenu.Add("Pause Script", (*) => TogglePause())
     A_TrayMenu.Add()
     A_TrayMenu.Add("Show/Hide", (*) => LookUp.Toggle())
-    A_TrayMenu.Add("Open Folder", (*) => Run("*open " A_ScriptDir))
+    A_TrayMenu.Add("Open File Location", (*) => Run("*open " A_ScriptDir))
+    A_TrayMenu.Add("Help", (*) => LookUp_ShowHelpUI())
     A_TrayMenu.Add("Exit", (*) => ExitApp())
 
     A_TrayMenu.Default := "Show/Hide"

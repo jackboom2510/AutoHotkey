@@ -1,0 +1,123 @@
+﻿{
+    "#KeyModifier": {
+        "ConfigureDrawboardPDF": {
+            "args": [1, 2],
+            "description": "Cấu hình Drawboard PDF",
+            "hasSimilarReturn": 1,
+            "hotkeys": [
+                {"key": "^!c"},
+                {"key": "^!+c"}
+            ],
+            "section": "🖥️ MONITOR & PEN SETTINGS"
+        },
+        "ConfigureMonitorSettings": {
+            "args": [2, 3, 1],
+            "description": "Cấu hình màn hình XP-Table",
+            "hasSimilarReturn": 1,
+            "hotkeys": [
+                {"key": "+!2"},
+                {"key": "+!3"},
+                {"key": "+!1"}
+            ],
+            "section": "🖥️ MONITOR & PEN SETTINGS"
+        },
+        "ConfigureOneNote": {
+            "args": [1, 2, 3, 4],
+            "description": "Cấu hình OneNote",
+            "hasSimilarReturn": 1,
+            "hotkeys": [
+                {"key": "1"},
+                {"key": "2"},
+                {"key": "3"},
+                {"key": "4"}
+            ],
+            "section": "🖥️ MONITOR & PEN SETTINGS"
+        },
+        "ConfigurePenSettings": {
+            "args": [1, 2],
+            "description": "Cấu hình bút",
+            "hasSimilarReturn": 1,
+            "hotkeys": [
+                {"key": "+!q"},
+                {"key": "+!e"}
+            ],
+            "section": "🖥️ MONITOR & PEN SETTINGS"
+        },
+        "CopyProcessDirectory": {
+            "description": "Copy thư mục tiến trình",
+            "hotkeys": [
+                {"key": "#^c"}
+            ],
+            "section": "📋 UTILITIES"
+        },
+        "InputBoxForAutoSendToggle": {
+            "description": "Tự động gửi phím mỗi giây (toggle)",
+            "hotkeys": [
+                {"key": "!F1"}
+            ],
+            "section": "🔁 AUTO SEND"
+        },
+        "Send": {
+            "description": "Send specific key combinations based on the hotkey pressed.",
+            "hotkeys": {
+                "!a": ["{WheelLeft}"],
+                "!d": ["{WheelRight}"],
+                "!e": ["!{=}"],
+                "!q": ["!{-}"],
+                "!s": ["{WheelDown}"],
+                "!w": ["{WheelUp}"],
+                "^!e": "^{WheelUp}",
+                "^!q": ["^{WheelDown}"],
+                "^!s": ["{PgDn}"],
+                "^!w": ["{PgUp}"],
+                "^e": ["^{=}"],
+                "^q": ["^{-}"],
+                "a": ["{Left}"],
+                "d": ["{Right}"],
+                "s": ["{Down}"],
+                "w": ["{Up}"]
+            },
+            "section": "Other"
+        },
+        "ToggleAndExecute": {
+            "args": [
+                [21, "ConfigureOneNote", "ConfigureOneNote", [2], [3]],
+                [15, "ConfigureOneNote", "ConfigureOneNote", [1], [2]],
+                [16, "ConfigureOneNote", "ConfigureOneNote", [1], [5]]
+            ],
+            "description": "Chuyển đổi cấu hình OneNote",
+            "hotkeys": [
+                {"key": "F21"},
+                {"key": "Space", "condition": "scriptActive"},
+                {"key": "^Space", "condition": "scriptActive"}
+            ],
+            "section": "🎛 TOGGLE KEYS"
+        },
+        "ToggleAndSend": {
+            "args": [[20, "1", "2"], [22, "^+2", "^+3"], [23, "{Space}", "{1}"], [24, "v", "h"]],
+            "description": "Chuyển đổi giữa các phím",
+            "hasSimilarReturn": 1,
+            "hotkeys": [
+                {"key": "F20"},
+                {"key": "F22"},
+                {"key": "F23"},
+                {"key": "F24"}
+            ],
+            "section": "🎛 TOGGLE KEYS"
+        },
+        "ToggleOverlayVisibility": {
+            "description": "Bật/tắt overlay trạng thái",
+            "hotkeys": [
+                {"key": "^!z"}
+            ],
+            "section": "🔧 ADDITIONAL FEATURES"
+        },
+        "ToggleScript": {
+            "description": "Bật/tắt toàn bộ script",
+            "hotkeys": [
+                {"key": "^!x"}
+            ],
+            "section": "🔧 ADDITIONAL FEATURES"
+        }
+    }
+}
