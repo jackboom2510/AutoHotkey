@@ -11,37 +11,41 @@ CoordMode "Mouse", "Screen"
 
 LookUp.CreateGui()
 
-BindingScript("LookUp")
+BindingScript()
 
-LookUp_ShowHelpUI(5)
-LookUp_ShowHelpUI(hideTimer := 0) {
-    sections := [{
-        title: "🔍 LOOKUP TOOL",
-        lines: [
-            "Alt+F`t→ Tìm kiếm từ trong clipboard",
-            "Ctrl+Alt+F`t→ Tìm kiếm từ đã nhập"
-        ]
-    }]
-    ShowHelp("LookUp Tool Help", sections, hideTimer)
-}
+A_TrayMenu.Delete()
+A_TrayMenu.AddStandard()
+A_TrayMenu.Insert("&Suspend Hotkeys", "Reload Script", (*) => Reload())
+A_TrayMenu.Insert("&Suspend Hotkeys", "Edit Script", (*) => Run("*edit " "C:\Users\jackb\Documents\AutoHotkey\src\v2LookUp.ahk"))
+A_TrayMenu.Insert("&Suspend Hotkeys")
+A_TrayMenu.Insert("E&xit")
+A_TrayMenu.Insert("E&xit", "Show/Hide", (*) => LookUp.Toggle())
+A_TrayMenu.Insert("E&xit", "Search", (*) => LookUp.SearchFromClipBoard())
+A_TrayMenu.Insert("E&xit", "Open File Location", (*) => Run("*open " "C:\Users\jackb\Documents\AutoHotkey\src\v2\"))
+A_TrayMenu.SetIcon("Open File Location", "C:\Windows\System32\shell32.dll", 4)
+A_TrayMenu.SetIcon("Search", "C:\Windows\System32\shell32.dll", 44)
+A_TrayMenu.Insert("E&xit", "Show Hotkeys", (*) => ShowScriptHotkeysUI())
+A_TrayMenu.SetIcon("Show Hotkeys", "C:\Windows\System32\shell32.dll", 24)
+A_TrayMenu.Default := "Search"
+A_TrayMenu.ClickCount := 1
 
-LookUp_InitTrayMenu()
-LookUp_InitTrayMenu() {
-    A_TrayMenu.Delete()
-    A_TrayMenu.Add("Reload Script", (*) => Reload())
-    A_TrayMenu.Add("Edit Script", (*) => Edit())
-    A_TrayMenu.Add()
-    A_TrayMenu.Add("Suspend Hotkeys", (*) => ToggleSuspend())
-    A_TrayMenu.Add("Pause Script", (*) => TogglePause())
-    A_TrayMenu.Add()
-    A_TrayMenu.Add("Show/Hide", (*) => LookUp.Toggle())
-    A_TrayMenu.Add("Open File Location", (*) => Run("*open " A_ScriptDir))
-    A_TrayMenu.Add("Help", (*) => LookUp_ShowHelpUI())
-    A_TrayMenu.Add("Exit", (*) => ExitApp())
+; LookUp_InitTrayMenu()
+; LookUp_InitTrayMenu() {
+;     A_TrayMenu.Delete()
+;     A_TrayMenu.Add("Reload Script", (*) => Reload())
+;     A_TrayMenu.Add("Edit Script", (*) => Edit())
+;     A_TrayMenu.Add()
+;     A_TrayMenu.Add("Suspend Hotkeys", (*) => ToggleSuspend())
+;     A_TrayMenu.Add("Pause Script", (*) => TogglePause())
+;     A_TrayMenu.Add()
+;     A_TrayMenu.Add("Show/Hide", (*) => LookUp.Toggle())
+;     A_TrayMenu.Add("Open File Location", (*) => Run("*open " A_ScriptDir))
+;     A_TrayMenu.Add("Help", (*) => LookUp_ShowHelpUI())
+;     A_TrayMenu.Add("Exit", (*) => ExitApp())
 
-    A_TrayMenu.Default := "Show/Hide"
-    A_TrayMenu.ClickCount := 1
-}
+;     A_TrayMenu.Default := "Show/Hide"
+;     A_TrayMenu.ClickCount := 1
+; }
 
 class LookUp {
     static gui := unset

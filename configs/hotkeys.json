@@ -2,13 +2,17 @@
     "#ClickTracker": {
         "ClickTracker.ToggleTracking": {
             "description": "Initializes tracking by clearing previous data, setting tracking flags, and minimizing the GUI window.",
-            "hotkeys": ["!t"],
+            "hotkeys": [
+                {"key": "!t"}
+            ],
             "isMethod": 1,
             "section": "Other"
         },
         "ClickTracker.Track": {
             "description": "Captures and stores mouse click coordinates, along with window information on the first click during tracking.",
-            "hotkeys": ["MButton"],
+            "hotkeys": [
+                {"key": "MButton"}
+            ],
             "isMethod": 1,
             "section": "Other"
         }
@@ -17,56 +21,75 @@
         "ConfigureDrawboardPDF": {
             "args": [1, 2],
             "description": "Configure settings for Drawboard PDF with two modes.",
-            "hotkeys": ["^!c", "^!+c"],
+            "hotkeys": [
+                {"key": "^!c"},
+                {"key": "^!+c"}
+            ],
             "section": "🖥️ MONITOR & PEN SETTINGS"
         },
         "ConfigureMonitorSettings": {
             "args": [2, 3, 1],
             "description": "Configure monitor settings based on the argument value.",
-            "hotkeys": ["+!1", "+!2", "+!3"],
+            "hotkeys": [
+                {"key": "+!1", "conditon": "VSCodeRunning"},
+                {"key": "+!2", "conditon": "VSCodeRunning"},
+                {"key": "+!3", "conditon": "VSCodeRunning"}
+            ],
             "section": "🖥️ MONITOR & PEN SETTINGS"
         },
         "ConfigureOneNote": {
             "args": [1, 2, 3, 4],
             "description": "Configure OneNote with different arguments (1 to 4). The Space and Ctrl+Space also work as toggles.",
-            "hotkeys": [["1"], ["2"], ["3"], ["4"]],
+            "hotkeys": [
+                {"key": "1", "condition": "GetScriptStatus"},
+                {"key": "2", "condition": "GetScriptStatus"},
+                {"key": "3", "condition": "GetScriptStatus"},
+                {"key": "4", "condition": "GetScriptStatus"}
+            ],
             "section": "🖥️ MONITOR & PEN SETTINGS"
         },
         "ConfigurePenSettings": {
             "args": [1, 2],
             "description": "Configure pen settings for two different modes.",
-            "hotkeys": ["+!q", "+!e"],
+            "hotkeys": [
+                {"key": "+!q"},
+                {"key": "+!e"}
+            ],
             "section": "🖥️ MONITOR & PEN SETTINGS"
         },
         "CopyProcessDirectory": {
             "description": "Copy the directory of the active process and display the path in the tooltip.",
-            "hotkeys": ["#^c"],
+            "hotkeys": [
+                {"key": "#^c"}
+            ],
             "section": "📋 UTILITIES"
         },
         "InputBoxForAutoSendToggle": {
             "description": "Toggle auto-send feature for continuous key input based on user input in a dialog box.",
-            "hotkeys": ["!F1"],
+            "hotkeys": [
+                {"key": "!F1"}
+            ],
             "section": "📋 UTILITIES"
         },
         "Send": {
             "description": "Send specific key combinations based on the hotkey pressed.",
             "hotkeys": {
-                "!a": ["{WheelLeft}"],
-                "!d": ["{WheelRight}"],
-                "!e": ["!{=}"],
-                "!q": ["!{-}"],
-                "!s": ["{WheelDown}"],
-                "!w": ["{WheelUp}"],
-                "^!e": "^{WheelUp}",
-                "^!q": ["^{WheelDown}"],
-                "^!s": ["{PgDn}"],
-                "^!w": ["{PgUp}"],
-                "^e": ["^{=}"],
-                "^q": ["^{-}"],
-                "a": ["{Left}"],
-                "d": ["{Right}"],
-                "s": ["{Down}"],
-                "w": ["{Up}"]
+                "!a": {"key": "{WheelLeft}", "condition": "GetScriptStatus"},
+                "!d": {"key": "{WheelRight}", "condition": "GetScriptStatus"},
+                "!e": {"key": "!{=}", "condition": "GetScriptStatus"},
+                "!q": {"key": "!{-}", "condition": "GetScriptStatus"},
+                "!s": {"key": "{WheelDown}", "condition": "GetScriptStatus"},
+                "!w": {"key": "{WheelUp}", "condition": "GetScriptStatus"},
+                "^!e": {"key": "^{WheelUp}", "condition": "GetScriptStatus"},
+                "^!q": {"key": "^{WheelDown}", "condition": "GetScriptStatus"},
+                "^!s": {"key": "{PgDn}", "condition": "GetScriptStatus"},
+                "^!w": {"key": "{PgUp}", "condition": "GetScriptStatus"},
+                "^e": {"key": "^{=}", "condition": "GetScriptStatus"},
+                "^q": {"key": "^{-}", "condition": "GetScriptStatus"},
+                "a": {"key": "{Left}", "condition": "GetScriptStatus"},
+                "d": {"key": "{Right}", "condition": "GetScriptStatus"},
+                "s": {"key": "{Down}", "condition": "GetScriptStatus"},
+                "w": {"key": "{Up}", "condition": "GetScriptStatus"}
             },
             "section": "Other"
         },
@@ -77,43 +100,62 @@
                 [16, "ConfigureOneNote", "ConfigureOneNote", [1], [5]]
             ],
             "description": "Toggle and execute the corresponding ConfigureOneNote function with different arguments.",
-            "hotkeys": ["F21", ["Space"], ["^Space"]],
+            "hotkeys": [
+                {"key": "F21"},
+                {"key": "Space", "condition": "GetScriptStatus"},
+                {"key": "^Space", "condition": "GetScriptStatus"}
+            ],
             "section": "🎛 TOGGLE KEYS"
         },
         "ToggleAndSend": {
             "args": [[20, "1", "2"], [22, "^+2", "^+3"], [23, "{Space}", "{1}"], [24, "v", "h"]],
             "description": "Toggle between sending different key combinations based on the assigned arguments.",
-            "hotkeys": ["F20", "F22", "F23", "F24"],
+            "hotkeys": [
+                {"key": "F20"},
+                {"key": "F22"},
+                {"key": "F23"},
+                {"key": "F24"}
+            ],
             "section": "🎛 TOGGLE KEYS"
         },
-        "ToggleOverlayVisibility": {
+        "overlay.ToggleVisibility": {
             "description": "Toggle the visibility of the status overlay for the script.",
-            "hotkeys": ["^!z"],
+            "hotkeys": [
+                {"key": "^!z"}
+            ],
             "section": "🔧 ADDITIONAL FEATURES"
         },
-        "ToggleScript": {
+        "overlay.ToggleScript": {
             "description": "Toggle the activation and deactivation of the script, enabling or disabling hotkeys.",
-            "hotkeys": ["^!x"],
+            "hotkeys": [
+                {"key": "^!x"}
+            ],
             "section": "🔧 ADDITIONAL FEATURES"
         }
     },
     "FavoriteMenu": {
         "DisplayMenu": {
             "description": "Displays the favorite menu, allowing users to access their favorite folders and files quickly.",
-            "hotkeys": ["!MButton"],
-            "section": "Other"
+            "hotkeys": [
+                {"key": "!MButton"}
+            ],
+            "section": "🌟 Favorite"
         }
     },
     "LookUp": {
         "LookUp.SearchFromClipBoard": {
             "description": "Searches for the content of the clipboard in the configured search engine.",
-            "hotkeys": ["!f"],
+            "hotkeys": [
+                {"key": "!f"}
+            ],
             "isMethod": 1,
             "section": "Other"
         },
         "LookUp.Toggle": {
             "description": "Toggles the visibility of the LookUp search interface.",
-            "hotkeys": ["!^f"],
+            "hotkeys": [
+                {"key": "!^f"}
+            ],
             "isMethod": 1,
             "section": "Other"
         }
@@ -121,13 +163,17 @@
     "ShortcutGenerator": {
         "ShortcutTool.AddShortcut": {
             "description": "Creates a shortcut to the currently active Chrome tab's URL in the selected folder, formatting the title and launching File Explorer as needed.",
-            "hotkeys": ["+!s"],
+            "hotkeys": [
+                {"key": "+!s"}
+            ],
             "isMethod": 1,
             "section": "Other"
         },
         "ShortcutTool.ChangePath": {
             "description": "Opens a folder picker dialog to select a new default path and updates the GUI and internal state accordingly.",
-            "hotkeys": ["+!x"],
+            "hotkeys": [
+                {"key": "+!x"}
+            ],
             "isMethod": 1,
             "section": "Other"
         }

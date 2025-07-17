@@ -1,39 +1,22 @@
 #Include <Log>
 waitTime := 300
-
-OnMessage(0x0200, On_WM_MOUSEMOVE)
-OnMessage(0x4E, ObjBindMethod(ShortcutTool, "WM_NOTIFY"))
-
-On_WM_MOUSEMOVE(wParam, lParam, msg, Hwnd) {
-    static PrevHwnd := 0
-    if (Hwnd != PrevHwnd) {
-        Text := "", ToolTip()
-        CurrControl := GuiCtrlFromHwnd(Hwnd)
-        if CurrControl {
-            if !CurrControl.HasProp("ToolTip")
-                return
-            Text := CurrControl.ToolTip
-            ToolTip(Text)
-        }
-        PrevHwnd := Hwnd
-    }
-}
-
 ShortcutTool
 class ShortcutTool {
-    static configFile := "C:\Users\jackb\Documents\AutoHotkey\configs\config.ini"
-    static defaultPath := ""
     static gui := unset
-    static pathLabel := ""
-    static ddlPath := ""
-    static ddlOptions := []
-    static transparencyUpDown := unset
-    static transparency := 225
-    static transparencyStep := 10
-    static transparencyMin := 50
-    static transparencyMax := 255
+    configFile := "C:\Users\jackb\Documents\AutoHotkey\configs\config.ini"
 
-    static pathMap := {
+    defaultPath := ""
+    pathLabel := ""
+    ddlPath := ""
+    ddlOptions := []
+
+    transparencyUpDown := unset
+    transparency := 225
+    transparencyStep := 10
+    transparencyMin := 50
+    transparencyMax := 255
+
+    pathMap := {
         Desktop: "C:\Users\jackb\Desktop",
         Documents: "C:\Users\jackb\Documents",
         Downloads: "C:\Users\jackb\Downloads",
@@ -47,223 +30,104 @@ class ShortcutTool {
         ShortcutTool.gui.SetFont("s10", "Segoe UI")
         ShortcutTool.gui.BackColor := "eaffff"
 
-        ShortcutTool.InitVars()
+        this.InitVars()
 
-        ShortcutTool.SetUpAll()
+        this.SetUpAll()
 
-        ShortcutTool.Show()
+        this.Show()
         WinSetTransColor ShortcutTool.gui.BackColor, "Shortcut Tool"
-        WinSetTransparent ShortcutTool.transparency, "Shortcut Tool"
+        WinSetTransparent this.transparency, "Shortcut Tool"
+        OnMessage(0x0200, ObjBindMethod(this, "On_WM_MOUSEMOVE"))
+        OnMessage(0x4E, ObjBindMethod(this, "On_WM_NOTIFY"))
     }
 
-    static Show() {
-        ShortcutTool.gui.Show("x1200 y85 AutoSize")
+    Show() {
+        if (ShortcutTool.gui)
+            ShortcutTool.gui.Show("x1200 y85 AutoSize")
+        else
+            ShortcutTool
     }
 
-    static SetUpAll() {
+    SetUpAll() {
         SetupControls
         SetupEvents
         SetupTooltips
 
         SetupControls() {
-            ShortcutTool.ddlPath := ShortcutTool.gui.AddDropDownList("xm y+5 w250 Choose" . ShortcutTool.ddlOptions.Length,
-                ShortcutTool.ddlOptions)
-            ShortcutTool.btnInsertDdl := ShortcutTool.gui.AddButton("x+5 yp w55", "Insert")
-            ShortcutTool.btnRemoveDdl := ShortcutTool.gui.AddButton("x+5 yp w50", "Del")
+            this.ddlPath := ShortcutTool.gui.AddDropDownList("xm y+5 w250 Choose" . this.ddlOptions.Length,
+                this.ddlOptions)
+            this.btnInsertDdl := ShortcutTool.gui.AddButton("x+5 yp w55", "Insert")
+            this.btnRemoveDdl := ShortcutTool.gui.AddButton("x+5 yp w50", "Del")
 
-            ShortcutTool.pathLabel := ShortcutTool.gui.AddEdit("xm y+5 w225 r1", ShortcutTool.defaultPath)
-            ShortcutTool.btnApply := ShortcutTool.gui.AddButton("x+5 yp w30", "✅")
-            ShortcutTool.btnBrowse := ShortcutTool.gui.AddButton("xp+35 yp w30", "🗂")
-            ShortcutTool.btnPaste := ShortcutTool.gui.AddButton("xp+35 yp w30", "📋")
-            ShortcutTool.btnSetDefault := ShortcutTool.gui.AddButton("xp+35 yp w30", "💾")
+            this.pathLabel := ShortcutTool.gui.AddEdit("xm y+5 w225 r1", this.defaultPath)
+            this.btnApply := ShortcutTool.gui.AddButton("x+5 yp w30", "✅")
+            this.btnBrowse := ShortcutTool.gui.AddButton("xp+35 yp w30", "🗂")
+            this.btnPaste := ShortcutTool.gui.AddButton("xp+35 yp w30", "📋")
+            this.btnSetDefault := ShortcutTool.gui.AddButton("xp+35 yp w30", "💾")
 
-            ShortcutTool.btnExit := ShortcutTool.gui.AddButton("xp y+5 w30", "❌")
-            ShortcutTool.btnReset := ShortcutTool.gui.AddButton("xp-35 yp w30", "↩")
-            ShortcutTool.transparencyEdit := ShortcutTool.gui.AddEdit("xp-70 yp+3 w60 h25", ShortcutTool.transparency)
-            ShortcutTool.transparencyUpDown := ShortcutTool.gui.AddUpDown("Range" ShortcutTool.transparencyMin "-" ShortcutTool
-                .transparencyMax,
-                ShortcutTool.transparency)
-
-            ShortcutTool.btnAdd := ShortcutTool.gui.AddButton("xm yp-3 w120", "➕ Shortcut")
-            ShortcutTool.btnHide := ShortcutTool.gui.AddButton("x+5 w100", "Hide")
+            this.btnExit := ShortcutTool.gui.AddButton("xp y+5 w30", "❌")
+            this.btnReset := ShortcutTool.gui.AddButton("xp-35 yp w30", "↩")
+            this.transparencyEdit := ShortcutTool.gui.AddEdit("xp-70 yp+3 w60 h25", this.transparency)
+            this.transparencyUpDown := ShortcutTool.gui.AddUpDown("Range" this.transparencyMin "-" this.transparencyMax,
+                this.transparency)
+            this.btnAdd := ShortcutTool.gui.AddButton("xm yp-3 w120", "➕ Shortcut")
+            this.btnHide := ShortcutTool.gui.AddButton("x+5 w100", "Hide")
         }
 
         SetupEvents() {
-            ShortcutTool.ddlPath.OnEvent("Change", (*) => (
-                ShortcutTool.pathLabel.Value := ShortcutTool.ddlOptions[ShortcutTool.ddlPath.Value]))
+            this.ddlPath.OnEvent("Change", (*) => (
+                this.pathLabel.Value := this.ddlOptions[this.ddlPath.Value]))
 
-            ShortcutTool.btnInsertDdl.OnEvent("Click", (*) => ShortcutTool.AddPathToDdl())
-            ShortcutTool.btnRemoveDdl.OnEvent("Click", (*) => ShortcutTool.RemovePathFromDdl())
-            ShortcutTool.btnAdd.OnEvent("Click", (*) => ShortcutTool.AddShortcut())
+            this.btnInsertDdl.OnEvent("Click", (*) => this.AddPathToDdl())
+            this.btnRemoveDdl.OnEvent("Click", (*) => this.RemovePathFromDdl())
+            this.btnAdd.OnEvent("Click", (*) => this.AddShortcut())
 
-            ShortcutTool.btnSetDefault.OnEvent("Click", (*) => ShortcutTool.SetAsDefaultPath())
-            ShortcutTool.btnPaste.OnEvent("Click", (*) => ShortcutTool.PasteFromClipboard())
-            ShortcutTool.btnBrowse.OnEvent("Click", (*) => ShortcutTool.ChangePath())
-            ShortcutTool.btnApply.OnEvent("Click", (*) => ShortcutTool.ApplyPathFromEdit())
-            ShortcutTool.btnReset.OnEvent("Click", (*) => (
-                ShortcutTool.pathLabel.Value := ShortcutTool.defaultPath
+            this.btnSetDefault.OnEvent("Click", (*) => this.SetAsDefaultPath())
+            this.btnPaste.OnEvent("Click", (*) => this.PasteFromClipboard())
+            this.btnBrowse.OnEvent("Click", (*) => this.ChangePath())
+            this.btnApply.OnEvent("Click", (*) => this.ApplyPathFromEdit())
+            this.btnReset.OnEvent("Click", (*) => (
+                this.pathLabel.Value := this.defaultPath
                 TrayTip("🔁 Đã hoàn tác về đường dẫn mặc định.")
             ))
-            ShortcutTool.btnHide.OnEvent("Click", (*) => ShortcutTool.gui.Hide())
-            ShortcutTool.btnExit.OnEvent("Click", (*) => ExitApp())
+            this.btnHide.OnEvent("Click", (*) => ShortcutTool.gui.Hide())
+            this.btnExit.OnEvent("Click", (*) => ExitApp())
         }
 
         SetupTooltips() {
-            ShortcutTool.btnInsertDdl.ToolTip := "Insert the selected path into the list."
-            ShortcutTool.btnRemoveDdl.ToolTip := "Remove the selected path from the list."
-            ShortcutTool.btnApply.ToolTip := "Apply the path from the input field."
-            ShortcutTool.btnBrowse.ToolTip := "Browse and select a new path."
-            ShortcutTool.btnPaste.ToolTip := "Paste a path from the clipboard."
-            ShortcutTool.btnSetDefault.ToolTip := "Set the current path as the default.`nCurrent DefaultPath: " ShortcutTool
-                .defaultPath
-            ShortcutTool.btnReset.ToolTip := "Reset the path to the default."
-            ShortcutTool.btnAdd.ToolTip := "Add a new shortcut."
-            ShortcutTool.btnHide.ToolTip := "Hide the Shortcut Tool window."
-            ShortcutTool.transparencyEdit.ToolTip := "Adjust transparency value (50–255)."
+            this.btnInsertDdl.ToolTip := "Insert the selected path into the list."
+            this.btnRemoveDdl.ToolTip := "Remove the selected path from the list."
+            this.btnApply.ToolTip := "Apply the path from the input field."
+            this.btnBrowse.ToolTip := "Browse and select a new path."
+            this.btnPaste.ToolTip := "Paste a path from the clipboard."
+            this.btnSetDefault.ToolTip := "Set the current path as the default.`nCurrent DefaultPath: " this.defaultPath
+            this.btnReset.ToolTip := "Reset the path to the default."
+            this.btnAdd.ToolTip := "Add a new shortcut."
+            this.btnHide.ToolTip := "Hide the Shortcut Tool window."
+            this.transparencyEdit.ToolTip := Format("Adjust transparency value ({}–{}).", this.transparencyMin, this.transparencyMax)
         }
     }
 
-    static ChangePath() {
-        newPath := DirSelect(ShortcutTool.pathLabel, 1, "Chọn thư mục lưu shortcut")
-        if newPath {
-            ShortcutTool.pathLabel.Value := newPath
-            TrayTip("✅ Đã chọn thư mục:`n" . newPath)
-        } else {
-            TrayTip("❌ Không có thư mục nào được chọn.")
+    InitVars() {
+        if FileExist(this.configFile) {
+            this.defaultPath := IniRead(this.configFile, "ShortcutTool", "defaultPath", "")
         }
-    }
-
-    static AddPathToDdl() {
-        if !(CheckIfValueExists(ShortcutTool.ddlOptions, ShortcutTool.pathLabel.Value)) {
-            ShortcutTool.ddlOptions.Push(ShortcutTool.pathLabel.Value)
-            ShortcutTool.ddlPath.Add([ShortcutTool.pathLabel.Value])
-            ShortcutTool.ddlPath.Choose(ShortcutTool.pathLabel.Value)
-            ShortcutTool.SaveDdlOptionsToConfig()
-            TrayTip(ShortcutTool.pathLabel.Value, "✅ Đã thêm đường dẫn mới vào danh sách: ")
-        }
-        else {
-            TrayTip(ShortcutTool.pathLabel.Value, "❌ Đã tồn tại phần tử đường dẫn trong danh sách", 16)
-        }
-    }
-
-    static RemovePathFromDdl() {
-        selectedPath := ShortcutTool.ddlPath.Value
-        if (selectedPath != 0) {
-            value := ShortcutTool.ddlOptions.RemoveAt(selectedPath)
-            ShortcutTool.ddlPath.Delete(selectedPath)
-            ShortcutTool.SaveDdlOptionsToConfig()
-            TrayTip("✅ Đã xóa phần tử " . value)
-        }
-        else {
-            TrayTip("❌ Danh sách trống.", "Lỗi", 16)
-        }
-    }
-
-    static SaveDdlOptionsToConfig() {
-        if (ShortcutTool.ddlOptions.Length != 0) {
-            paths := ""
-            for index, value in ShortcutTool.ddlOptions {
-                if (IsSet(value))
-                    paths .= value . ","
-            }
-            paths := RTrim(paths, ",")
-            IniWrite(paths, ShortcutTool.configFile, "DropdownOptions", "paths")
-        }
-    }
-
-    static InitVars() {
-        if FileExist(ShortcutTool.configFile) {
-            ShortcutTool.defaultPath := IniRead(ShortcutTool.configFile, "ShortcutTool", "defaultPath", "")
-        }
-        if ShortcutTool.defaultPath = ""
-            ShortcutTool.defaultPath := "D:\5. Jack\#Learn\Language\Japan"
+        if this.defaultPath = ""
+            this.defaultPath := "D:\5. Jack\#Learn\Language\Japan"
         paths := ""
-        if FileExist(ShortcutTool.configFile) {
-            paths := IniRead(ShortcutTool.configFile, "DropdownOptions", "paths", "")
+        if FileExist(this.configFile) {
+            paths := IniRead(this.configFile, "DropdownOptions", "paths", "")
         }
         if (paths = "") {
-            paths := ShortcutTool.pathMap
-            IniWrite(ShortcutTool.defaultPath, ShortcutTool.configFile, "DropdownOptions", "paths")
+            paths := this.pathMap
+            IniWrite(this.defaultPath, this.configFile, "DropdownOptions", "paths")
         }
         loop parse, paths, "," {
-            ShortcutTool.ddlOptions.Push(A_LoopField)
+            this.ddlOptions.Push(A_LoopField)
         }
     }
 
-    static SetAsDefaultPath() {
-        newPath := ShortcutTool.pathLabel.Value
-        if newPath != "" && DirExist(newPath) {
-            ShortcutTool.defaultPath := newPath
-            IniWrite(ShortcutTool.defaultPath, ShortcutTool.configFile, "ShortcutTool", "defaultPath")
-            ShortcutTool.btnSetDefault.ToolTip := "Set the current path as the default.`nCurrent DefaultPath: " newPath
-            TrayTip("✅ Đã lưu đường dẫn làm mặc định:`n" . newPath)
-        } else {
-            TrayTip("❌ Đường dẫn không hợp lệ, không thể lưu.", "Lỗi", 16)
-        }
-    }
-
-    static PasteFromClipboard() {
-        if A_Clipboard != "" {
-            ShortcutTool.pathLabel.Value := A_Clipboard
-            TrayTip("📋 Đã dán từ clipboard.")
-        }
-        else {
-            TrayTip("❌ Clipboard đang trống.")
-        }
-    }
-
-    static ApplyPathFromEdit() {
-        if (ShortcutTool.pathLabel.Value = "Desktop")
-            ShortcutTool.pathLabel.Value := A_Desktop
-        newPath := ShortcutTool.pathLabel.Value
-        if newPath != "" && DirExist(newPath) {
-            ShortcutTool.defaultPath := newPath
-            TrayTip("✅ Cập nhật đường dẫn thành:`n" . newPath)
-        } else {
-            TrayTip("❌ Đường dẫn không hợp lệ.", "Lỗi", 16)
-        }
-    }
-    
-    static Toggle() {
-        if !ShortcutTool.gui {
-            ShortcutTool
-            return
-        }
-        hwnd := ShortcutTool.gui.Hwnd
-        if !WinExist("ahk_id " hwnd) {
-            ShortcutTool.gui.Show("x1200 y85 AutoSize")
-            return
-        }
-        winState := WinGetMinMax("ahk_id " hwnd)
-        if winState = -1
-            ShortcutTool.gui.Show("x1200 y85 AutoSize")
-        else
-            ShortcutTool.gui.Hide()
-    }
-
-    static WM_NOTIFY(wParam, lParam, Msg, hWnd) {
-        static UDN_DELTAPOS := -722
-        static is64Bit := (A_PtrSize = 8)
-
-        NMUPDOWN := Buffer(is64Bit ? 40 : 24, 0)
-        DllCall("RtlMoveMemory", "Ptr", NMUPDOWN.Ptr, "Ptr", lParam, "UPtr", NMUPDOWN.Size)
-
-        hwndFrom := NumGet(NMUPDOWN, 0, "UPtr")
-        code := NumGet(NMUPDOWN, is64Bit ? 16 : 8, "Int")
-        delta := NumGet(NMUPDOWN, is64Bit ? 28 : 16, "Int")
-
-        if (hwndFrom = ShortcutTool.transparencyUpDown.hwnd && code = UDN_DELTAPOS) {
-            newVal := ShortcutTool.transparencyUpDown.Value + delta * ShortcutTool.transparencyStep
-            newVal := Min(Max(newVal, ShortcutTool.transparencyMin), ShortcutTool.transparencyMax)
-            ShortcutTool.transparencyUpDown.Value := newVal
-            ShortcutTool.transparencyEdit.Value := newVal
-            ShortcutTool.transparency := newVal
-            WinSetTransparent ShortcutTool.transparency, "Shortcut Tool"
-            return true
-        }
-    }
-
-    static AddShortcut() {
+    AddShortcut() {
 
         if !WinExist("ahk_exe chrome.exe") {
             TrayTip("Không tìm thấy cửa sổ Chrome đang mở!", "Lỗi", 16)
@@ -294,16 +158,16 @@ class ShortcutTool {
 
         title := prefix . RegExReplace(title, "[\\/:*?" "<>|]", "")
 
-        DirCreate(ShortcutTool.defaultPath)
+        DirCreate(this.defaultPath)
 
         if WinExist("ahk_class CabinetWClass") {
             WinActivate("ahk_class CabinetWClass")
             Send("!d")
             Sleep 200
-            SendText(ShortcutTool.defaultPath)
+            SendText(this.defaultPath)
             Send("{Enter}")
         } else {
-            Run("explorer.exe " . ShortcutTool.defaultPath)
+            Run("explorer.exe " . this.defaultPath)
             if !WinWaitActive("ahk_class CabinetWClass", , 3) {
                 TrayTip("Không thể mở File Explorer!", "Lỗi", 16)
                 return
@@ -330,6 +194,135 @@ class ShortcutTool {
 
         TrayTip("✅ Shortcut đã được tạo với tiêu đề:`n" . title, "Hoàn tất")
     }
+
+    ChangePath() {
+        newPath := DirSelect(this.pathLabel, 1, "Chọn thư mục lưu shortcut")
+        if newPath {
+            this.pathLabel.Value := newPath
+            TrayTip("✅ Đã chọn thư mục:`n" . newPath)
+        } else {
+            TrayTip("❌ Không có thư mục nào được chọn.")
+        }
+    }
+
+    AddPathToDdl() {
+        if !(CheckIfValueExists(this.ddlOptions, this.pathLabel.Value)) {
+            this.ddlOptions.Push(this.pathLabel.Value)
+            this.ddlPath.Add([this.pathLabel.Value])
+            this.ddlPath.Choose(this.pathLabel.Value)
+            this.SaveDdlOptionsToConfig()
+            TrayTip(this.pathLabel.Value, "✅ Đã thêm đường dẫn mới vào danh sách: ")
+        }
+        else {
+            TrayTip(this.pathLabel.Value, "❌ Đã tồn tại phần tử đường dẫn trong danh sách", 16)
+        }
+    }
+
+    RemovePathFromDdl() {
+        selectedPath := this.ddlPath.Value
+        if (selectedPath != 0) {
+            value := this.ddlOptions.RemoveAt(selectedPath)
+            this.ddlPath.Delete(selectedPath)
+            this.SaveDdlOptionsToConfig()
+            TrayTip("✅ Đã xóa phần tử " . value)
+        }
+        else {
+            TrayTip("❌ Danh sách trống.", "Lỗi", 16)
+        }
+    }
+
+    SaveDdlOptionsToConfig() {
+        if (this.ddlOptions.Length != 0) {
+            paths := ""
+            for index, value in this.ddlOptions {
+                if (IsSet(value))
+                    paths .= value . ","
+            }
+            paths := RTrim(paths, ",")
+            IniWrite(paths, this.configFile, "DropdownOptions", "paths")
+        }
+    }
+
+    SetAsDefaultPath() {
+        newPath := this.pathLabel.Value
+        if newPath != "" && DirExist(newPath) {
+            this.defaultPath := newPath
+            IniWrite(this.defaultPath, this.configFile, "ShortcutTool", "defaultPath")
+            this.btnSetDefault.ToolTip := "Set the current path as the default.`nCurrent DefaultPath: " newPath
+            TrayTip("✅ Đã lưu đường dẫn làm mặc định:`n" . newPath)
+        } else {
+            TrayTip("❌ Đường dẫn không hợp lệ, không thể lưu.", "Lỗi", 16)
+        }
+    }
+
+    PasteFromClipboard() {
+        if A_Clipboard != "" {
+            this.pathLabel.Value := A_Clipboard
+            TrayTip("📋 Đã dán từ clipboard.")
+        }
+        else {
+            TrayTip("❌ Clipboard đang trống.")
+        }
+    }
+
+    ApplyPathFromEdit() {
+        if (this.pathLabel.Value = "Desktop")
+            this.pathLabel.Value := A_Desktop
+        newPath := this.pathLabel.Value
+        if newPath != "" && DirExist(newPath) {
+            this.defaultPath := newPath
+            TrayTip("✅ Cập nhật đường dẫn thành:`n" . newPath)
+        } else {
+            TrayTip("❌ Đường dẫn không hợp lệ.", "Lỗi", 16)
+        }
+    }
+
+    Toggle() {
+        if WinExist("ahk_id " ShortcutTool.gui.Hwnd)
+            ShortcutTool.gui.Hide()
+        else
+            this.Show()
+    }
+
+
+
+    On_WM_NOTIFY(wParam, lParam, Msg, hWnd) {
+        static UDN_DELTAPOS := -722
+        static is64Bit := (A_PtrSize = 8)
+
+        NMUPDOWN := Buffer(is64Bit ? 40 : 24, 0)
+        DllCall("RtlMoveMemory", "Ptr", NMUPDOWN.Ptr, "Ptr", lParam, "UPtr", NMUPDOWN.Size)
+
+        hwndFrom := NumGet(NMUPDOWN, 0, "UPtr")
+        code := NumGet(NMUPDOWN, is64Bit ? 16 : 8, "Int")
+        delta := NumGet(NMUPDOWN, is64Bit ? 28 : 16, "Int")
+
+        if (hwndFrom = this.transparencyUpDown.hwnd && code = UDN_DELTAPOS) {
+            newVal := this.transparencyUpDown.Value + delta * this.transparencyStep
+            newVal := Min(Max(newVal, this.transparencyMin), this.transparencyMax)
+            this.transparencyUpDown.Value := newVal
+            this.transparencyEdit.Value := newVal
+            this.transparency := newVal
+            WinSetTransparent this.transparency, "Shortcut Tool"
+            return true
+        }
+    }
+
+    On_WM_MOUSEMOVE(wParam, lParam, msg, Hwnd) {
+        static PrevHwnd := 0
+        if (Hwnd != PrevHwnd) {
+            Text := "", ToolTip()
+            CurrControl := GuiCtrlFromHwnd(Hwnd)
+            if CurrControl {
+                if !CurrControl.HasProp("ToolTip")
+                    return
+                Text := CurrControl.ToolTip
+                ToolTip(Text)
+            }
+            PrevHwnd := Hwnd
+        }
+    }
+
 
 }
 

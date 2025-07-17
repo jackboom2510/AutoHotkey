@@ -4,40 +4,35 @@ CoordMode "Mouse", "Screen"
 Persistent
 endl := '`n'
 
-#Include <Log>
-#Include <JSON>
+; #Include <Log>
 
-logJson := "C:\Users\jackb\Documents\AutoHotkey\configs\log.json"
-erf(logJson)
+_gui := Gui()
+_gui.AddText(, "RandomText")
+AdditionCtr := Array()
+passarg(["Button", "Hotkeys", "", (*) => MsgBox(), "Show Hotkeys"])
 
-; scripts := JSON.LoadFile(logJson, "UTF-8")
-erf
-
-arr := [{
-    123: "unkown",
-    345: "unknow1",
-    678: [6, 7, 8]
-},
-1,
-[
-    [21, "ConfigureOneNote", "ConfigureOneNote", [2], [3]],
-    [15, "ConfigureOneNote", "ConfigureOneNote", [1], [2]],
-    [16, "ConfigureOneNote", "ConfigureOneNote", [1], [5]]
-]]
-
-wtype(obj, indent) {
-    typo := "`"" Type(obj) "`""
-    output := ""
-    if (Type(obj) = "Func") {
-        output := "`"" obj.name "`""
-        return Repeat(indent) "{" typo ": " output "}"
+passarg(Addition*) {
+    if (Addition.Length != 0) {
+        for idx, ctrl in Addition {
+            if (ctrl.has(1) && ctrl.has(2) && ctrl.has(3)) {
+                AdditionCtr.Push(_gui.Add(ctrl[1], ctrl[3], ctrl[2]))
+            }
+            else {
+                debugStr := "Missing some parameters:`n"
+                if (!ctrl.has(1))
+                    debugStr .= "- ControlType`n"
+                if (!ctrl.has(3))
+                    debugStr .= "- Text`n"
+                if (!ctrl.has(2))
+                    debugStr .= "- Options"
+                TrayTip(debugStr, "Error!", 3)
+                OutputDebug(debugStr)
+            }
+            if (ctrl.has(4))
+                AdditionCtr[idx].OnEvent("Click", ctrl[4])
+            if (ctrl.has(5))
+                AdditionCtr[idx].ToolTip := ctrl[5]
+        }
     }
-    else if (!IsObject(obj)) {
-        output := obj
-        return Repeat(indent) "{" typo ": " output "}"
-    }
-    output := SingleFormat(obj, indent + 1)
-    return Repeat(indent) "{" Format("`"{}`":`n{}", Type(obj), output) Repeat(indent) "}"
 }
-
-
+_gui.Show()

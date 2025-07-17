@@ -1,5 +1,4 @@
 #Include <Log>
-
 class HelpGui {
     __New(title := "🧩 Script Hotkey Help", sections := [], hideTimer := 0, lineLimit := 0) {
         this.gui := Gui("+AlwaysOnTop +Resize -DPIScale", title)
@@ -25,11 +24,6 @@ class HelpGui {
             SetTimer(this.gui.Hide.Bind(this.gui), -hideTimer * 1000)
         }
     }
-
-    Show() {
-        this.gui.Show()
-    }
-
     AddSection(title, content, lineLimit := 5) {
         if (title != "") {
             this.gui.SetFont("s10 bold cGreen", "Segoe UI")
@@ -47,13 +41,14 @@ class HelpGui {
 
     AddSectionFromLines(title, linesArray, lineLimit := 5) {
         linesArray := SortStringArrayByLength(linesArray)
-        content := _Format(linesArray, 0, "o")
+        content := _Format('`n', 0, 'plain', linesArray)
         this.AddSection(title, content, lineLimit)
     }
-}
-
-ShowHelp(title := "🧩 Script Hotkey Help", sections := [], hideTimer := 0, lineLimit := 0) {
-    help := HelpGui(title, sections, hideTimer, lineLimit)
-    help.Show()
-    return help.gui  ; Trả về instance GUI để sử dụng nếu cần
+    Toggle() {
+        if WinExist('ahk_id ' this.gui.hwnd)
+            this.gui.Hide()
+        else
+            this.gui.Show()
+        return
+    }
 }
