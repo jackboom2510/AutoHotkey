@@ -1,0 +1,10 @@
+{
+  "name": "ahk-compiler-runner",
+  "version": "1.0.0",
+  "bin": "run-ahk2exe.js",
+  "pkg": {
+    "targets": [
+      "node18-win-x64"
+    ]
+  }
+}

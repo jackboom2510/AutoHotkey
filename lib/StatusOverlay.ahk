@@ -1,22 +1,24 @@
 class StatusOverlay {
-    static _gui := ""
+    _gui := ""
     guiTitle := "Status Overlay"
     guiOpts := "+AlwaysOnTop -Caption +ToolWindow"
-    guiWidth := 15
-    guiHeight := 20
+    guiWidth := 18
+    guiHeight := 24
     xPos := 0
     yPos := 0
     bgColor1 := "7c0080"
     bgColor2 := "Red"
+    textColor1 := "White"
+    textColor2 := "White"
 
     OnIcon := "✅"
     OffIcon := "⛔"
-    iconRatio := 0.68
+    iconRatio := 0.75
 
     isScriptEnabled := false
 
-    static statusTextControl := ""
-    __New(guiTitle := "Status Overlay", options := "", args*) {
+    statusTextControl := ""
+    __New(guiTitle := this.guiTitle, options := "", args*) {
         this.guiTitle := guiTitle
         this.ParseOptions(options)
         this.ParseArgs(args*)
@@ -24,16 +26,15 @@ class StatusOverlay {
         OnMessage(0x0214, ObjBindMethod(this, "On_WM_SIZING"))
     }
     Show() {
-        if (StatusOverlay._gui) {
-            StatusOverlay._gui.Destroy()
+        if (this._gui) {
+            this._gui.Destroy()
         }
-        StatusOverlay._gui := Gui(this.guiOpts)
-        StatusOverlay._gui.BackColor := this.isScriptEnabled ? this.bgColor1 : this.bgColor2
-        StatusOverlay.statusTextControl := StatusOverlay._gui.AddText("+Center w" this.guiWidth " h" this.guiHeight " ",
+        this._gui := Gui(this.guiOpts)
+        this._gui.BackColor := this.isScriptEnabled ? this.bgColor1 : this.bgColor2
+        this.statusTextControl := this._gui.AddText("+Center w" this.guiWidth " h" this.guiHeight " ",
             this.isScriptEnabled ? this.OnIcon : this.OffIcon)
-        StatusOverlay.statusTextControl.SetFont("s" Floor(Min(this.guiWidth, this.guiHeight) * this.iconRatio) " Bold cWhite",
-        "Segoe UI Emoji")
-        StatusOverlay._gui.Show("x" this.xPos " y" this.yPos " NoActivate")
+        this.statusTextControl.SetFont("s" Floor(Min(this.guiWidth, this.guiHeight) * this.iconRatio) " Bold c" (this.isScriptEnabled ? this.textColor1 : this.textColor2),"Segoe UI")
+        this._gui.Show("x" this.xPos " y" this.yPos " NoActivate")
     }
     ParseOptions(options) {
         flags := {
@@ -43,6 +44,8 @@ class StatusOverlay {
             y: "(\d+)",
             bg1: "(\w+)",
             bg2: "(\w+)",
+            tx1: "(\w+)",
+            tx2: "(\w+)"
         }
         for flag, regex in flags.OwnProps() {
             while RegExMatch(options, flag . "\{" . regex . "\}", &Match) {
@@ -53,11 +56,13 @@ class StatusOverlay {
                     case "y": this.yPos := Match[1]
                     case "bg1": this.bgColor1 := Match[1]
                     case "bg2": this.bgColor2 := Match[1]
+                    case "tx1": this.textColor1 := Match[1]
+                    case "tx2": this.textColor2 := Match[1]
                 }
                 break
             }
         }
-        if RegExMatch(options, "\b(?!w|h|x|y|bg1|bg2)(\w+)\{([^}]+)\}", &match) {
+        if RegExMatch(options, "\b(?!w|h|x|y|bg1|bg2|tx1|tx2)(\w+)\{([^}]+)\}", &match) {
             invalid_flag := match[1]
             invalid_value := match[2]
             TrayTip(":x: Invalid flag: `"" invalid_flag "`" with value: `"" invalid_value "`"",
@@ -79,21 +84,25 @@ class StatusOverlay {
         }
     }
     ToggleVisibility() {
-        if (WinExist("ahk_id " StatusOverlay._gui.hwnd)) {
-            StatusOverlay._gui.Hide
+        if (WinExist("ahk_id " this._gui.hwnd)) {
+            this._gui.Hide
         } else {
-            StatusOverlay._gui.Show()
+            this._gui.Show()
         }
     }
-    ToggleScript() {
-        this.isScriptEnabled := !this.isScriptEnabled
-        if (StatusOverlay._gui) {
-            StatusOverlay._gui.BackColor := this.isScriptEnabled ? this.bgColor1 : this.bgColor2
-            StatusOverlay.statusTextControl.Value := this.isScriptEnabled ? this.OnIcon : this.OffIcon
+    ToggleScript(toState := "") {
+        if(toState = "")
+            this.isScriptEnabled := !this.isScriptEnabled
+        else
+            this.isScriptEnabled := toState
+        if (this._gui) {
+            this._gui.BackColor := this.isScriptEnabled ? this.bgColor1 : this.bgColor2
+            this.statusTextControl.SetFont("c" (this.isScriptEnabled ? this.textColor1 : this.textColor2))
+            this.statusTextControl.Value := this.isScriptEnabled ? this.OnIcon : this.OffIcon
         }
     }
     On_WM_SIZE(wPARAM, lPARAM, msg, hwnd) {
-        if (hwnd != StatusOverlay._gui.hwnd)
+        if (hwnd != this._gui.hwnd)
             return
         newWidth := lPARAM & 0xFFFF
         newHeight := lPARAM >> 16
@@ -101,12 +110,12 @@ class StatusOverlay {
         if (newFontSize < 10) {
             newFontSize := 10
         }
-        StatusOverlay.statusTextControl.SetFont("s" newFontSize " Bold cWhite", "Segoe UI Emoji")
-        StatusOverlay.statusTextControl.Move(, , newWidth, newHeight)
-        StatusOverlay.statusTextControl.Opt("Center")
+        this.statusTextControl.SetFont("s" newFontSize, "Segoe UI Emoji")
+        this.statusTextControl.Move(, , newWidth, newHeight)
+        this.statusTextControl.Opt("Center")
     }
     On_WM_SIZING(wPARAM, lPARAM, msg, hwnd) {
-        if (hwnd != StatusOverlay._gui.Hwnd)
+        if (hwnd != this._gui.Hwnd)
             return
 
         rect := {
@@ -118,7 +127,7 @@ class StatusOverlay {
 
         currentWidth := rect.Right - rect.Left
         currentHeight := rect.Bottom - rect.Top
-        StatusOverlay._gui.GetClientPos(, , &currentClientWidth, &currentClientHeight)
+        this._gui.GetClientPos(, , &currentClientWidth, &currentClientHeight)
         aspectRatio := 1.0
         originalLeft := rect.Left
         originalTop := rect.Top
@@ -208,11 +217,10 @@ class StatusOverlay {
         if (finalFontSize < 10) {
             finalFontSize := 10
         }
-        StatusOverlay.statusTextControl.SetFont("s" finalFontSize " Bold cWhite", "Segoe UI Emoji")
-        StatusOverlay.statusTextControl.Move(0, 0, newWidth, newHeight)
-        StatusOverlay.statusTextControl.Opt("+Center")
+        this.statusTextControl.SetFont("s" finalFontSize " Bold cWhite", "Segoe UI Emoji")
+        this.statusTextControl.Move(0, 0, newWidth, newHeight)
+        this.statusTextControl.Opt("+Center")
 
         return True
     }
 }
-

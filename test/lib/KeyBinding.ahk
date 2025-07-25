@@ -1,0 +1,533 @@
+#Include C:\Users\jackb\Documents\AutoHotkey\test\lib\JSON.ahk
+#Include C:\Users\jackb\Documents\AutoHotkey\test\lib\HelpGui.ahk
+#SingleInstance Force
+hotkeysJSON := "C:\Users\jackb\Documents\AutoHotkey\test\configs\hotkeys.json"
+scripts := JSON.LoadFile(hotkeysJSON, "UTF-8")
+TextAlign_widths := [2. 3, 5, 8, 15, 20]
+
+GroupHotkeys(script) {
+    sectionGroups := Map()
+
+    for fn_id, fn in script {
+        if (fn_id = "Send") {
+            for hk_id, hk in fn["hotkeys"] {
+                hotkeyStr := hkexp(hk_id)
+                display := IsObject(hk) ? hk["key"] : hk
+                line := TextAlign(hotkeyStr) " → " hkexp(display)
+                isConditional := IsObject(hk) && hk.Has("condition")
+                sectionName := fn["section"] 
+                if !sectionGroups.Has(sectionName)
+                    sectionGroups[sectionName] := { unconditionalLines: [], conditionalLines: [] }
+
+                if (isConditional) {
+                    sectionGroups[sectionName].conditionalLines.Push(line)
+                } else {
+                    sectionGroups[sectionName].unconditionalLines.Push(line)
+                }
+            }
+            continue
+        }
+
+        sectionName := fn["section"]
+        if !sectionGroups.Has(sectionName)
+            sectionGroups[sectionName] := { unconditionalLines: [], conditionalLines: [] }
+
+        name := fn.Has("description") ? fn["description"] : fn_id
+        hasSimilar := fn.Has("hasSimilar") && fn["hasSimilar"]
+
+        if (hasSimilar = 1) {
+            entries := []
+            for hkEntry in fn["hotkeys"] {
+                key := IsObject(hkEntry) ? hkEntry["key"] : hkEntry
+                entries.Push(hkexp(key))
+            }
+            argsText := fn.Has("args") ? (JoinArgs(", ", fn["args"]*)) : ""
+
+            line := TextAlign(JoinArgs(" / ", entries*)) " → " name (argsText ? " (" argsText ")" : "")
+            sectionGroups[sectionName].unconditionalLines.Push(line)
+
+        } else {
+            for i, hkEntry in fn["hotkeys"] {
+                key := IsObject(hkEntry) ? hkEntry["key"] : hkEntry
+                isConditional := IsObject(hkEntry) && hkEntry.Has("condition") && hkEntry["condition"] = "GetScriptStatus"
+                argText := fn.Has("args") ? (
+                    IsObject(fn["args"][i]) ? JoinArgs(", ", fn["args"][i]*) : fn["args"][i]
+                ) : ""
+                line := TextAlign(hkexp(key)) " → " name (argText ? " (" argText ")" : "")
+                if (isConditional) {
+                    sectionGroups[sectionName].conditionalLines.Push(line)
+                } else {
+                    sectionGroups[sectionName].unconditionalLines.Push(line)
+                }
+            }
+        }
+    }
+    return sectionGroups
+}
+
+ShowHotkeys(input := A_scriptName, hideTimer := 0, lineLimit := 4) {
+    if (input = "All") {
+        for script_id, script in scripts {
+            ShowHotkeys_Internal(script_id, hideTimer, lineLimit)
+        }
+        return
+    } else if (InStr(input, '.')) {
+        input := StrSplit(input, '.')[1]
+    }
+    if !scripts.Has(input) {
+        OutputDebug "❌ Không tìm thấy script: " input
+        return
+    }
+    ShowHotkeys_Internal(input, hideTimer, lineLimit)
+    return
+
+    ShowHotkeys_Internal(scriptName, hideTimer := 0, lineLimit := 4) {
+        script := scripts[scriptName]
+
+        ; sectionGroups sẽ là một Map chứa {unconditionalLines: [], conditionalLines: []} cho mỗi section
+        sectionGroupsMap := GroupHotkeys(script)
+
+        sectionsForGui := []
+        for name, data in sectionGroupsMap {
+            sectionsForGui.Push({ title: name, unconditionalLines: data.unconditionalLines, conditionalLines: data.conditionalLines })
+        }
+
+        static g_scriptHotkeysHelpGuiInstance := ""
+        if (!IsObject(g_scriptHotkeysHelpGuiInstance) || !WinExist('ahk_id ' g_scriptHotkeysHelpGuiInstance.gui.hwnd)) {
+            g_scriptHotkeysHelpGuiInstance := HelpGui("🧩 Hotkeys cho script: " scriptName, sectionsForGui, hideTimer,
+                lineLimit)
+        } else {
+            ; Nếu GUI đã tồn tại, bạn có thể muốn cập nhật nội dung của nó thay vì tạo lại.
+            ; Việc cập nhật nội dung cho bố cục lưới này sẽ phức tạp hơn.
+            ; Hiện tại, chúng ta chỉ toggle nó.
+        }
+        g_scriptHotkeysHelpGuiInstance.Toggle() ; Gọi phương thức Toggle, không phải thuộc tính
+    }
+}
+
+Convert() {
+    citeria := "GetScriptStatus"
+    for scripts_idx, script in scripts {
+        for fn_name, fn in script {
+            if (fn_name = "Send") {
+                for hks_key, hk in fn["hotkeys"] {
+                    if (Type(fn["hotkeys"][hks_key]) = "Map")
+                        continue
+                    hk_clone := Map()
+                    if (IsObject(hk)) {
+                        hk_clone["key"] := hk[1]
+                        hk_clone["condition"] := citeria
+                    }
+                    else {
+                        hk_clone["key"] := hk
+                    }
+                    try {
+                        OutputDebug "- Success convert " fn_name ": " _pl(fn["hotkeys"][hks_key])
+                        fn["hotkeys"][hks_key] := hk_clone
+                    }
+                    catch as err {
+                        OutputDebug "- Fail convert " fn_name ": " _pl(fn["hotkeys"][hks_key]) "`n`t- Err: " err.Message
+                        continue
+                    }
+                }
+                continue
+            }
+            if (fn.has("args")) {
+
+                for args_idx, arg in fn["args"] {
+                    if (Type(fn["hotkeys"][args_idx]) = "Map")
+                        continue
+                    hk_clone := Map()
+                    hk := fn["hotkeys"][args_idx]
+                    if (IsObject(hk)) {
+                        hk_clone["key"] := hk[1]
+                        hk_clone["condition"] := citeria
+                    }
+                    else {
+                        hk_clone["key"] := hk
+                    }
+                    try {
+                        OutputDebug "- Success convert " fn_name ": " _pl(fn["hotkeys"][hks_key])
+                        fn["hotkeys"][args_idx] := hk_clone
+                    }
+                    catch as err {
+                        OutputDebug "- Fail convert " fn_name ": " _pl(fn["hotkeys"][args_idx]) "`n`t- Err: " err.Message
+                        continue
+                    }
+                }
+            }
+            else {
+
+                if (Type(fn["hotkeys"][1]) = "Map")
+                    continue
+                hk_clone := Map()
+                hk := fn["hotkeys"][1]
+                if (IsObject(hk)) {
+                    hk_clone["key"] := hk[1]
+                    hk_clone["condition"] := citeria
+                }
+                else {
+                    hk_clone["key"] := hk
+                }
+                try {
+                    OutputDebug "- Success convert " fn_name ": " fn["hotkeys"][1]
+                    fn["hotkeys"][1] := hk_clone
+                }
+                catch as err {
+                    OutputDebug "- Fail convert " fn_name ": " fn["hotkeys"][1] "`n`t- Err: " err.Message
+                    continue
+                }
+            }
+        }
+    }
+    Save
+}
+
+NormalizeHotkeys() {
+    for script_id, script in scripts {
+        for fn_id, fn in script {
+            if (!fn.Has("section")) {
+                fn["section"] := "Other"
+            }
+        }
+    }
+}
+
+BindingScript(input := A_ScriptName, hideTimer := 3) {
+    if (input = "ALL") {
+        for (script_id, script in scripts) {
+            BindingScript_Internal(script_id)
+        }
+    }
+    else {
+        if (InStr(input, '.')) {
+            input := StrSplit(input, '.')[1]
+        }
+        BindingScript_Internal(input)
+    }
+    return
+    BindingScript_Internal(script) {
+        if (!scripts.has(script)) {
+            OutputDebug "⚠️ No hotkeys found for script: " script
+            return false
+        }
+        for fn_id, fn in scripts[script] {
+            if (fn_id = "Send") {
+                for hk_id, hk in fn["hotkeys"] {
+                    AssignBoundHotkey(hk_id, "Send", hk)
+                }
+                continue
+            }
+            if (fn.has("isMethod") && fn["isMethod"] = true || InStr(fn_id, '.')) {
+                fullFn := StrSplit(fn_id, '.')
+                try {
+                    fn_id := ObjBindMethod(%fullFn[1]%, fullFn[2])
+                }
+                catch as Err {
+                    OutputDebug "❌ Error running when running " fullFn[1] '.' fullFn[2] ': ' Err.Message
+                    FileOpen("C:\Users\jackb\Documents\AutoHotkey\configs\error_log.txt", 'a').Write(
+                        "Error writing to file: " Err.Message "`n")
+                }
+            }
+            if (!fn.has("args")) {
+                if (fn.has("hotkeys"))
+                    AssignBoundHotkey(fn["hotkeys"][1], fn_id)
+                continue
+            }
+            for args_id, args in fn["args"] {
+                if (IsObject(args)) {
+                    if (fn.has("hotkeys"))
+                        AssignBoundHotkey(fn["hotkeys"][args_id], fn_id, args*)
+                } else {
+                    if (fn.has("hotkeys"))
+                        AssignBoundHotkey(fn["hotkeys"][args_id], fn_id, args)
+                }
+            }
+        }
+        return true
+    }
+}
+
+AssignBoundHotkey(_hotkey, Function, FnArgs*) {
+    if ((Function = Send || Function = "Send")) {
+        if FnArgs[1].has("key") {
+            if FnArgs[1].has("condition") {
+                HotIf (*) => citeria(FnArgs[1]["condition"])
+                AssignHotkey(_hotkey, Function, FnArgs[1]["key"])
+                HotIf
+            }
+            else {
+                AssignHotkey(_hotkey, Function, FnArgs[1]["key"])
+            }
+        }
+        return
+    }
+    if (_hotkey.has("key")) {
+        if (_hotkey.has("condition")) {
+            HotIf (*) => citeria(_hotkey["condition"])
+            AssignHotkey(_hotkey["key"], Function, FnArgs*)
+            HotIf
+        }
+        else {
+            AssignHotkey(_hotkey["key"], Function, FnArgs*)
+        }
+    }
+    return
+    citeria(Expression, *) {
+        if (Type(Expression) = "string") {
+            Expression := %Expression%()
+        }
+        else if (Type(Expression) = "Array") {
+            exps := Expression.Clone()
+            Expression := true
+            for idx, exp in exps {
+                if (Type(exp) = "String")
+                    exp := %exp%
+                Expression := Expression && exp()
+            }
+        }
+        return Expression
+    }
+}
+
+AssignHotkey(_Hotkey, Function, FnArgs*) {
+    if (_Hotkey = "" || Trim(_Hotkey) = "") {
+        OutputDebug "⚠️ Không thể gán hotkey vì không có KeyName hợp lệ."
+        return false
+    }
+    if (Type(Function) = "String") {
+        Function := %Function%
+    }
+    if !IsObject(Function) || !Function.HasMethod("Call") {
+        OutputDebug "❌ Callback không hợp lệ."
+        return false
+    }
+
+    ; try Hotkey(_Hotkey, "Off")
+    try {
+        Hotkey(_Hotkey, (*) => Function(FnArgs*))
+        return true
+    } catch as e {
+        OutputDebug("❌ Lỗi khi gán hotkey `"" _Hotkey "`" cho <" Type(Function) ">`"" Function.Name "`":`n - " e.Message
+        )
+        return false
+    }
+}
+
+Save(inputJSON := hotkeysJSON, outputJSON := hotkeysJSON, _scripts := scripts) {
+    JSON.DumpFile(_scripts, outputJSON, 1)
+    PrettifyJSON(outputJSON, outputJSON)
+}
+
+ShowHotkeysOrignial(input := A_scriptName, hideTimer := 0, lineLimit := 10) {
+    if (input = "All") {
+        for script_id, script in scripts {
+            ShowHotkeys_Internal(script_id, hideTimer, lineLimit)
+        }
+    }
+    else if (InStr(input, '.')) {
+        input := StrSplit(input, '.')[1]
+    }
+    if !scripts.Has(input) {
+        OutputDebug "❌ Không tìm thấy script: " input
+        return
+    }
+    ShowHotkeys_Internal(input, hideTimer, lineLimit)
+    return
+    ShowHotkeys_Internal(script, hideTimer := 0, lineLimit := 10) {
+        script := scripts[input]
+        sectionGroups := GroupHotkeys(script)
+        sections := []
+        for name, lines in sectionGroups {
+            sections.Push({ title: name, lines: lines })
+        }
+        if !IsSet(g_scriptHotkeysHelpGuiInstance) {
+            static g_scriptHotkeysHelpGuiInstance := HelpGui("🧩 Hotkeys cho script: " input, sections, hideTimer,
+                lineLimit)
+        } else {
+        }
+        g_scriptHotkeysHelpGuiInstance.Toggle
+    }
+}
+
+GroupHotkeysOrignial(script) {
+    sectionGroups := Map()
+
+    for fn_id, fn in script {
+        if (fn_id = "Send") {
+            for hk_id, hk in fn["hotkeys"] {
+                hotkeyStr := hkexp(hk_id)
+                display := IsObject(hk) ? hk["key"] : hk
+                line := TextAlign(hotkeyStr) " → "
+                . hkexp(display)
+                section := (IsObject(hk) && hk.Has("condition")) ? "⚙️ HOTKEYS CONDITIONED BY SCRIPT STATUS" : fn[
+                    "section"]
+                if !sectionGroups.Has(section)
+                    sectionGroups[section] := []
+                sectionGroups[section].Push(line)
+            }
+            continue
+        }
+
+        section := fn["section"]
+        if !sectionGroups.Has(section)
+            sectionGroups[section] := []
+
+        name := fn.Has("description") ? fn["description"] : fn_id
+        hasSimilar := fn.Has("hasSimilarReturn") && fn["hasSimilarReturn"]
+
+        if (hasSimilar = 1) {
+            entries := []
+            for hkEntry in fn["hotkeys"] {
+                key := IsObject(hkEntry) ? hkEntry["key"] : hkEntry
+                entries.Push(hkexp(key))
+            }
+            argsText := fn.Has("args") ? (
+                JoinArgs(", ", fn["args"]*)
+            ) : ""
+            sectionGroups[section].Push(
+                TextAlign(JoinArgs(" / ", entries*)) " → " name (argsText ? " (" argsText ")" : "")
+            )
+        } else {
+            for i, hkEntry in fn["hotkeys"] {
+                key := IsObject(hkEntry) ? hkEntry["key"] : hkEntry
+                cond := IsObject(hkEntry) && hkEntry.Has("condition") && hkEntry["condition"] = "GetScriptStatus"
+                effectiveSection := cond ? "⚙️ HOTKEYS CONDITIONED BY SCRIPT STATUS" : section
+                if !sectionGroups.Has(effectiveSection)
+                    sectionGroups[effectiveSection] := []
+                argText := fn.Has("args") ? (
+                    IsObject(fn["args"][i]) ?
+                        JoinArgs(", ", fn["args"][i]*) :
+                        fn["args"][i]
+                ) : ""
+                sectionGroups[effectiveSection].Push(TextAlign(hkexp(key)) " → " name (argText ? " (" argText ")" : ""))
+            }
+        }
+    }
+
+    return sectionGroups
+}
+
+
+; ShowAllScriptsFunctionsGUI() {
+;     myGui := gui("+AlwaysOnTop + Resize", "All Scripts Functions")
+;     myGui.SetFont("s10")
+
+;     checkboxes := Map() ; Map[script][fn_id] = checkbox control
+
+;     y := 10
+;     margin := 10
+;     lineHeight := 30
+;     sectionSpacing := 10
+
+;     for scriptName, script in scripts {
+;         ; Tạo GroupBox làm section
+;         myGui.Add("GroupBox", "x10 y" y " w250 h" (lineHeight * (script.Count + 1)), scriptName)
+;         y += 30
+
+;         checkboxes[scriptName] := Map()
+
+;         for fn_id, fn_data in script {
+;             if (fn_id = "Send")
+;                 continue
+
+;             ; Thêm checkbox cho hàm
+;             cb := myGui.AddCheckbox("x30 y" y " w250 v" scriptName "_" fn_id, fn_id)
+;             checkboxes[scriptName][fn_id] := cb
+;             y += lineHeight
+;         }
+;         y += sectionSpacing
+;     }
+;     myGui.Show()
+; }
+
+; ShowScriptFunctionGUI(script) {
+;     if (!scripts.Has(script)) {
+;         MsgBox "⚠️ Script '" script "' not found in JSON."
+;         return
+;     }
+
+;     myGui := gui("+AlwaysOnTop", "Functions for " script)
+;     myGui.SetFont("s10")
+;     checkboxes := Map()
+
+;     for fn_id, fn_data in scripts[script] {
+;         if (fn_id = "Send")
+;             continue
+
+;         label := fn_id
+;         cb := myGui.AddCheckbox("v" label, label)
+;         checkboxes[fn_id] := cb
+;     }
+;     myGui.Show("AutoSize Center")
+; }
+
+
+
+; GroupHotkeysByDisplayGroup(script) {
+;     groupMap := Map()
+
+;     for fn_id, fn in script {
+;         groupName := fn.Has("displayGroup") ? fn["displayGroup"] : ""
+;         if (groupName = "") {
+;             continue
+;         }
+
+;         entries := []
+;         if fn.Has("args") {
+;             for i, args in fn["args"] {
+;                 hk := fn["hotkeys"][i]
+;                 hotkeyStr := IsObject(hk) ? hk[1] : hk
+;                 entries.Push(hkexp(hotkeyStr))
+;             }
+;         } else {
+;             hk := fn["hotkeys"]
+;             hotkeyStr := IsObject(hk) ? hk[1] : hk
+;             entries.Push(hkexp(hotkeyStr))
+;         }
+
+;         combinedHotkeys := JoinArgs(" / ", entries*)
+;         if !groupMap.Has(groupName)
+;             groupMap[groupName] := []
+
+;         groupMap[groupName].Push(combinedHotkeys " → " groupName)
+;     }
+
+;     return groupMap
+; }
+
+; GroupHotkeysBySection(script) {
+;     sectionGroups := Map()
+
+;     for fn_id, fn in script {
+;         if (fn_id = "Send") {
+;             if !sectionGroups.Has("Other")
+;                 sectionGroups["Other"] := []
+;             for hk_id, hk in fn["hotkeys"] {
+;                 display := IsObject(hk) ? hk[1] : hk
+;                 sectionGroups["Other"].Push(TextAlign(hkexp(hk_id)) " → " hkexp(display))
+;             }
+;             continue
+;         }
+
+;         section := fn["section"]
+;         if !sectionGroups.Has(section)
+;             sectionGroups[section] := []
+
+;         name := fn.Has("description") ? fn["description"] : fn_id
+;         if fn.Has("args") {
+;             for i, args in fn["args"] {
+;                 hk := fn["hotkeys"][i]
+;                 hotkeyStr := IsObject(hk) ? hk[1] : hk
+;                 argText := IsObject(args) ? JoinArgs(", ", args*) : args
+;                 sectionGroups[section].Push(TextAlign(hkexp(hotkeyStr)) " → " name " (" argText ")")
+;             }
+;         } else {
+;             hk := fn["hotkeys"]
+;             hotkeyStr := IsObject(hk) ? hk[1] : hk
+;             sectionGroups[section].Push(TextAlign(hkexp(hotkeyStr)) " → " name)
+;         }
+;     }
+
+;     return sectionGroups
+; }

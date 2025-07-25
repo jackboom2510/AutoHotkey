@@ -1,14 +1,15 @@
 global currentKey := ""
+global currentProjectMode := false
 global toggleASend := false
 global toggleF := []
 loop 25
     toggleF.Push(false)
 
 class KeyBindingUI {
-    static _gui := unset
+    _gui := unset
+    guiID := ""
     name := "Key Binding Options Menu"
-    guiOpts := "+AlwaysOnTop +Resize -DPIScale -Caption"
-
+    guiOpts := "+AlwaysOnTop +Resize -DPIScale "
     xpos := 0
     ypos := 0
     guiWidth := 0
@@ -26,16 +27,22 @@ class KeyBindingUI {
     AdditionCtr := []
 
     __New(Addition*) {
-        KeyBindingUI._gui := Gui(this.guiOpts, this.name)
-        KeyBindingUI._gui.SetFont("s10", "Verdana")
-        KeyBindingUI._gui.BackColor := "E0FFFF"
+        if (this.guiID) {
+            if (WinExist(this.name " ahk_id " this.guiID))
+                return
+        }
+        this._gui := Gui(this.guiOpts, this.name)
+        this.guiID := this._gui.hwnd
+        this._gui.SetFont("s10", "Verdana")
+        this._gui.BackColor := "E0FFFF"
 
         this.SetupAll(Addition*)
         this.Show()
-        WinSetTransColor(KeyBindingUI._gui.BackColor, this.name)
+        WinSetTransColor(this._gui.BackColor, this.name)
         WinSetTransparent(this.transparency, this.name)
         OnMessage(0x0200, ObjBindMethod(this, "On_WM_MOUSEMOVE"))
         OnMessage(0x004E, ObjBindMethod(this, "On_WM_NOTIFY"))
+        ; OnMessage(0x0100, ObjBindMethod(this, "On_WM_KEYDOWN"))
     }
 
     SetUpAll(Addition*) {
@@ -45,7 +52,7 @@ class KeyBindingUI {
         if (Addition.Length != 0) {
             for idx, ctrl in Addition {
                 if (ctrl.has(1) && ctrl.has(2) && ctrl.has(3)) {
-                    this.AdditionCtr.Push(KeyBindingUI._gui.Add(ctrl[1], ctrl[3], ctrl[2]))
+                    this.AdditionCtr.Push(this._gui.Add(ctrl[1], ctrl[3], ctrl[2]))
                 }
                 else {
                     debugStr := "Missing some parameters:`n"
@@ -67,25 +74,27 @@ class KeyBindingUI {
         return
         SetupControls() {
             ; Add Checkboxes for selecting actions
-            this.tittle := KeyBindingUI._gui.AddText("x100 w100 h22", "Options")
+            this.tittle := this._gui.AddText("x100 w100 h22", "Options")
             this.tittle.SetFont("s12 Bold c6200ff", "Verdana")
-            ; this.Checkbox[1] := KeyBindingUI._gui.AddCheckbox("xm", "ALL")
-            this.Checkbox[2] := KeyBindingUI._gui.AddCheckbox("xm", "Common functions")
+            this.Checkbox[1] := this._gui.AddCheckbox("xm", "Utilities")
+            this.Checkbox[1].Value := 1
+            this.Checkbox[2] := this._gui.AddCheckbox("xm", "Disable PgUp && PgDown")
             this.Checkbox[2].Value := 1
-            this.Checkbox[3] := KeyBindingUI._gui.AddCheckbox("", "VSCode debug tasks")
-            this.Checkbox[3].Value := 1
-            this.Checkbox[4] := KeyBindingUI._gui.AddCheckbox("", "Device configurations && MouseClick")
-            this.Checkbox[4].Value := 1
-            KeyBindingUI._gui.AddEdit("xm w75 +Right").ToolTip := "Adjust " this.name "'s transparency (" this.transparencyMin "–" this
+            this.Checkbox[3] := this._gui.AddCheckbox("", "VSCode debug tasks")
+            this.Checkbox[3].Value := 0
+            this.Checkbox[4] := this._gui.AddCheckbox("", "Device configurations && MouseClick")
+            this.Checkbox[4].Value := 0
+            this._gui.AddEdit("xm w75 +Right").ToolTip := "Adjust " this.name "'s transparency (" this.transparencyMin "–" this
             .transparencyMax ")."
-            this.transparencyUpDown := KeyBindingUI._gui.AddUpDown("Range" this.transparencyMin "-" this.transparencyMax,
+            this.transparencyUpDown := this._gui.AddUpDown("Range" this.transparencyMin "-" this.transparencyMax,
                 this.transparency)
-            this.ApplyBtn := KeyBindingUI._gui.AddButton("xp+160 yp-2", "Apply && Exit")
+            this.ApplyBtn := this._gui.AddButton("xp+160 yp-2", "Apply && Exit")
+
         }
 
         SetupEvents() {
             ; Event handling for checkboxes selection
-            this.ApplyBtn.OnEvent("Click", (*) => KeyBindingUI._gui.Hide())
+            this.ApplyBtn.OnEvent("Click", (*) => this._gui.Hide())
             ; this.Checkbox[1].OnEvent("Click", (*) => this.OnSelectAll)
             ; this.Checkbox[2].OnEvent("Click", (*) => this.OnSelectCommonFunction)
             ; this.Checkbox[3].OnEvent("Click") (*) => this.OnSelectDeviceConfig)
@@ -93,8 +102,9 @@ class KeyBindingUI {
         }
 
         SetupToolTips() {
-            KeyBindingUI._gui.ToolTip := "Select checkboxes and press Apply."
-            this.Checkbox[2].ToolTip := "Hotkeys for common functions"
+            this._gui.ToolTip := "Select checkboxes and press Apply."
+            this.Checkbox[1].ToolTip := "Hotkeys for Utilities (Timer, ChangeProjectMode)"
+            this.Checkbox[2].ToolTip := "Diasble/Enable PageUp && PageDown"
             this.Checkbox[3].ToolTip := "Hotkeys for VSCode debugging tasks"
             this.Checkbox[4].ToolTip := "Hotkeys for device configurations && Mouse Manipulation"
         }
@@ -110,18 +120,23 @@ class KeyBindingUI {
         ;     _UI.gui.Show("x" xpos " y" ypos " w" guiWidth " h" guiHeight " Restore" option*)
         ; }
         ShowOtp := ""
-        if(this.xpos != 0)
+        if (this.xpos != 0)
             ShowOtp .= Format("x{} ", this.xpos)
-        if(this.ypos != 0)
+        if (this.ypos != 0)
             ShowOtp .= Format("y{} ", this.ypos)
-        KeyBindingUI._gui.Show(ShowOtp)
+        this._gui.Show(ShowOtp)
+        this.Checkbox[3].Focus()
     }
-
+    Hide() {
+        this._gui.Hide()
+    }
     Toggle(*) {
-        if WinExist('ahk_id ' KeyBindingUI._gui.hwnd)
-            KeyBindingUI._gui.Hide()
-        else
-            KeyBindingUI._gui.Show()
+        if WinExist('ahk_id ' this._gui.hwnd)
+            this._gui.Hide()
+        else {
+            this._gui.Show()
+            this.Checkbox[3].Focus()
+        }
         return
     }
 
@@ -166,7 +181,16 @@ class KeyBindingUI {
             return true
         }
     }
+    On_WM_KEYDOWN(wParam, lParam, msg, Hwnd) {
+        if (wParam >= 0x31 && wParam <= 0x34) {
+            idx := wParam - 0x31 + 1
+            this.Checkbox[idx].value := !this.Checkbox[idx].value
+            return true
+        }
+        return false
+    }
 }
+
 
 FormatSendKeys(keySpec) {
     mods := ""
@@ -296,4 +320,19 @@ InputBoxForAutoSendToggle() {
         SetTimer(Send(currentKey), 0)
     }
     SetTimer(ToolTip, -1500)
+}
+
+ToggleProjectMode() {
+    displaySwitchPath := A_WinDir . "\System32\DisplaySwitch.exe"
+    global currentProjectMode := !currentProjectMode
+
+    if (currentProjectMode = 0) {
+        Run displaySwitchPath " /extend"
+        TrayTip "Project Mode", "Switched to: Extend (Desktop duplicated and extended to second screen)"
+        OutputDebug "Switched to: Extend Mode"
+    } else {
+        Run displaySwitchPath " /external"
+        TrayTip "Project Mode", "Switched to: Second screen only (Only the external display is active)"
+        OutputDebug "Switched to: Second Screen Only Mode"
+    }
 }

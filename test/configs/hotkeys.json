@@ -1,0 +1,218 @@
+﻿{
+    "#ClickTracker": {
+        "ClickTracker.ToggleTracking": {
+            "description": "Initializes tracking by clearing previous data, setting tracking flags, and minimizing the GUI window.",
+            "hotkeys": [
+                {"key": "!s", "condition": "ClickTrackerActive"}
+            ],
+            "section": "⚙️ TRACKING SETTINGS"
+        },
+        "ClickTracker.Track": {
+            "description": "Captures and stores mouse click coordinates, along with window information on the first click during tracking.",
+            "hotkeys": [
+                {"key": "MButton", "condition": "StartTracking"}
+            ],
+            "section": "🖱️ ClickTracking"
+        },
+        "ClickTracker.Toggle": {
+            "description": "Toggle the visibility of Mouse Click Tracker GUI.",
+            "hotkeys": [
+                {"key": "!s", "condition": "ClickTrackerInActive"}
+            ],
+            "section": "⚙️ TRACKING SETTINGS"
+        }
+    },
+    "#KeyModifier": {
+        "ChangeLangLayout": {
+            "description": "Switch between Language Layout: Vietnamese/English.",
+            "hotkeys": [
+                {"key": "^+", "condition": "GetOption1"}
+            ],
+            "section": "🛠️ SYSTEM CONFIGURATIONS"
+        },
+        "ConfigureDrawboardPDF": {
+            "args": [1, 2],
+            "description": "Configure settings for Drawboard PDF with two modes.",
+            "hotkeys": [
+                {"key": "^!c", "condition": "DrawboardPDFRunning"},
+                {"key": "^!+c", "condition": "DrawboardPDFRunning"}
+            ],
+            "section": "🖥️ MONITOR & PEN SETTINGS"
+        },
+        "ConfigureMonitorSettings": {
+            "args": [2, 3, 1],
+            "description": "Configure monitor settings based on the argument value.",
+            "hotkeys": [
+                {"key": "+!1", "condition": "VSCodeNotRunning"},
+                {"key": "+!2", "condition": "VSCodeNotRunning"},
+                {"key": "+!3", "condition": "VSCodeNotRunning"}
+            ],
+            "section": "🖥️ MONITOR & PEN SETTINGS"
+        },
+        "ConfigureOneNote": {
+            "args": [1, 2, 3, 4],
+            "description": "Configure OneNote with different arguments (1 to 4). The Space and Ctrl+Space also work as toggles.",
+            "hotkeys": [
+                {"key": "1", "condition": "GetScriptStatus"},
+                {"key": "2", "condition": "GetScriptStatus"},
+                {"key": "3", "condition": "GetScriptStatus"},
+                {"key": "4", "condition": "GetScriptStatus"}
+            ],
+            "hasSimilar": true,
+            "section": "🖥️ MONITOR & PEN SETTINGS"
+        },
+        "ConfigurePenSettings": {
+            "args": [1, 2],
+            "description": "Configure pen settings for two different modes.",
+            "hotkeys": [
+                {"key": "+!q"},
+                {"key": "+!e"}
+            ],
+            "section": "🖥️ MONITOR & PEN SETTINGS"
+        },
+        "CopyProcessDirectory": {
+            "description": "Copy the directory of the active process and display the path in the tooltip.",
+            "hotkeys": [
+                {"key": "#^c"}
+            ],
+            "section": "⚡ UTILITIES"
+        },
+        "InputBoxForAutoSendToggle": {
+            "description": "Toggle auto-send feature for continuous key input based on user input in a dialog box.",
+            "hotkeys": [
+                {"key": "!+s", "condition": "GetScriptStatus"}
+            ],
+            "section": "⚡ UTILITIES"
+        },
+        "Send": {
+            "description": "Send specific key combinations based on the hotkey pressed.",
+            "hotkeys": {
+                "!a": {"key": "{WheelLeft}", "condition": "GetScriptStatus"},
+                "!d": {"key": "{WheelRight}", "condition": "GetScriptStatus"},
+                "!e": {"key": "!{=}", "condition": "GetScriptStatus"},
+                "!q": {"key": "!{-}", "condition": "GetScriptStatus"},
+                "!s": {"key": "{WheelDown}", "condition": "GetScriptStatus"},
+                "!w": {"key": "{WheelUp}", "condition": "GetScriptStatus"},
+                "^!e": {"key": "^{WheelUp}", "condition": "GetScriptStatus"},
+                "^!q": {"key": "^{WheelDown}", "condition": "GetScriptStatus"},
+                "^!s": {"key": "{PgDn}", "condition": "GetScriptStatus"},
+                "^!w": {"key": "{PgUp}", "condition": "GetScriptStatus"},
+                "^e": {"key": "^{=}", "condition": "GetScriptStatus"},
+                "^q": {"key": "^{-}", "condition": "GetScriptStatus"},
+                "a": {"key": "{Left}", "condition": "GetScriptStatus"},
+                "d": {"key": "{Right}", "condition": "GetScriptStatus"},
+                "s": {"key": "{Down}", "condition": "GetScriptStatus"},
+                "w": {"key": "{Up}", "condition": "GetScriptStatus"}
+            },
+            "section": "🎛 TOGGLE KEYS"
+        },
+        "ShowHotkeys": {
+            "description": "Show/Hide Hotkeys Menu.",
+            "hotkeys": [
+                {"key": "F1"}
+            ],
+            "section": "💡 ADDITIONAL FEATURES"
+        },
+        "TimerUI": {
+            "description": "Quick Set Coundown via FlowLauncher.",
+            "hotkeys": [
+                {"key": "!t", "condition": "GetOption1"}
+            ],
+            "section": "⚡ UTILITIES"
+        },
+        "ToggleAndExecute": {
+            "args": [
+                [21, "ConfigureOneNote", "ConfigureOneNote", [2], [3]],
+                [15, "ConfigureOneNote", "ConfigureOneNote", [1], [2]],
+                [16, "ConfigureOneNote", "ConfigureOneNote", [1], [5]]
+            ],
+            "description": "Toggle and execute the corresponding ConfigureOneNote function with different arguments.",
+            "hotkeys": [
+                {"key": "F21"},
+                {"key": "Space", "condition": "GetScriptStatus"},
+                {"key": "^Space", "condition": "GetScriptStatus"}
+            ],
+            "section": "🎛 TOGGLE KEYS"
+        },
+        "ToggleAndSend": {
+            "args": [[20, "1", "2"], [22, "^+2", "^+3"], [23, "{Space}", "{1}"], [24, "v", "h"]],
+            "description": "Toggle between sending different key combinations based on the assigned arguments.",
+            "hotkeys": [
+                {"key": "F20"},
+                {"key": "F22"},
+                {"key": "F23"},
+                {"key": "F24"}
+            ],
+            "section": "🎛 TOGGLE KEYS"
+        },
+        "ToggleProjectMode": {
+            "description": "Switch between Project Mode: Extend/Second Screen Only.",
+            "hotkeys": [
+                {"key": "F3", "condition": "GetOption1"}
+            ],
+            "section": "🛠️ SYSTEM CONFIGURATIONS"
+        },
+        "options.Toggle": {
+            "description": "Show/Hide the Options menu to Enable/Disable Hotkeys.",
+            "hotkeys": [
+                {"key": "!F1"}
+            ],
+            "section": "💡 ADDITIONAL FEATURES"
+        },
+        "overlay.ToggleScript": {
+            "description": "Toggle the activation and deactivation of the script, enabling or disabling hotkeys.",
+            "hotkeys": [
+                {"key": "^!x"}
+            ],
+            "section": "💡 ADDITIONAL FEATURES"
+        },
+        "overlay.ToggleVisibility": {
+            "description": "Toggle the visibility of the status overlay for the script.",
+            "hotkeys": [
+                {"key": "^!z"}
+            ],
+            "section": "💡 ADDITIONAL FEATURES"
+        }
+    },
+    "FavoriteMenu": {
+        "DisplayMenu": {
+            "description": "Displays the favorite menu, allowing users to access their favorite folders and files quickly.",
+            "hotkeys": [
+                {"key": "!MButton"}
+            ],
+            "section": "🌟 Favorite"
+        }
+    },
+    "LookUp": {
+        "LookUp.SearchFromClipBoard": {
+            "description": "Searches for the content of the clipboard in the configured search engine.",
+            "hotkeys": [
+                {"key": "!f"}
+            ],
+            "section": "Other"
+        },
+        "LookUp.Toggle": {
+            "description": "Toggles the visibility of the LookUp search interface.",
+            "hotkeys": [
+                {"key": "!^f"}
+            ],
+            "section": "Other"
+        }
+    },
+    "ShortcutGenerator": {
+        "ShortcutGenerator.AddShortcut": {
+            "description": "Creates a shortcut to the currently active Chrome tab's URL in the selected folder, formatting the title and launching File Explorer as needed.",
+            "hotkeys": [
+                {"key": "+!s"}
+            ],
+            "section": "Other"
+        },
+        "ShortcutGenerator.ChangePath": {
+            "description": "Opens a folder picker dialog to select a new default path and updates the GUI and internal state accordingly.",
+            "hotkeys": [
+                {"key": "+!x"}
+            ],
+            "section": "Other"
+        }
+    }
+}

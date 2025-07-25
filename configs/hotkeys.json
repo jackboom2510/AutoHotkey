@@ -5,16 +5,14 @@
             "hotkeys": [
                 {"key": "!t"}
             ],
-            "isMethod": 1,
-            "section": "Other"
+            "section": "⚙️ TRACKING SETTINGS"
         },
         "ClickTracker.Track": {
             "description": "Captures and stores mouse click coordinates, along with window information on the first click during tracking.",
             "hotkeys": [
-                {"key": "MButton"}
+                {"key": "MButton", "condition": "StartTracking"}
             ],
-            "isMethod": 1,
-            "section": "Other"
+            "section": "🖱️ ClickTracking"
         }
     },
     "#KeyModifier": {
@@ -22,8 +20,8 @@
             "args": [1, 2],
             "description": "Configure settings for Drawboard PDF with two modes.",
             "hotkeys": [
-                {"key": "^!c"},
-                {"key": "^!+c"}
+                {"key": "^!c", "condition": "DrawboardPDFRunning"},
+                {"key": "^!+c", "condition": "DrawboardPDFRunning"}
             ],
             "section": "🖥️ MONITOR & PEN SETTINGS"
         },
@@ -31,9 +29,9 @@
             "args": [2, 3, 1],
             "description": "Configure monitor settings based on the argument value.",
             "hotkeys": [
-                {"key": "+!1", "conditon": "VSCodeRunning"},
-                {"key": "+!2", "conditon": "VSCodeRunning"},
-                {"key": "+!3", "conditon": "VSCodeRunning"}
+                {"key": "+!1", "condition": "VSCodeNotRunning"},
+                {"key": "+!2", "condition": "VSCodeNotRunning"},
+                {"key": "+!3", "condition": "VSCodeNotRunning"}
             ],
             "section": "🖥️ MONITOR & PEN SETTINGS"
         },
@@ -46,6 +44,7 @@
                 {"key": "3", "condition": "GetScriptStatus"},
                 {"key": "4", "condition": "GetScriptStatus"}
             ],
+            "hasSimilar": true,
             "section": "🖥️ MONITOR & PEN SETTINGS"
         },
         "ConfigurePenSettings": {
@@ -62,36 +61,50 @@
             "hotkeys": [
                 {"key": "#^c"}
             ],
-            "section": "📋 UTILITIES"
+            "section": "⚡ UTILITIES"
         },
         "InputBoxForAutoSendToggle": {
             "description": "Toggle auto-send feature for continuous key input based on user input in a dialog box.",
             "hotkeys": [
-                {"key": "!F1"}
+                {"key": "!+s", "condition": "GetScriptStatus"}
             ],
-            "section": "📋 UTILITIES"
+            "section": "⚡ UTILITIES"
         },
         "Send": {
             "description": "Send specific key combinations based on the hotkey pressed.",
             "hotkeys": {
-                "!a": {"key": "{WheelLeft}", "condition": "GetScriptStatus"},
-                "!d": {"key": "{WheelRight}", "condition": "GetScriptStatus"},
+                "a": {"key": "{WheelLeft}", "condition": "GetScriptStatus"},
+                "d": {"key": "{WheelRight}", "condition": "GetScriptStatus"},
+                "s": {"key": "{WheelDown}", "condition": "GetScriptStatus"},
+                "w": {"key": "{WheelUp}", "condition": "GetScriptStatus"},
                 "!e": {"key": "!{=}", "condition": "GetScriptStatus"},
                 "!q": {"key": "!{-}", "condition": "GetScriptStatus"},
-                "!s": {"key": "{WheelDown}", "condition": "GetScriptStatus"},
-                "!w": {"key": "{WheelUp}", "condition": "GetScriptStatus"},
                 "^!e": {"key": "^{WheelUp}", "condition": "GetScriptStatus"},
                 "^!q": {"key": "^{WheelDown}", "condition": "GetScriptStatus"},
                 "^!s": {"key": "{PgDn}", "condition": "GetScriptStatus"},
                 "^!w": {"key": "{PgUp}", "condition": "GetScriptStatus"},
                 "^e": {"key": "^{=}", "condition": "GetScriptStatus"},
                 "^q": {"key": "^{-}", "condition": "GetScriptStatus"},
-                "a": {"key": "{Left}", "condition": "GetScriptStatus"},
-                "d": {"key": "{Right}", "condition": "GetScriptStatus"},
-                "s": {"key": "{Down}", "condition": "GetScriptStatus"},
-                "w": {"key": "{Up}", "condition": "GetScriptStatus"}
+                "!a": {"key": "{Left}", "condition": "VSCodeRunning"},
+                "!d": {"key": "{Right}", "condition": "VSCodeRunning"},
+                "!s": {"key": "{Down}", "condition": "VSCodeRunning"},
+                "!w": {"key": "{Up}", "condition": "VSCodeRunning"}
             },
-            "section": "Other"
+            "section": "🎛 TOGGLE KEYS"
+        },
+        "ShowHotkeys": {
+            "description": "Show/Hide Hotkeys Menu.",
+            "hotkeys": [
+                {"key": "!F1"}
+            ],
+            "section": "💡 ADDITIONAL FEATURES"
+        },
+        "TimerUI": {
+            "description": "Quick Set Coundown via FlowLauncher.",
+            "hotkeys": [
+                {"key": "!t", "condition": "GetOption1"}
+            ],
+            "section": "⚡ UTILITIES"
         },
         "ToggleAndExecute": {
             "args": [
@@ -118,19 +131,33 @@
             ],
             "section": "🎛 TOGGLE KEYS"
         },
-        "overlay.ToggleVisibility": {
-            "description": "Toggle the visibility of the status overlay for the script.",
+        "ToggleProjectMode": {
+            "description": "Switch between Project Mode: Extend/Second Screen Only.",
             "hotkeys": [
-                {"key": "^!z"}
+                {"key": "F3", "condition": "GetOption1"}
             ],
-            "section": "🔧 ADDITIONAL FEATURES"
+            "section": "🛠️ SYSTEM CONFIGURATIONS"
+        },
+        "options.Toggle": {
+            "description": "Show/Hide the Options menu to Enable/Disable Hotkeys.",
+            "hotkeys": [
+                {"key": "F1"}
+            ],
+            "section": "💡 ADDITIONAL FEATURES"
         },
         "overlay.ToggleScript": {
             "description": "Toggle the activation and deactivation of the script, enabling or disabling hotkeys.",
             "hotkeys": [
                 {"key": "^!x"}
             ],
-            "section": "🔧 ADDITIONAL FEATURES"
+            "section": "💡 ADDITIONAL FEATURES"
+        },
+        "overlay.ToggleVisibility": {
+            "description": "Toggle the visibility of the status overlay for the script.",
+            "hotkeys": [
+                {"key": "^!z"}
+            ],
+            "section": "💡 ADDITIONAL FEATURES"
         }
     },
     "FavoriteMenu": {
@@ -148,7 +175,6 @@
             "hotkeys": [
                 {"key": "!f"}
             ],
-            "isMethod": 1,
             "section": "Other"
         },
         "LookUp.Toggle": {
@@ -156,25 +182,22 @@
             "hotkeys": [
                 {"key": "!^f"}
             ],
-            "isMethod": 1,
             "section": "Other"
         }
     },
     "ShortcutGenerator": {
-        "ShortcutTool.AddShortcut": {
+        "ShortcutGenerator.AddShortcut": {
             "description": "Creates a shortcut to the currently active Chrome tab's URL in the selected folder, formatting the title and launching File Explorer as needed.",
             "hotkeys": [
-                {"key": "+!s"}
+                {"key": "+!g"}
             ],
-            "isMethod": 1,
             "section": "Other"
         },
-        "ShortcutTool.ChangePath": {
+        "ShortcutGenerator.ChangePath": {
             "description": "Opens a folder picker dialog to select a new default path and updates the GUI and internal state accordingly.",
             "hotkeys": [
                 {"key": "+!x"}
             ],
-            "isMethod": 1,
             "section": "Other"
         }
     }

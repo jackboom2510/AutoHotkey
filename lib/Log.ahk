@@ -11,6 +11,7 @@ _pl := _Format.Bind(',`n', 0, 'plain')
 _t := _Format.Bind(, 0, 't')
 _pr := _Format.Bind(, 0, 'pr')
 
+_wjs := WriteFile.Bind(globalLogJson, ',`n', 0, 'json')
 _w := WriteFile.Bind(globalLogFile, ',`n', 0, 'args')
 _wl := WriteFile.Bind(globalLogFile, , , 'l')
 _wt := WriteFile.Bind(globalLogFile, , 0, 't')
@@ -65,7 +66,7 @@ OpenFile(file := globalLogFile, mode := "a", encoding := "UTF-8") {
  * - Danh sách các đối tượng dùng cho chế độ định dạng `"args"`, `"cp_args"` và `"pl_args"`
  * - Tên File / Tên Obj cho chế độ định dạng `"type"`
  */
-WriteFile(file := globalLogFile, input := ';`n', indent := 0, Flags := 'args', args*) {
+WriteFile(file := globalLogFile, input := '', indent := 0, Flags := 'args', args*) {
     FileObj := OpenFile(file)
     str := _Format(input, indent, Flags, args*)
     FileObj.Write(str)
@@ -114,17 +115,18 @@ _Format(input := ',`n', indent := 0, Flags := 'args', args*) {
         case 4, 't', 'ty', 'type':
             typo := "`"" Type(input) "`""
             ; output := ""
-            if(Type(input = "Func")) {
+            if (Type(input) = "Func") {
                 output := "`"" input.name "`""
                 return Repeat(indent) "{" typo ": " output "}" '`n'
             }
-            ; else if (!IsObject(input)) {
-            ;     output := input
-            ;     return Repeat(indent) "{" typo ": " output "}"
-            ; }
-            ; output := SingleFormat(input, indent+1)
-            ; return Repeat(indent) "{" Format("`"{}`":`n{}", Type(input), output) Repeat(indent) "}"
-            return Repeat(indent) '<' typo '>`n'
+            else if (!IsObject(input)) {
+                output := input
+                return Repeat(indent) "{" typo ": " output "}"
+            }
+            else
+                return Repeat(indent) '<' typo '>`n'
+            output := MultipleFormat(, indent, , input)
+            return Repeat(indent) "{" Format("`"{}`":`n{}", typo, output) Repeat(indent) "}"
         case 5, 'obj1', 'o1', 'obj', 'o':
             return SingleFormat(input, indent, "pretty")
         case 6, 'obj2', 'o2', 'cp_obj', 'cpo', :
@@ -145,6 +147,22 @@ _Format(input := ',`n', indent := 0, Flags := 'args', args*) {
 }
 
 SingleFormat(obj, indent := 0, mode := "pretty", sep := ',') {
+    output := Repeat(indent) SingleFormat_Internal(obj, indent, mode, sep)
+    cleaned := []
+    for , line in StrSplit(output, "`n") {
+        if (Trim(line) = "")
+            continue
+        if (mode = "plain" && SubStr(line, 1, 1) = "`t")
+            line := SubStr(line, 2)
+        cleaned.Push(line)
+    }
+    output := ""
+    for line in cleaned {
+        output .= line
+        if (A_index < cleaned.Length)
+            output .= "`n"
+    }
+    return output
     SingleFormat_Internal(obj, indent := 0, mode := "pretty", sep := ",") {
         compact := (mode = "compact")
         plain := (mode = "plain")
@@ -183,22 +201,6 @@ SingleFormat(obj, indent := 0, mode := "pretty", sep := ',') {
         }
         return str
     }
-    output := Repeat(indent) SingleFormat_Internal(obj, indent, mode, sep)
-    cleaned := []
-    for , line in StrSplit(output, "`n") {
-        if (Trim(line) = "")
-            continue
-        if (mode = "plain" && SubStr(line, 1, 1) = "`t")
-            line := SubStr(line, 2)
-        cleaned.Push(line)
-    }
-    output := ""
-    for line in cleaned {
-        output .= line
-        if (A_index < cleaned.Length)
-            output .= "`n"
-    }
-    return output
 }
 
 MultipleFormat(sep := ',`n', indent := 0, mode := "pretty", args*) {
@@ -364,53 +366,14 @@ PrettifyJSON(inputJSON := globalLogFile, outputJSON := globalLogFile, pythonScri
     }
 }
 
-; HotkeyExp(hotkey) {
-;     explanation := ""
-;     if (InStr(hotkey, "+")) {
-;         explanation .= "Shift"
-;         hotkey := StrReplace(hotkey, "+")
-;     }
-;     if (InStr(hotkey, "!")) {
-;         if (explanation) {
-;             explanation .= " + "
-;         }
-;         explanation .= "Alt"
-;         hotkey := StrReplace(hotkey, "!")
-;     }
-;     if (InStr(hotkey, "^")) {
-;         if (explanation) {
-;             explanation .= " + "
-;         }
-;         explanation .= "Ctrl"
-;         hotkey := StrReplace(hotkey, "^")
-;     }
-;     if (InStr(hotkey, "#")) {
-;         if (explanation) {
-;             explanation .= " + "
-;         }
-;         explanation .= "Windows"
-;         hotkey := StrReplace(hotkey, "#")
-;     }
-;     if hotkey {
-;         if explanation
-;             explanation .= " + "
-;         if RegExMatch(hotkey, "\{(.*)\}") {
-;             hotkey := RegExReplace(hotkey, "\{}")
-;         } else {
-;             explanation .= StrUpper(SubStr(hotkey, 1, 1)) . SubStr(hotkey, 2)
-;         }
-;     }
-;     return explanation
-; }
-
 HotkeyExp(hotkey) {
-    explanation := ""
-    hotkey := RegExReplace(hotkey, "(\+)", "Shift + ")
-    hotkey := RegExReplace(hotkey, "(!)", "Alt + ")
-    hotkey := RegExReplace(hotkey, "(\^)", "Ctrl + ")
-    hotkey := RegExReplace(hotkey, "(#)", "Win + ")
-    hotkey := RegExReplace(hotkey, "(Ctrl|Alt|Shift|Win)(?=\s*(Ctrl|Alt|Shift|Win))", "$1 + ")
-    hotkey := RegExReplace(hotkey, "(Ctrl|Alt|Shift|Win)(?=\s*(Ctrl|Alt|Shift|Win))", "$1 + ")
+    hotkey := RegExReplace(hotkey, "(\+)", "Shift ")
+    hotkey := RegExReplace(hotkey, "(!)", "Alt ")
+    hotkey := RegExReplace(hotkey, "(\^)", "Ctrl ")
+    hotkey := RegExReplace(hotkey, "(#)", "Win ")
+    hotkey := RegExReplace(hotkey, "(Ctrl|Alt|Shift|Win)\s+([^+\s!^#].*)", "$1 + $2")
+    hotkey := RegExReplace(hotkey, "(Ctrl|Alt|Shift|Win)\s+([^+\s!^#].*)", "$1 + $2")
+    hotkey := RegExReplace(hotkey, "(Ctrl|Alt|Shift|Win)\s+([^+\s!^#].*)", "$1 + $2")
     hotkey := RegExReplace(hotkey, "\{(.*)\}", "$1")
     hotkey := RegExReplace(hotkey, "\b(.)", "$U{1}")
     return hotkey

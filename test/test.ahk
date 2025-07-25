@@ -1,38 +1,32 @@
-#Requires AutoHotkey v2.0.18+
+#Requires AutoHotkey v2.0+
 #SingleInstance Force
-CoordMode "Mouse", "Screen"
-Persistent
-endl := '`n'
 
-; #Include <Log>
+mygui := Gui("+AlwaysOnTop -DPIScale")
+mygui.SetFont("s15", 'Arial')
+arr := ['', 'T', 'T*', 'ST', 'ST*', '*']
+ddl := mygui.AddDDL('vopts Choose4', arr)
+cb := mygui.AddCheckbox('x150', 'Select')
+cb.SetFont('s14 italic')
 
-_gui := Gui()
-_gui.AddText(, "RandomText")
-AdditionCtr := Array()
-passarg(["Button", "Hotkeys", "", (*) => MsgBox(), "Show Hotkeys"])
-
-passarg(Addition*) {
-    if (Addition.Length != 0) {
-        for idx, ctrl in Addition {
-            if (ctrl.has(1) && ctrl.has(2) && ctrl.has(3)) {
-                AdditionCtr.Push(_gui.Add(ctrl[1], ctrl[3], ctrl[2]))
-            }
-            else {
-                debugStr := "Missing some parameters:`n"
-                if (!ctrl.has(1))
-                    debugStr .= "- ControlType`n"
-                if (!ctrl.has(3))
-                    debugStr .= "- Text`n"
-                if (!ctrl.has(2))
-                    debugStr .= "- Options"
-                TrayTip(debugStr, "Error!", 3)
-                OutputDebug(debugStr)
-            }
-            if (ctrl.has(4))
-                AdditionCtr[idx].OnEvent("Click", ctrl[4])
-            if (ctrl.has(5))
-                AdditionCtr[idx].ToolTip := ctrl[5]
+cb.OnEvent("Click", (*) => On_CBClick(cb.value))
+On_CBClick(Checked) {
+    selectedIdx := ddl.value
+    if (Checked) {
+        for idx, val in arr {
+            arr[idx] := 'C1 ' arr[idx]
         }
+        ddl.Delete()
+        ddl.Add(arr)
+        ddl.Choose(selectedIdx)
+    }
+    else {
+        for idx, val in arr {
+            arr[idx] := RegExReplace(arr[idx], '(.*)\s(.*)', '$2')
+        }
+        ddl.Delete()
+        ddl.Add(arr)
+        ddl.Choose(selectedIdx)
     }
 }
-_gui.Show()
+
+mygui.Show()

@@ -1,16 +1,17 @@
-#Requires AutoHotkey v2.0
+#Requires AutoHotkey v2+
 #SingleInstance Force
-#Include <StatusOverlay>
-#Include <KeyBinding>
+CoordMode "Mouse", "Screen"
+Persistent
+endl := '`n'
+
 #Include <Log>
-; #in
-Persistent()
 
-; fn := "ClickTracker.ClickAndSleep"
-; fullFn := StrSplit(fn, '.')
-
-; typo(ObjBindMethod(%fullFn[1]%, fullFn[2]))
-
-Send("{RButton}")
-
-FileObj.Close()
+PromtToSaveInSort(filePath := globalLogFile) {
+    inp := InputBox(, "Bạn có muốn lưu Macros không?")
+    if (inp.Submit() = "Cancel") {
+        return
+    }
+    else {
+        inp := InputBox("Hãy nhập vào địa chỉ lưa ", ")
+    }
+}

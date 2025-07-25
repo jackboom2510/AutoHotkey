@@ -1,0 +1,134 @@
+﻿{
+	".gpt": [
+		chatgpt.com,
+		1
+	],
+	".tt": [
+		tactics.tools/vie,
+		2
+	],
+	".yt": [
+		youtube.com,
+		3
+	],
+	"/m": [
+		/mute all,
+		4
+	],
+	"/ntfm1": [
+		\large \mathcal { \color{tomato} \fcolorbox{tomato}{white}{~} },
+		5
+	],
+	"/ntfm2": [
+		\large \mathcal { \fbox {~} },
+		6
+	],
+	"@thaind": [
+		ThaiND.B23KH105@stu.ptit.edu.vn,
+		7
+	],
+	"ab": [
+		AddButton("w25 h25", ,
+		8
+	],
+	"abb": [
+		abbreviation of,
+		9
+	],
+	"anto": [
+		antonym of,
+		10
+	],
+	"cshv": [
+		chuyển sang hán-việt là gì,
+		11
+	],
+	"cw": [
+		collocation with,
+		12
+	],
+	"hira": [
+		hiragana calligraphy,
+		13
+	],
+	"jap": [
+		japanese,
+		14
+	],
+	"kata": [
+		katakana calligraphy,
+		15
+	],
+	"kj": [
+		khác gì,
+		16
+	],
+	"lg": [
+		là gì,
+		17
+	],
+	"lttt": [
+		lý thuyết thông tin,
+		18
+	],
+	"nlg": [
+		nghĩa là gì,
+		19
+	],
+	"nls": [
+		nghĩa là sao,
+		20
+	],
+	"ntn": [
+		như thế nào,
+		21
+	],
+	"pts": [
+		photoshop,
+		22
+	],
+	"syno": [
+		synonym of,
+		23
+	],
+	"thaind": [
+		ThaiND.B23KH105,
+		24
+	],
+	"ts": [
+		thì sao,
+		25
+	],
+	"tta": [
+		trong tiếng Anh là gì,
+		26
+	],
+	"tthcm": [
+		Tư tưởng Hồ Chí Minh,
+		27
+	],
+	"ttn": [
+		trong tiếng Nhật,
+		28
+	],
+	"ttv": [
+		trong tiếng Việt,
+		29
+	],
+	"vh": [
+		trong bối cảnh tiểu thuyết giả tưởng phép thuậ, việt hóa,
+		30
+	],
+	"vt": [
+		viết tắt,
+		31
+	],
+	"vtlg": [
+		viết tắt là gì,
+		32
+	],
+	"xstk": [
+		xác suất thống kê,
+		33
+	]
+}

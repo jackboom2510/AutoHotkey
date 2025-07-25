@@ -1,0 +1,9 @@
+﻿<"Map">
+{
+	"conditon": VSCodeNotRunning,
+	"key": +!1
+}
+{
+	"condition": VSCodeNotRunning,
+	"key": !+1
+}

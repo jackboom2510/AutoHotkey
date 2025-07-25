@@ -129,3 +129,15 @@ CopyProcessDirectory() {
 
     SetTimer(() => ToolTip, -1500)
 }
+
+VSCodeNotRunning() {
+    return !WinActive("ahk_exe Code.exe")
+}
+
+VSCodeRunning() {
+    return WinActive("ahk_exe Code.exe")
+}
+
+DrawboardPDFRunning() {
+    return WinActive("Drawboard PDF")
+}
