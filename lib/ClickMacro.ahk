@@ -9,9 +9,45 @@ RunIfNotExist(exePathOrShellCmd, exeName, isUWP := false) {
     return true
 }
 
-ClickAndSleep(x, y, clickDelay := 200) {
+GetWindowStatus(Status := 1, WinTitle := '', WinText := '', NoWinTitle := '', NoWinText := '', *) {
+    if (Status)
+        return WinActive(WinTitle, WinText, NoWinTitle, NoWinText)
+    return !WinActive(WinTitle, WinText, NoWinTitle, NoWinText)
+}
+
+ClickAndSleep(x, y, clickDelay := 200, moveAfterClick := false, clickInit := false) {
+    MouseGetPos(&xp, &yp)
     Click(x, y)
     Sleep(clickDelay)
+    if (moveAfterClick) {
+        if (clickInit)
+            Click(xp, yp)
+        else
+            MouseMove(xp, yp, 0)
+    }
+}
+
+global moveDistance := 5, mouseSpeed := 0, isMovingByKey := false
+MoveMouseByPixels(upKey, downKey, leftKey, rightKey, modifierKey, freq := 25) {
+    global moveDistance, mouseSpeed
+    if !isMovingByKey {
+        SetTimer(MoveMouseByPixels_Internal, freq)
+        MoveMouseByPixels_Internal()
+    }
+    MoveMouseByPixels_Internal() {
+        global isMovingByKey, moveDistance, mouseSpeed
+        if modifierKey = "" || GetKeyState(modifierKey, "P") {
+            if isMovingByKey := (x := moveDistance * (GetKeyState(rightKey, "P") - GetKeyState(leftKey, "P")))
+            | (y := moveDistance * (GetKeyState(downKey, "P") - GetKeyState(upKey, "P"))) {
+                MouseMove x, y, mouseSpeed, "R"
+            } else {
+                try SetTimer , 0
+            }
+        } else {
+            isMovingByKey := false
+            try SetTimer , 0
+        }
+    }
 }
 
 ConfigureMonitorSettings(option) {
@@ -122,22 +158,8 @@ CopyProcessDirectory() {
         exePath := ProcessGetPath(pid)
         SplitPath exePath, , &dir
         A_Clipboard := dir
-        ToolTip("Đã copy: " . dir)
+        TrayTip("Đã copy: " dir " vào clipboard")
     } catch {
         MsgBox("Không thể lấy đường dẫn tiến trình.", "Lỗi", 48)
     }
-
-    SetTimer(() => ToolTip, -1500)
-}
-
-VSCodeNotRunning() {
-    return !WinActive("ahk_exe Code.exe")
-}
-
-VSCodeRunning() {
-    return WinActive("ahk_exe Code.exe")
-}
-
-DrawboardPDFRunning() {
-    return WinActive("Drawboard PDF")
 }

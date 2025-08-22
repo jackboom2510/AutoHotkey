@@ -1,5 +1,5 @@
 class StatusOverlay {
-    _gui := ""
+    gui := ""
     guiTitle := "Status Overlay"
     guiOpts := "+AlwaysOnTop -Caption +ToolWindow"
     guiWidth := 18
@@ -26,15 +26,16 @@ class StatusOverlay {
         OnMessage(0x0214, ObjBindMethod(this, "On_WM_SIZING"))
     }
     Show() {
-        if (this._gui) {
-            this._gui.Destroy()
+        if (this.gui) {
+            this.gui.Destroy()
         }
-        this._gui := Gui(this.guiOpts)
-        this._gui.BackColor := this.isScriptEnabled ? this.bgColor1 : this.bgColor2
-        this.statusTextControl := this._gui.AddText("+Center w" this.guiWidth " h" this.guiHeight " ",
+        this.gui := Gui(this.guiOpts)
+        this.gui.BackColor := this.isScriptEnabled ? this.bgColor1 : this.bgColor2
+        this.statusTextControl := this.gui.AddText("+Center w" this.guiWidth " h" this.guiHeight " ",
             this.isScriptEnabled ? this.OnIcon : this.OffIcon)
-        this.statusTextControl.SetFont("s" Floor(Min(this.guiWidth, this.guiHeight) * this.iconRatio) " Bold c" (this.isScriptEnabled ? this.textColor1 : this.textColor2),"Segoe UI")
-        this._gui.Show("x" this.xPos " y" this.yPos " NoActivate")
+        this.statusTextControl.SetFont("s" Floor(Min(this.guiWidth, this.guiHeight) * this.iconRatio) " Bold c" (this.isScriptEnabled ?
+            this.textColor1 : this.textColor2), "Segoe UI")
+        this.gui.Show("x" this.xPos " y" this.yPos " NoActivate")
     }
     ParseOptions(options) {
         flags := {
@@ -84,25 +85,25 @@ class StatusOverlay {
         }
     }
     ToggleVisibility() {
-        if (WinExist("ahk_id " this._gui.hwnd)) {
-            this._gui.Hide
+        if (WinExist("ahk_id " this.gui.hwnd)) {
+            this.gui.Hide
         } else {
-            this._gui.Show()
+            this.gui.Show()
         }
     }
     ToggleScript(toState := "") {
-        if(toState = "")
+        if (toState = "")
             this.isScriptEnabled := !this.isScriptEnabled
         else
             this.isScriptEnabled := toState
-        if (this._gui) {
-            this._gui.BackColor := this.isScriptEnabled ? this.bgColor1 : this.bgColor2
+        if (this.gui) {
+            this.gui.BackColor := this.isScriptEnabled ? this.bgColor1 : this.bgColor2
             this.statusTextControl.SetFont("c" (this.isScriptEnabled ? this.textColor1 : this.textColor2))
             this.statusTextControl.Value := this.isScriptEnabled ? this.OnIcon : this.OffIcon
         }
     }
     On_WM_SIZE(wPARAM, lPARAM, msg, hwnd) {
-        if (hwnd != this._gui.hwnd)
+        if (hwnd != this.gui.hwnd)
             return
         newWidth := lPARAM & 0xFFFF
         newHeight := lPARAM >> 16
@@ -115,7 +116,7 @@ class StatusOverlay {
         this.statusTextControl.Opt("Center")
     }
     On_WM_SIZING(wPARAM, lPARAM, msg, hwnd) {
-        if (hwnd != this._gui.Hwnd)
+        if (hwnd != this.gui.Hwnd)
             return
 
         rect := {
@@ -127,7 +128,7 @@ class StatusOverlay {
 
         currentWidth := rect.Right - rect.Left
         currentHeight := rect.Bottom - rect.Top
-        this._gui.GetClientPos(, , &currentClientWidth, &currentClientHeight)
+        this.gui.GetClientPos(, , &currentClientWidth, &currentClientHeight)
         aspectRatio := 1.0
         originalLeft := rect.Left
         originalTop := rect.Top

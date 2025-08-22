@@ -10,9 +10,10 @@ class TimerUI {
     defaultVals := ["30m", "45m", " pm", " am", "Pause", "Kill All"]
     currentTabIndex := 1
     transparency := 225
+    firstTrigger := true
 
     okBtn := ""
-    
+
     __New(options := "", args*) {
         if (TimerUI.guiID) {
             if WinExist("ahk_class AutoHotkeyGUI ahk_id " TimerUI.guiID) {
@@ -60,13 +61,24 @@ class TimerUI {
         if (timer = "" || timer = "p" || timer = "pause") {
             Send "!{Space}"
             SendText Format("timer {}", timer)
+            if(this.firstTrigger) {
+                Sleep(2000)
+                this.firstTrigger := false
+            }
+            else 
+                Sleep(500)
             Send("{Enter}")
             return
         }
         Send "!{Space}"
         Sleep(500)
         SendText Format("timer {}", timer)
-        Sleep(1000)
+        if (this.firstTrigger) {
+            Sleep(2000)
+            this.firstTrigger := false
+        }
+        else
+            Sleep(500)
         Send("{Down}")
         Sleep(500)
         Send("{Enter}")

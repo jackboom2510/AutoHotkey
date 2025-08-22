@@ -1,8 +1,8 @@
-#Include <JSON>
+#Include <cJSON>
 #Include <HelpGui>
 #SingleInstance Force
 hotkeysJSON := "C:\Users\jackb\Documents\AutoHotkey\configs\hotkeys.json"
-scripts := JSON.LoadFile(hotkeysJSON, "UTF-8")
+scripts := cJSON.LoadFile(hotkeysJSON, "UTF-8")
 TextAlign_widths := [2. 3, 5, 8, 15, 20]
 
 BindingScript(input := A_ScriptName, hideTimer := 3) {
@@ -26,7 +26,7 @@ BindingScript(input := A_ScriptName, hideTimer := 3) {
         for fn_id, fn in scripts[script] {
             if (fn_id = "Send") {
                 for hk_id, hk in fn["hotkeys"] {
-                    AssignBoundHotkey(hk_id, "Send", hk)
+                    AssignHotkey(hk_id, "Send", hk)
                 }
                 continue
             }
@@ -43,16 +43,16 @@ BindingScript(input := A_ScriptName, hideTimer := 3) {
             }
             if (!fn.has("args")) {
                 if (fn.has("hotkeys"))
-                    AssignBoundHotkey(fn["hotkeys"][1], fn_id)
+                    AssignHotkey(fn["hotkeys"][1], fn_id)
                 continue
             }
             for args_id, args in fn["args"] {
                 if (IsObject(args)) {
                     if (fn.has("hotkeys"))
-                        AssignBoundHotkey(fn["hotkeys"][args_id], fn_id, args*)
+                        AssignHotkey(fn["hotkeys"][args_id], fn_id, args*)
                 } else {
                     if (fn.has("hotkeys"))
-                        AssignBoundHotkey(fn["hotkeys"][args_id], fn_id, args)
+                        AssignHotkey(fn["hotkeys"][args_id], fn_id, args)
                 }
             }
         }
@@ -60,16 +60,16 @@ BindingScript(input := A_ScriptName, hideTimer := 3) {
     }
 }
 
-AssignBoundHotkey(_hotkey, Function, FnArgs*) {
+AssignHotkey(_hotkey, Function, FnArgs*) {
     if ((Function = Send || Function = "Send")) {
         if FnArgs[1].has("key") {
             if FnArgs[1].has("condition") {
                 HotIf (*) => citeria(FnArgs[1]["condition"])
-                AssignHotkey(_hotkey, Function, FnArgs[1]["key"])
+                AssignHotkey_Internal(_hotkey, Function, FnArgs[1]["key"])
                 HotIf
             }
             else {
-                AssignHotkey(_hotkey, Function, FnArgs[1]["key"])
+                AssignHotkey_Internal(_hotkey, Function, FnArgs[1]["key"])
             }
         }
         return
@@ -77,52 +77,67 @@ AssignBoundHotkey(_hotkey, Function, FnArgs*) {
     if (_hotkey.has("key")) {
         if (_hotkey.has("condition")) {
             HotIf (*) => citeria(_hotkey["condition"])
-            AssignHotkey(_hotkey["key"], Function, FnArgs*)
+            AssignHotkey_Internal(_hotkey["key"], Function, FnArgs*)
             HotIf
         }
         else {
-            AssignHotkey(_hotkey["key"], Function, FnArgs*)
+            AssignHotkey_Internal(_hotkey["key"], Function, FnArgs*)
         }
     }
-    return
     citeria(Expression, *) {
-        if (Type(Expression) = "string") {
+        if (Expression is string) {
             Expression := %Expression%()
         }
-        else if (Type(Expression) = "Array") {
+        else if (Expression is Func)
+            Expression := Expression()
+        else if (Expression is Array) {
             exps := Expression.Clone()
             Expression := true
             for idx, exp in exps {
-                if (Type(exp) = "String")
+                if (exp is String) {
                     exp := %exp%
-                Expression := Expression && exp()
+                    Expression := Expression && exp()
+                }
+                else if (exp is Func)
+                    Expression := Expression && exp()
+                else if (exp is Array) {
+                    if (exp[1] is string)
+                        exp[1] := %exp[1]%
+                    if (exp.Length = 1)
+                        Expression := Expression && exp[1]()
+                    else {
+                        if (!IsObject(exp[2]))
+                            Expression := Expression && exp[1](exp[2])
+                        else
+                            Expression := Expression && exp[1](exp[2]*)
+                    }
+                }
             }
         }
         return Expression
     }
-}
+    AssignHotkey_Internal(_Hotkey, Function, FnArgs*) {
+        if (_Hotkey = "" || Trim(_Hotkey) = "") {
+            OutputDebug "⚠️ Không thể gán hotkey vì không có KeyName hợp lệ."
+            return false
+        }
+        if (Type(Function) = "String") {
+            Function := %Function%
+        }
+        if !IsObject(Function) || !Function.HasMethod("Call") {
+            OutputDebug "❌ Callback không hợp lệ."
+            return false
+        }
 
-AssignHotkey(_Hotkey, Function, FnArgs*) {
-    if (_Hotkey = "" || Trim(_Hotkey) = "") {
-        OutputDebug "⚠️ Không thể gán hotkey vì không có KeyName hợp lệ."
-        return false
-    }
-    if (Type(Function) = "String") {
-        Function := %Function%
-    }
-    if !IsObject(Function) || !Function.HasMethod("Call") {
-        OutputDebug "❌ Callback không hợp lệ."
-        return false
-    }
-
-    try Hotkey(_Hotkey, "Off")
-    try {
-        Hotkey(_Hotkey, (*) => Function(FnArgs*))
-        return true
-    } catch as e {
-        OutputDebug("❌ Lỗi khi gán hotkey `"" _Hotkey "`" cho <" Type(Function) ">`"" Function.Name "`":`n - " e.Message
-        )
-        return false
+        try Hotkey(_Hotkey, "Off")
+        try {
+            Hotkey(_Hotkey, (*) => Function(FnArgs*))
+            return true
+        } catch as e {
+            OutputDebug("❌ Lỗi khi gán hotkey `"" _Hotkey "`" cho <" Type(Function) ">`"" Function.Name "`":`n - " e.Message
+            )
+            return false
+        }
     }
 }
 
@@ -140,12 +155,8 @@ ShowHotkeys(input := A_scriptName, hideTimer := 0, lineLimit := 4) {
         return
     }
     ShowHotkeys_Internal(input, hideTimer, lineLimit)
-    return
-
     ShowHotkeys_Internal(scriptName, hideTimer := 0, lineLimit := 4) {
         script := scripts[scriptName]
-
-        ; sectionGroups sẽ là một Map chứa {unconditionalLines: [], conditionalLines: []} cho mỗi section
         sectionGroupsMap := GroupHotkeys(script)
 
         sectionsForGui := []
@@ -162,19 +173,18 @@ ShowHotkeys(input := A_scriptName, hideTimer := 0, lineLimit := 4) {
             ; Việc cập nhật nội dung cho bố cục lưới này sẽ phức tạp hơn.
             ; Hiện tại, chúng ta chỉ toggle nó.
         }
-        g_scriptHotkeysHelpGuiInstance.Toggle() ; Gọi phương thức Toggle, không phải thuộc tính
+        g_scriptHotkeysHelpGuiInstance.Toggle()
     }
 }
 
 GroupHotkeys(script) {
     sectionGroups := Map()
-
     for fn_id, fn in script {
         if (fn_id = "Send") {
             for hk_id, hk in fn["hotkeys"] {
-                hotkeyStr := hkexp(hk_id)
+                hotkeyStr := reghk(hk_id)
                 display := IsObject(hk) ? hk["key"] : hk
-                line := TextAlign(hotkeyStr) " → " hkexp(display)
+                line := TextAlign(hotkeyStr) " → " reghk(display)
                 isConditional := IsObject(hk) && hk.Has("condition")
                 sectionName := fn["section"]
                 if !sectionGroups.Has(sectionName)
@@ -200,7 +210,7 @@ GroupHotkeys(script) {
             entries := []
             for hkEntry in fn["hotkeys"] {
                 key := IsObject(hkEntry) ? hkEntry["key"] : hkEntry
-                entries.Push(hkexp(key))
+                entries.Push(reghk(key))
             }
             argsText := fn.Has("args") ? (JoinArgs(", ", fn["args"]*)) : ""
 
@@ -215,7 +225,7 @@ GroupHotkeys(script) {
                 argText := fn.Has("args") ? (
                     IsObject(fn["args"][i]) ? JoinArgs(", ", fn["args"][i]*) : fn["args"][i]
                 ) : ""
-                line := TextAlign(hkexp(key)) " → " name (argText ? " (" argText ")" : "")
+                line := TextAlign(reghk(key)) " → " name (argText ? " (" argText ")" : "")
                 if (isConditional) {
                     sectionGroups[sectionName].conditionalLines.Push(line)
                 } else {
@@ -228,7 +238,7 @@ GroupHotkeys(script) {
 }
 
 Save(inputJSON := hotkeysJSON, outputJSON := hotkeysJSON, _scripts := scripts) {
-    JSON.DumpFile(_scripts, outputJSON, 1)
+    cJSON.DumpFile(_scripts, outputJSON, 1)
     PrettifyJSON(outputJSON, outputJSON)
 }
 

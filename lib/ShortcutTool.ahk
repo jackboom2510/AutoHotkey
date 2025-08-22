@@ -1,4 +1,5 @@
 #Include <Log>
+#Include <Chrome>
 waitTime := 300
 class ShortcutTool {
     static gui := unset
@@ -25,19 +26,18 @@ class ShortcutTool {
     }
 
     __New() {
-        ShortcutTool.gui := Gui("+AlwaysOnTop -Caption +Resize -DPIScale", "Shortcut Tool")
+        ShortcutTool.gui := Gui("+AlwaysOnTop -Caption +Resize", "Shortcut Tool")
         ShortcutTool.gui.SetFont("s10", "Segoe UI")
         ShortcutTool.gui.BackColor := "eaffff"
 
         this.InitVars()
-
         this.SetUpAll()
 
         this.Show()
         WinSetTransColor ShortcutTool.gui.BackColor, "Shortcut Tool"
         WinSetTransparent this.transparency, "Shortcut Tool"
-        OnMessage(0x0200, ObjBindMethod(this, "On_WM_MOUSEMOVE"))
-        OnMessage(0x4E, ObjBindMethod(this, "On_WM_NOTIFY"))
+        ; OnMessage(0x0200, ObjBindMethod(this, "On_WM_MOUSEMOVE"))
+        ; OnMessage(0x4E, ObjBindMethod(this, "On_WM_NOTIFY"))
     }
 
     Show() {
@@ -50,7 +50,7 @@ class ShortcutTool {
     SetUpAll() {
         SetupControls
         SetupEvents
-        SetupTooltips
+        ; SetupTooltips
 
         SetupControls() {
             this.ddlPath := ShortcutTool.gui.AddDropDownList("xm y+5 w250 Choose" . this.ddlOptions.Length,
@@ -103,7 +103,8 @@ class ShortcutTool {
             this.btnReset.ToolTip := "Reset the path to the default."
             this.btnAdd.ToolTip := "Add a new shortcut."
             this.btnHide.ToolTip := "Hide the Shortcut Tool window."
-            this.transparencyEdit.ToolTip := Format("Adjust transparency value ({}–{}).", this.transparencyMin, this.transparencyMax)
+            this.transparencyEdit.ToolTip := Format("Adjust transparency value ({}–{}).", this.transparencyMin, this.transparencyMax
+            )
         }
     }
 
@@ -112,7 +113,7 @@ class ShortcutTool {
             this.defaultPath := IniRead(this.configFile, "ShortcutTool", "defaultPath", "")
         }
         if this.defaultPath = ""
-            this.defaultPath := "D:\5. Jack\#Learn\Language\Japan"
+            this.defaultPath := "D:\1. Jack"
         paths := ""
         if FileExist(this.configFile) {
             paths := IniRead(this.configFile, "DropdownOptions", "paths", "")
@@ -125,14 +126,61 @@ class ShortcutTool {
             this.ddlOptions.Push(A_LoopField)
         }
     }
-
     AddShortcut() {
-        if !WinExist("ahk_exe chrome.exe") {
-            TrayTip("Không tìm thấy cửa sổ Chrome đang mở!", "Lỗi", 16)
+        info := GetChromeInfo()
+        if (info.url = "")
+            return
+        title := StrReplace(info.title, " - Google ChromeObj")
+        title := Trim(title)
+        if InStr(info.url, "youtube.com") || InStr(info.url, "youtu.be") {
+            title := StrReplace(title, " - YouTube")
+            prefix := "(Y) "
+        } else {
+            prefix := "(L) "
+        }
+
+        title := prefix . RegExReplace(title, "[\\/:*?" "<>|]", "")
+
+        shortcutDir := this.pathLabel.Value
+        DirCreate(shortcutDir)
+
+        CreateShortcutFile(shortcutDir, info.url, title)
+        GetChromeInfo() {
+            try {
+                ChromeObj := Chrome()
+                url := ChromeObj.URL()
+                title := ChromeObj.Title()
+
+                if (url = "" || title = "") {
+                    TrayTip("URL hoặc tiêu đề trống!", "Lỗi", 16)
+                    return { url: "", title: "" }
+                }
+                return { url: url, title: title }
+            } catch as e {
+                TrayTip("Lỗi kết nối với ChromeObj: " . e.Message, "Lỗi", 16)
+                return { url: "", title: "" }
+            }
+        }
+        CreateShortcutFile(shortcutPath, targetUrl, shortcutTitle) {
+            try {
+                shell := ComObject("WScript.Shell")
+                shortcut := shell.CreateShortcut(shortcutPath . "\" . shortcutTitle . ".url")
+                shortcut.TargetPath := targetUrl
+                shortcut.Save()
+                TrayTip("✅ Shortcut đã được tạo thành công.", "Hoàn tất")
+            } catch as ex {
+                TrayTip("❌ Lỗi khi tạo shortcut: " . ex.Message, "Lỗi", 16)
+            }
+        }
+    }
+
+    AddShortcutOriginal() {
+        if !WinExist("ahk_exe ChromeObj.exe") {
+            TrayTip("Không tìm thấy cửa sổ ChromeObj đang mở!", "Lỗi", 16)
             return
         }
 
-        WinActivate("ahk_exe chrome.exe")
+        WinActivate("ahk_exe ChromeObj.exe")
         winTitle := WinGetTitle("A")
 
         Send("^l")
@@ -144,7 +192,7 @@ class ShortcutTool {
         }
         url := A_Clipboard
 
-        title := StrReplace(winTitle, " - Google Chrome")
+        title := StrReplace(winTitle, " - Google ChromeObj")
         title := Trim(title)
 
         if InStr(url, "youtube.com") || InStr(url, "youtu.be") {
@@ -156,16 +204,16 @@ class ShortcutTool {
 
         title := prefix . RegExReplace(title, "[\\/:*?" "<>|]", "")
 
-        DirCreate(this.pathLabel)
+        DirCreate(this.pathLabel.value)
 
         if WinExist("ahk_class CabinetWClass") {
             WinActivate("ahk_class CabinetWClass")
             Send("!d")
             Sleep 200
-            SendText(this.pathLabel)
+            SendText(this.pathLabel.value)
             Send("{Enter}")
         } else {
-            Run("explorer.exe " . this.pathLabel)
+            Run("explorer.exe " . this.pathLabel.value)
             if !WinWaitActive("ahk_class CabinetWClass", , 3) {
                 TrayTip("Không thể mở File Explorer!", "Lỗi", 16)
                 return
@@ -194,7 +242,7 @@ class ShortcutTool {
     }
 
     ChangePath() {
-        newPath := DirSelect(this.pathLabel, 1, "Chọn thư mục lưu shortcut")
+        newPath := DirSelect(this.pathLabel.Value, 1, "Chọn thư mục lưu shortcut")
         if newPath {
             this.pathLabel.Value := newPath
             TrayTip("✅ Đã chọn thư mục:`n" . newPath)

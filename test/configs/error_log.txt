@@ -1,6 +1,0 @@
-Error writing to file: This global variable has not been assigned a value.
-Error writing to file: This global variable has not been assigned a value.
-Error writing to file: This global variable has not been assigned a value.
-Error writing to file: Variable not found.
-Error writing to file: This global variable has not been assigned a value.
-Error writing to file: Variable not found.

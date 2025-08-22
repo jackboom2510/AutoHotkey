@@ -4,7 +4,7 @@ errorLogFile := "C:\Users\jackb\Documents\AutoHotkey\configs\error_log.txt"
 TextAlign_widths := [1, 3, 5, 7, 9, 10, 14, 16, 17, 20, 24]
 
 erf := EraseFile
-hkexp := HotkeyExp
+reghk := RegexHotkey
 fm := _Format
 _fma := _Format.Bind(',`n', 0, 'args')
 _pl := _Format.Bind(',`n', 0, 'plain')
@@ -366,15 +366,57 @@ PrettifyJSON(inputJSON := globalLogFile, outputJSON := globalLogFile, pythonScri
     }
 }
 
-HotkeyExp(hotkey) {
-    hotkey := RegExReplace(hotkey, "(\+)", "Shift ")
-    hotkey := RegExReplace(hotkey, "(!)", "Alt ")
-    hotkey := RegExReplace(hotkey, "(\^)", "Ctrl ")
-    hotkey := RegExReplace(hotkey, "(#)", "Win ")
-    hotkey := RegExReplace(hotkey, "(Ctrl|Alt|Shift|Win)\s+([^+\s!^#].*)", "$1 + $2")
-    hotkey := RegExReplace(hotkey, "(Ctrl|Alt|Shift|Win)\s+([^+\s!^#].*)", "$1 + $2")
-    hotkey := RegExReplace(hotkey, "(Ctrl|Alt|Shift|Win)\s+([^+\s!^#].*)", "$1 + $2")
-    hotkey := RegExReplace(hotkey, "\{(.*)\}", "$1")
+; RegexHotkey(hotkey) {
+;     hotkey := RegExReplace(hotkey, "(\+)", "Shift ")
+;     hotkey := RegExReplace(hotkey, "(!)", "Alt ")
+;     hotkey := RegExReplace(hotkey, "(\^)", "Ctrl ")
+;     hotkey := RegExReplace(hotkey, "(#)", "Win ")
+;     hotkey := RegExReplace(hotkey, "(Ctrl|Alt|Shift|Win)\s+([^+\s!^#].*)", "$1 + $2")
+;     hotkey := RegExReplace(hotkey, "(Ctrl|Alt|Shift|Win)\s+([^+\s!^#].*)", "$1 + $2")
+;     hotkey := RegExReplace(hotkey, "(Ctrl|Alt|Shift|Win)\s+([^+\s!^#].*)", "$1 + $2")
+;     hotkey := RegExReplace(hotkey, "\{(.*)\}([^\s+{].*)", "$1 + $2")
+;     hotkey := RegExReplace(hotkey, "\{(.*)\}([^\s+{].*)", "$1 + $2")
+;     hotkey := RegExReplace(hotkey, "\{(.*)\}", "$1")
+;     hotkey := RegExReplace(hotkey, "\b(.)", "$U{1}")
+;     return hotkey
+; }
+
+; RegexHotkey(hotkey) {
+;     hotkey := RegExReplace(hotkey, "\+", "Shift ")
+;     hotkey := RegExReplace(hotkey, "!", "Alt ")
+;     hotkey := RegExReplace(hotkey, "\^", "Ctrl ")
+;     hotkey := RegExReplace(hotkey, "#", "Win ")
+;     hotkeyComponents := []
+;     pos := 1
+;     while RegExMatch(hotkey, "\G(\b(?:Ctrl|Alt|Shift|Win)\b|\{[^}]+\}|\w+)", &match, pos) {
+;         hotkeyComponents.Push(match[1])
+;         pos := match.Pos + StrLen(match[1])
+;     }
+;     for i, component in hotkeyComponents {
+;         hotkeyComponents[i] := RegExReplace(component, "[{}]", "")
+;     }
+;     hotkey := ""
+;     for idx, value in hotkeyComponents {
+;         hotkey .= value
+;         if(idx < hotkeyComponents.Length)
+;             hotkey .= " + "
+;     }
+;     hotkey := RegExReplace(hotkey, "\b(.)", "$U{1}")
+;     return hotkey
+; }
+
+RegexHotkey(hotkey) {
+    hotkey := RegExReplace(hotkey, "([!+#^])", " $1 ")
+    hotkey := RegExReplace(hotkey, "\+", "Shift")
+    hotkey := RegExReplace(hotkey, "!", "Alt")
+    hotkey := RegExReplace(hotkey, "\^", "Ctrl")
+    hotkey := RegExReplace(hotkey, "#", "Win")
+    hotkey := RegExReplace(hotkey, "\{", " {")
+    hotkey := RegExReplace(hotkey, "\}", "} ")
+    hotkey := RegExReplace(hotkey, "\s+", " ")
+    hotkey := Trim(hotkey)
+    hotkey := RegExReplace(hotkey, "[{}]", "")
+    hotkey := RegExReplace(hotkey, "\s+", " + ")
     hotkey := RegExReplace(hotkey, "\b(.)", "$U{1}")
     return hotkey
 }

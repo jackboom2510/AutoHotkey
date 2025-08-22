@@ -1,8 +1,8 @@
-CoordMode "Mouse"
+CoordMode "Mouse", "Screen"
 class ClickTrackerUI {
     gui := unset
     guiID := ""
-    guiOpts := "+AlwaysOnTop -Resize -DPIScale"
+    guiOpts := "+AlwaysOnTop -Resize"
     ShowOpts := ""
     name := "Mouse Click Tracker"
     clicks := []
@@ -15,8 +15,8 @@ class ClickTrackerUI {
     targetWinPos := { x: 0, y: 0, w: 0, h: 0 }
 
     __New() {
-        if(this.guiID) {
-            if(WinExist(this.name " ahk_id " this.guiID))
+        if (this.guiID) {
+            if (WinExist(this.name " ahk_id " this.guiID))
                 return
         }
         this.gui := Gui(this.guiOpts, this.name)
@@ -45,7 +45,7 @@ class ClickTrackerUI {
         this.Show()
     }
     Toggle() {
-        if !WinActive("ahk_id " this.guiID) 
+        if !WinActive("ahk_id " this.guiID)
             this.Hide()
         else
             this.Show()
@@ -104,7 +104,7 @@ class ClickTrackerUI {
         code .= "ReplayTest1() {" "`n"
         if (this.targetWinTitle != "") {
             code .= Format('    WinActivate("ahk_exe {}")`n    Sleep(500)`n', this.targetWinExe)
-            code .= '    screenW := ' SysGet(78) '`n    screenH := ' SysGet(79) '`n'
+            code .= '    screenW := ' A_ScreenWidth '`n    screenH := ' A_ScreenHeight '`n'
         }
         for pt in this.clicks {
             posX := pt.x + this.targetWinPos.x
@@ -162,16 +162,16 @@ class ClickTrackerUI {
     }
 
     RunTestAbsolute() {
-        screenWidth := SysGet(78)
-        screenHeight := SysGet(79)
-        testGui := Gui("+AlwaysOnTop +ToolWindow +LastFound -DPIScale", "Test Overlay")
+        screenWidth := A_ScreenWidth
+        screenHeight := A_ScreenHeight
+        testGui := Gui("+AlwaysOnTop -Caption +ToolWindow +LastFound", "Test Overlay")
         testGui.BackColor := "White"
         WinSetTransparent(150)
         testGui.Show("x0 y0 w" screenWidth " h" screenHeight)
 
         for click in this.clicks {
-            posX := click.x + this.targetWinPos.x
-            posY := click.y + this.targetWinPos.y
+            posX := click.x
+            posY := click.y
             this.DrawRedX(testGui, posX, posY)
             this.ClickAndSleep(posX, posY, 300)
         }
@@ -181,7 +181,7 @@ class ClickTrackerUI {
     }
 
     RunTestRelative() {
-
+        CoordMode 'Mouse', 'Window'
         win := this.targetWinID
         if !win {
             MsgBox "Chưa có thông tin cửa sổ!"
@@ -191,20 +191,21 @@ class ClickTrackerUI {
         x := this.targetWinPos.x, y := this.targetWinPos.y
         w := this.targetWinPos.w, h := this.targetWinPos.h
 
-        testGui := Gui("+AlwaysOnTop +ToolWindow +LastFound -DPIScale", "Test Overlay (Window Based)")
+        testGui := Gui("+AlwaysOnTop -Caption +ToolWindow +LastFound", "Test Overlay (Window Based)")
         testGui.BackColor := "White"
         WinSetTransparent(150)
         testGui.Show("x" x " y" y " w" w " h" h)
 
         for click in this.clicks {
-            relX := click.x
-            relY := click.y
+            relX := click.x - x
+            relY := click.y - y
             this.DrawRedX(testGui, relX, relY)
-            this.ClickAndSleep(relX, relY, 300)
+            this.ClickAndSleep(relX, relY)
         }
 
         Sleep(1000)
         testGui.Destroy()
+        CoordMode 'Mouse'
     }
 
     DrawRedX(gui, x, y) {
@@ -229,9 +230,9 @@ class ClickTrackerUI {
         }
     }
 
-    Range(from, to) {
+    Range(from, to, step := 1) {
         result := []
-        step := from <= to ? 1 : -1
+        step *= from <= to ? 1 : -1
         loop Abs(to - from) + 1
             result.Push(from + (A_Index - 1) * step)
         return result
@@ -242,4 +243,3 @@ class ClickTrackerUI {
         Sleep(clickDelay)
     }
 }
-

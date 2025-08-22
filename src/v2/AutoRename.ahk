@@ -5,103 +5,127 @@ Persistent()
 ;@Ahk2Exe-SetMainIcon rename.ico
 
 class AutoRenameTool {
-    static configFile := "C:\Users\jackb\Documents\AutoHotkey\configs\config.ini"
-    static name := "AutoRenameTool"
-    static maxRecent := 10
-    static recentArray := []
+    configFile := 'file:///C:\Users\jackb\Documents\AutoHotkey\configs\config.ini'
+    name := 'AutoRenameTool'
+    maxRecent := 10
+    recentArray := []
 
     __New() {
         this.lineSpacing := 10
         this.btnSpacing := 10
 
         ; Load config
-        this.defaultPath := IniRead(AutoRenameTool.configFile, AutoRenameTool.name, "DefaultPath", A_ScriptDir)
-        recentPaths := IniRead(AutoRenameTool.configFile, AutoRenameTool.name, "RecentPaths", this.defaultPath)
-        this.removeKeyword := IniRead(AutoRenameTool.configFile, AutoRenameTool.name, "RemoveKeyword", "")
-        this.extDefault := IniRead(AutoRenameTool.configFile, AutoRenameTool.name, "Extension", ".cpp")
+        this.defaultPath := IniRead(this.configFile, this.name, 'DefaultPath', A_ScriptDir)
+        this.recentPaths := IniRead(this.configFile, this.name, 'RecentPaths', this.defaultPath)
+        this.removeKeyword := IniRead(this.configFile, this.name, 'RemoveKeyword', '')
+        this.extDefault := IniRead(this.configFile, this.name, 'Extension', '.cpp')
 
-        AutoRenameTool.recentArray := (recentPaths != "") ? StrSplit(recentPaths, "|") : []
-        if !AutoRenameTool.recentArray.Has(this.defaultPath)
-            AutoRenameTool.recentArray.InsertAt(1, this.defaultPath)
+        this.recentArray := (this.recentPaths != '') ? StrSplit(this.recentPaths, '|') : []
+        if !this.recentArray.Has(this.defaultPath)
+            this.recentArray.InsertAt(1, this.defaultPath)
 
         this.BuildGUI()
     }
 
     BuildGUI() {
-        this.myGui := Gui("+AlwaysOnTop +Resize", "AutoRename Tool")
-        this.myGui.SetFont("s10", "Segoe UI")
+        this.gui := Gui('+AlwaysOnTop +Resize', 'AutoRename Tool')
+        this.gui.SetFont('s10', 'Segoe UI')
 
-        this.folderEdit := this.myGui.AddEdit("x10 w450 vFolderPath", this.defaultPath)
-        btnBrowse := this.myGui.AddButton("x+" this.btnSpacing " yp w40", "📂")
-        btnSave := this.myGui.AddButton("x+" this.btnSpacing " yp w40", "💾")
-        btnBrowse.ToolTip := "Browse Folder"
-        btnSave.ToolTip := "Save to Recent"
+        this.folderEdit := this.gui.AddEdit('x10 w450', this.defaultPath)
+        btnBrowse := this.gui.AddButton('x+' this.btnSpacing ' yp w40', '📂')
+        btnSave := this.gui.AddButton('x+' this.btnSpacing ' yp w40', '💾')
 
-        this.myGui.AddText("xs y+" this.lineSpacing, "Remove Keyword:")
-        this.removeEdit := this.myGui.AddEdit("x+5 yp-3 w250 vRemoveKeyword", this.removeKeyword)
+        this.gui.AddText('xs y+' this.lineSpacing, 'Remove Keyword:')
+        this.removeEdit := this.gui.AddEdit('x+5 yp-3 w250', this.removeKeyword)
 
-        this.myGui.AddText("x+" (this.btnSpacing + 20) " yp+3", "Extension:")
-        this.extEdit := this.myGui.AddEdit("x+5 yp-3 w100 vExtension", this.extDefault)
+        this.gui.AddText('x+' (this.btnSpacing + 20) ' yp+3', 'Extension:')
+        this.extEdit := this.gui.AddEdit('x+5 yp-3 w100', this.extDefault)
 
-        btnRename := this.myGui.AddButton("xs y+" this.lineSpacing " w100", "✂️ Remove")
-        btnAddExt := this.myGui.AddButton("x+" this.btnSpacing " yp w80", "📄 Add")
-        btnDelExt := this.myGui.AddButton("x+" this.btnSpacing " yp w80", "🗑 Delete")
-        btnSaveConfig := this.myGui.AddButton("x+" this.btnSpacing " yp w80", "💾 Save")
-        btnApplyAll := this.myGui.AddButton("x+" this.btnSpacing " yp w80", "✅ Apply")
-        btnExit := this.myGui.AddButton("x+" this.btnSpacing " w80", "❌ Exit")
+        btnRename := this.gui.AddButton('xs y+' this.lineSpacing ' w100', '✂️ Rename')
+        btnAddExt := this.gui.AddButton('x+' this.btnSpacing ' yp w80', '📄 Add')
+        btnDelExt := this.gui.AddButton('x+' this.btnSpacing ' yp w80', '🗑 Delete')
+        btnSaveConfig := this.gui.AddButton('x+' this.btnSpacing ' yp w80', '💾 Save')
+        btnApplyAll := this.gui.AddButton('x+' this.btnSpacing ' yp w80', '📂 Open')
+        btnExit := this.gui.AddButton('x+' this.btnSpacing ' w80', '❌ Exit')
 
-        btnBrowse.OnEvent("Click", (*) => this.ChooseFolder())
-        btnSave.OnEvent("Click", (*) => this.SaveFolder())
-        btnSaveConfig.OnEvent("Click", (*) => this.SaveAsDefault())
-        btnApplyAll.OnEvent("Click", (*) => this.ApplyAll())
-        btnExit.OnEvent("Click", (*) => ExitApp())
-
-        btnDelExt.OnEvent("Click", (*) => this.DeleteFilesByExtension())
-        btnRename.OnEvent("Click", (*) => this.RenameRemoveKeyword())
-        btnAddExt.OnEvent("Click", (*) => this.AddExtensionIfMissing())
-
-        this.myGui.Show()
+        btnRename.OnEvent('Click', (*) => this.RenameRemoveKeyword())
+        btnBrowse.OnEvent('Click', (*) => this.ChooseFolder())
+        btnSave.OnEvent('Click', (*) => this.SaveFolder())
+        btnSaveConfig.OnEvent('Click', (*) => this.SaveAsDefault())
+        btnApplyAll.OnEvent('Click', (*) => this.OpenConfigFile())
+        btnExit.OnEvent('Click', (*) => ExitApp())
+        btnDelExt.OnEvent('Click', (*) => this.DeleteFilesByExtension())
+        btnAddExt.OnEvent('Click', (*) => this.AddExtensionIfMissing())
+        SetupToolTip
+        SetupToolTip() {
+            btnBrowse.ToolTip := 'Browse Folder'
+            btnSave.ToolTip := 'Save to Recent'
+            btnExit.ToolTip := 'Exit App'
+            btnRename.ToolTip := ''
+            btnAddExt.ToolTip := 'Add Extension If Missing'
+            btnApplyAll.ToolTip := ''
+            btnSaveConfig.ToolTip := ''
+            btnExit.ToolTip := ''
+            btnDelExt.ToolTip := ''
+        }
+        this.gui.Show()
+        OnMessage(0x0200, On_WM_MOUSEMOVE)
+        On_WM_MOUSEMOVE(wParam, lParam, msg, Hwnd) {
+            PrevHwnd := 0
+            if (Hwnd != PrevHwnd) {
+                Text := ''
+                SetTimer(ToolTip)
+                CurrControl := GuiCtrlFromHwnd(Hwnd)
+                if CurrControl {
+                    if !CurrControl.HasProp('ToolTip')
+                        return
+                    Text := CurrControl.ToolTip
+                    ToolTip(Text)
+                }
+                PrevHwnd := Hwnd
+            }
+        }
     }
 
     ChooseFolder() {
-        picked := DirSelect("Select Folder")
+        picked := DirSelect('Select Folder')
         if picked
             this.folderEdit.Value := picked
     }
 
     SaveFolder() {
         newPath := Trim(this.folderEdit.Value)
-        if (newPath = "") || !DirExist(newPath) {
-            TrayTip("Error", "Invalid folder path.", 1)
+        if (newPath = '') || !DirExist(newPath) {
+            TrayTip('Error', 'Invalid folder path.', 1)
             return
         }
 
-        if !AutoRenameTool.recentArray.Has(newPath) {
-            AutoRenameTool.recentArray.InsertAt(1, newPath)
-            if AutoRenameTool.recentArray.Length > AutoRenameTool.maxRecent
-                AutoRenameTool.recentArray.RemoveAt(AutoRenameTool.recentArray.Length)
+        if !this.recentArray.Has(newPath) {
+            this.recentArray.InsertAt(1, newPath)
+            if this.recentArray.Length > this.maxRecent
+                this.recentArray.RemoveAt(this.recentArray.Length)
         } else {
-            idx := AutoRenameTool.recentArray.IndexOf(newPath)
+            idx := this.recentArray.IndexOf(newPath)
             if idx {
-                AutoRenameTool.recentArray.RemoveAt(idx)
-                AutoRenameTool.recentArray.InsertAt(1, newPath)
+                this.recentArray.RemoveAt(idx)
+                this.recentArray.InsertAt(1, newPath)
             }
         }
 
-        IniWrite(newPath, AutoRenameTool.configFile, AutoRenameTool.name, "DefaultPath")
-        IniWrite(AutoRenameTool.recentArray.Join("|"), AutoRenameTool.configFile, AutoRenameTool.name, "RecentPaths")
-        TrayTip("Success", "Saved folder path.", 1)
+        IniWrite(newPath, this.configFile, this.name, 'DefaultPath')
+        IniWrite(this.recentArray.Join('|'), this.configFile, this.name, 'RecentPaths')
+        TrayTip('Success', 'Saved folder path.', 1)
     }
 
     SaveAsDefault() {
-        IniWrite(Trim(this.folderEdit.Value), AutoRenameTool.configFile, AutoRenameTool.name, "DefaultPath")
-        IniWrite(Trim(this.removeEdit.Value), AutoRenameTool.configFile, AutoRenameTool.name, "RemoveKeyword")
-        IniWrite(Trim(this.extEdit.Value), AutoRenameTool.configFile, AutoRenameTool.name, "Extension")
-        TrayTip("Settings Saved", "Default values stored.", 1)
+        IniWrite(Trim(this.folderEdit.Value), this.configFile, this.name, 'DefaultPath')
+        IniWrite(Trim(this.removeEdit.Value), this.configFile, this.name, 'RemoveKeyword')
+        IniWrite(Trim(this.extEdit.Value), this.configFile, this.name, 'Extension')
+        TrayTip('Settings Saved', 'Default values stored.', 1)
     }
 
-    ApplyAll() {
-        TrayTip("Applied", "Values applied temporarily.", 1)
+    OpenConfigFile() {
+        Run(this.configFile)
     }
 
     DeleteFilesByExtension() {
@@ -109,80 +133,79 @@ class AutoRenameTool {
         ext := Trim(this.extEdit.Value)
 
         if !DirExist(folderPath) {
-            TrayTip("Error", "Invalid folder path.", 1)
+            TrayTip('Error', 'Invalid folder path.', 1)
             return
         }
-        if (ext = "") {
-            TrayTip("Error", "No extension provided.", 1)
+        if (ext = '') {
+            TrayTip('Error', 'No extension provided.', 1)
             return
         }
 
-        if SubStr(ext, 1, 1) = "."
+        if SubStr(ext, 1, 1) = '.'
             ext := SubStr(ext, 2)
 
         count := 0
-        Loop Files folderPath "\*." ext, "F" {
+        loop files folderPath '\*.' ext, 'F' {
             try {
                 FileDelete(A_LoopFileFullPath)
                 count++
             }
         }
 
-        TrayTip("Delete Complete", count " file(s) with ." ext " deleted.", 1)
+        TrayTip('Delete Complete', count ' file(s) with .' ext ' deleted.', 1)
     }
 
     RenameRemoveKeyword() {
         folderPath := Trim(this.folderEdit.Value)
         key := Trim(this.removeEdit.Value)
         if !DirExist(folderPath) {
-            TrayTip("Error", "Invalid folder path.", 1)
+            TrayTip('Invalid folder path.', 'Error', 1)
             return
         }
-        if (key = "") {
-            TrayTip("Error", "No keyword provided.", 1)
+        if (key = '') {
+            TrayTip('No keyword provided.', 'Error', 1)
             return
         }
 
         count := 0
-        Loop Files folderPath "\*", "F" {
+        loop files folderPath '\*', 'F' {
             old := A_LoopFileName
             if InStr(old, key) {
                 new := StrReplace(old, key)
                 try {
-                    FileMove(folderPath "\" old, folderPath "\" new, true)
+                    FileMove(folderPath '\' old, folderPath '\' new, true)
                     count++
                 }
             }
         }
-        TrayTip("Rename Complete", count " file(s) renamed.", 1)
+        TrayTip(count ' file(s) renamed.', 'Rename Complete', 1)
     }
 
     AddExtensionIfMissing() {
         folderPath := Trim(this.folderEdit.Value)
         ext := Trim(this.extEdit.Value)
         if !DirExist(folderPath) {
-            TrayTip("Error", "Invalid folder path.", 1)
+            TrayTip('Error', 'Invalid folder path.', 1)
             return
         }
-        if (ext = "") {
-            TrayTip("Error", "No extension specified.", 1)
+        if (ext = '') {
+            TrayTip('Error', 'No extension specified.', 1)
             return
         }
 
         count := 0
-        Loop Files folderPath "\*", "F" {
-            SplitPath A_LoopFileFullPath,,,&e,&n
-            if (e = "") {
-                newPath := folderPath "\" n ext
+        loop files folderPath '\*', 'F' {
+            SplitPath A_LoopFileFullPath, , , &e, &n
+            if (e = '') {
+                newPath := folderPath '\' n ext
                 try {
                     FileMove(A_LoopFileFullPath, newPath, true)
                     count++
                 }
             }
         }
-        TrayTip("Extension Added", count " file(s) renamed.", 1)
+        TrayTip('Extension Added', count ' file(s) renamed.', 1)
     }
 }
 
-; === Run the tool ===
 tool := AutoRenameTool()

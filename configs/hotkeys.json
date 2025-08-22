@@ -15,37 +15,162 @@
             "section": "🖱️ ClickTracking"
         }
     },
-    "#KeyModifier": {
+    "#Macros": {
+        "Send": { 
+            "description": "Send specific key combinations based on the hotkey pressed.",
+            "hotkeys": {
+                "a": {"key": "{WheelLeft}", "condition": ["GetScriptStatus"]},
+                "d": {"key": "{WheelRight}", "condition": ["GetScriptStatus"]},
+                "s": {"key": "{WheelDown}", "condition": ["GetScriptStatus"]},
+                "w": {"key": "{WheelUp}", "condition": ["GetScriptStatus"]},
+                "!e": {"key": "!{=}", "condition": ["GetScriptStatus"]},
+                "!q": {"key": "!{-}", "condition": ["GetScriptStatus"]},
+                "^!e": {"key": "^{WheelUp}", "condition": ["GetScriptStatus"]},
+                "^!q": {"key": "^{WheelDown}", "condition": ["GetScriptStatus"]},
+                "^!s": {"key": "{PgDn}", "condition": ["GetScriptStatus"]},
+                "^!w": {"key": "{PgUp}", "condition": ["GetScriptStatus"]},
+                "^e": {"key": "^{=}", "condition": ["GetScriptStatus"]},
+                "^q": {"key": "^{-}", "condition": ["GetScriptStatus"]},
+                "!a": {"key": "{Left}", "condition": [["GetOption", 3]]},
+                "!d": {"key": "{Right}", "condition": [["GetOption", 3]]},
+                "!s": {"key": "{Down}", "condition": [["GetOption", 3]]},
+                "!w": {"key": "{Up}", "condition": [["GetOption", 3]]},
+                "XButton1 & WheelDown": {"key": "{Left}", "condition": [["GetWindowStatus", [1, "YouTube - Google Chrome"]]]},
+                "XButton1 & WheelUp": {"key": "{Right}", "condition": [["GetWindowStatus", [1, "YouTube - Google Chrome"]]]},
+                "!+w": {"key": "+{Home}"},
+                "!+d": {"key": "+{Home}{Del}"},
+                "+Space": {"key": "_", "condition": [["GetOption", 1]]},
+                "+Backspace": {"key": "+^{Right}{Del}", "condition": [["GetOption", 1]]},
+                "!x": {"key": ",", "condition": [["GetWindowStatus", [1, "TechSmith Camtasia 2025"]]]},
+                "!z": {"key": ".", "condition": [["GetWindowStatus", [1, "TechSmith Camtasia 2025"]]]},
+                "!;": {"key": "{Click}", "condition": [["GetOption", 1]]},
+                "!f": {"key": "{Enter}", "condition": [["GetOption", 1]]},
+                "!XButton1": {"key": "{F10}", "condition": [["GetWindowStatus", [1, "ahk_exe Code.exe"]]]},
+                "!XButton2": {"key": "{F11}", "condition": [["GetWindowStatus", [1, "ahk_exe Code.exe"]]]},
+                "!^i": {"key": "{WheelUp}", "condition": [["GetOption", [1]]]},
+                "!^k": {"key": "{WheelDown}", "condition": [["GetOption", [1]]]}
+            },
+            "section": "🤖 SIMULATION"
+        },
+        "CycleAndExecute": {
+            "args": [
+                [1, [["ConfigureOneNote", [2]], ["ConfigureOneNote", [3]]]],
+                [2, [["ConfigureOneNote", [1]], ["ConfigureOneNote", [2]]]],
+                [3, [["ConfigureOneNote", [1]], ["ConfigureOneNote", [5]]]],
+                [4, [["DynamicSet", ["moveDistance", 5]], ["DynamicSet", ["moveDistance", 15]]]]
+            ],
+            "description": "Toggle and execute the corresponding ConfigureOneNote function with different arguments.",
+            "hotkeys": [ 
+                {"key": "F21"},
+                {"key": "Space", "condition": ["GetScriptStatus"]},
+                {"key": "^Space", "condition": ["GetScriptStatus"]},
+                {"key": "!+;", "condition": [["GetOption", 1]]}
+            ],
+            "section": "⏯️ TOGGLE KEYS"
+        },
+        "CycleAndSend": {
+            "args": [
+                [5, ["1", "2"]],
+                [6, ["^+2", "^+3"]],
+                [7, ["{Space}", "{1}"]],
+                [8, ["v", "h"]]
+            ],
+            "description": "Toggle between sending different key combinations based on the assigned arguments.",
+            "hotkeys": [
+                {"key": "F20"},
+                {"key": "F21"},
+                {"key": "F22"},
+                {"key": "F23"}
+            ],
+            "section": "⏯️ TOGGLE KEYS"
+        },
+        "RunFunctions": {
+            "description": "Run Specific Function with arguments",
+            "hotkeys": [
+                {"key": "#p", "condition": [["GetOption", [1]]]},
+                {"key": "#m"},
+                {"key": "1", "condition": [["GetOption", [4]]]},
+                {"key": "2", "condition": [["GetOption", [4]]]},
+                {"key": "3", "condition": [["GetOption", [4]]]},
+                {"key": "z", "condition": [["GetOption", [4]]]},
+                {"key": "x", "condition": [["GetOption", [4]]]},
+                {"key": "c", "condition": [["GetOption", [4]]]},
+                {"key": "4", "condition": [["GetOption", [4]]]},
+                {"key": "!r", "condition": [["GetOption", [4]]]},
+                {"key": "XButton1", "condition": [["GetWindowStatus", [1, "ahk_exe IntoTheDeadOurDarkestDays.exe"]]]},
+                {"key": "XButton2", "condition": [["GetWindowStatus", [1, "ahk_exe IntoTheDeadOurDarkestDays.exe"]]]}
+            ],
+            "args": [
+                [["Run", "*RunAs pwsh"]],
+                [["Run", ["pwsh -NoExit -Command \".\\mysql.exe -ujackb -p;\"", "D:\\2. Program Files\\MySQL\\bin"]]],
+                [["ClickAndSleep", [1336, 624, -1, true, true]]],
+                [["ClickAndSleep", [1438, 564, -1, true, false]]],
+                [["ClickAndSleep", [1537, 617, -1, true, false]]],
+                [["ClickAndSleep", [671, 611, -1, true, true]]],
+                [["ClickAndSleep", [734, 610, -1, true, true]]],
+                [["ClickAndSleep", [1534, 414, -1, true, false]]],
+                [["ClickAndSleep", [1346, 510, -1, true, false]]],
+                [
+                    ["Send", ["{Esc}"]],
+                    ["Sleep", [1000]],
+                    ["ClickAndSleep", [803, 754, 700]],
+                    ["ClickAndSleep", [603, 537, 2000]],
+                    ["ClickAndSleep", [798, 811, 2000]],
+                    ["ClickAndSleep", [990, 425, 2000]],
+                    ["ClickAndSleep", [1146, 609, 4000]],
+                    ["ClickAndSleep", [637, 671, 1000]],
+                    ["ClickAndSleep", [1238, 799]]
+                ],
+                [
+                    ["Send", ["{Tab}"]],
+                    ["Sleep", [100]],
+                    ["Send", ["r"]],
+                    ["Send", ["{Tab}"]]
+                ],
+                [
+                    ["Send", ["{Tab}"]],
+                    ["Sleep", [700]],
+                    ["Send", ["r"]],
+                    ["Send", ["{Tab}"]]
+                ]
+            ],
+            "section": "✨ Run"
+        },
+        "ChangeLang": {
+            "description": "Switch between Language Layout: Vietnamese/English.",
+            "hotkeys": [{ "key": "CapsLock", "condition": [["GetOption", [1]]] }],
+            "section": "🛠️ SYSTEM CONFIGURATIONS"
+        },
         "ConfigureDrawboardPDF": {
             "args": [1, 2],
             "description": "Configure settings for Drawboard PDF with two modes.",
             "hotkeys": [
-                {"key": "^!c", "condition": "DrawboardPDFRunning"},
-                {"key": "^!+c", "condition": "DrawboardPDFRunning"}
+                {"key": "^!c", "condition": [["GetWindowStatus", [1, "Drawboard PDF"]]]},
+                {"key": "^!+c", "condition": [["GetWindowStatus", [1, "Drawboard PDF"]]]}
             ],
-            "section": "🖥️ MONITOR & PEN SETTINGS"
+            "section": "🖥️ DEVICES SETTINGS"
         },
         "ConfigureMonitorSettings": {
             "args": [2, 3, 1],
             "description": "Configure monitor settings based on the argument value.",
             "hotkeys": [
-                {"key": "+!1", "condition": "VSCodeNotRunning"},
-                {"key": "+!2", "condition": "VSCodeNotRunning"},
-                {"key": "+!3", "condition": "VSCodeNotRunning"}
+                {"key": "+!1", "condition": [["GetWindowStatus", [0, "ahk_exe Code.exe"]]]},
+                {"key": "+!2", "condition": [["GetWindowStatus", [0, "ahk_exe Code.exe"]]]},
+                {"key": "+!3", "condition": [["GetWindowStatus", [0, "ahk_exe Code.exe"]]]}
             ],
-            "section": "🖥️ MONITOR & PEN SETTINGS"
+            "section": "🖥️ DEVICES SETTINGS"
         },
         "ConfigureOneNote": {
             "args": [1, 2, 3, 4],
             "description": "Configure OneNote with different arguments (1 to 4). The Space and Ctrl+Space also work as toggles.",
             "hotkeys": [
-                {"key": "1", "condition": "GetScriptStatus"},
-                {"key": "2", "condition": "GetScriptStatus"},
-                {"key": "3", "condition": "GetScriptStatus"},
-                {"key": "4", "condition": "GetScriptStatus"}
+                {"key": "1", "condition": ["GetScriptStatus"]},
+                {"key": "2", "condition": ["GetScriptStatus"]},
+                {"key": "3", "condition": ["GetScriptStatus"]},
+                {"key": "4", "condition": ["GetScriptStatus"]}
             ],
             "hasSimilar": true,
-            "section": "🖥️ MONITOR & PEN SETTINGS"
+            "section": "🖥️ DEVICES SETTINGS"
         },
         "ConfigurePenSettings": {
             "args": [1, 2],
@@ -54,7 +179,7 @@
                 {"key": "+!q"},
                 {"key": "+!e"}
             ],
-            "section": "🖥️ MONITOR & PEN SETTINGS"
+            "section": "🖥️ DEVICES SETTINGS"
         },
         "CopyProcessDirectory": {
             "description": "Copy the directory of the active process and display the path in the tooltip.",
@@ -66,75 +191,37 @@
         "InputBoxForAutoSendToggle": {
             "description": "Toggle auto-send feature for continuous key input based on user input in a dialog box.",
             "hotkeys": [
-                {"key": "!+s", "condition": "GetScriptStatus"}
+                {"key": "!+s", "condition": ["GetScriptStatus"]}
             ],
             "section": "⚡ UTILITIES"
         },
-        "Send": {
-            "description": "Send specific key combinations based on the hotkey pressed.",
-            "hotkeys": {
-                "a": {"key": "{WheelLeft}", "condition": "GetScriptStatus"},
-                "d": {"key": "{WheelRight}", "condition": "GetScriptStatus"},
-                "s": {"key": "{WheelDown}", "condition": "GetScriptStatus"},
-                "w": {"key": "{WheelUp}", "condition": "GetScriptStatus"},
-                "!e": {"key": "!{=}", "condition": "GetScriptStatus"},
-                "!q": {"key": "!{-}", "condition": "GetScriptStatus"},
-                "^!e": {"key": "^{WheelUp}", "condition": "GetScriptStatus"},
-                "^!q": {"key": "^{WheelDown}", "condition": "GetScriptStatus"},
-                "^!s": {"key": "{PgDn}", "condition": "GetScriptStatus"},
-                "^!w": {"key": "{PgUp}", "condition": "GetScriptStatus"},
-                "^e": {"key": "^{=}", "condition": "GetScriptStatus"},
-                "^q": {"key": "^{-}", "condition": "GetScriptStatus"},
-                "!a": {"key": "{Left}", "condition": "VSCodeRunning"},
-                "!d": {"key": "{Right}", "condition": "VSCodeRunning"},
-                "!s": {"key": "{Down}", "condition": "VSCodeRunning"},
-                "!w": {"key": "{Up}", "condition": "VSCodeRunning"}
-            },
-            "section": "🎛 TOGGLE KEYS"
-        },
-        "ShowHotkeys": {
-            "description": "Show/Hide Hotkeys Menu.",
-            "hotkeys": [
-                {"key": "!F1"}
+        "MoveMouseByPixels": {
+            "description": "Move the mouse cursor by a specified number of pixels.",
+            "args": [
+                ["i", "k", "j", "l", "Alt", 5],
+                ["i", "k", "j", "l", "Alt", 5],
+                ["i", "k", "j", "l", "Alt", 5],
+                ["i", "k", "j", "l", "Alt", 5]
             ],
-            "section": "💡 ADDITIONAL FEATURES"
+            "hotkeys": [
+                {"key": "!i", "condition": [["GetOption", 1]]},
+                {"key": "!j", "condition": [["GetOption", 1]]},
+                {"key": "!k", "condition": [["GetOption", 1]]},
+                {"key": "!l", "condition": [["GetOption", 1]]}
+            ],
+            "section": "🤖 SIMULATION"
         },
         "TimerUI": {
             "description": "Quick Set Coundown via FlowLauncher.",
             "hotkeys": [
-                {"key": "!t", "condition": "GetOption1"}
+                {"key": "!+t", "condition": [["GetOption", 1]]}
             ],
             "section": "⚡ UTILITIES"
-        },
-        "ToggleAndExecute": {
-            "args": [
-                [21, "ConfigureOneNote", "ConfigureOneNote", [2], [3]],
-                [15, "ConfigureOneNote", "ConfigureOneNote", [1], [2]],
-                [16, "ConfigureOneNote", "ConfigureOneNote", [1], [5]]
-            ],
-            "description": "Toggle and execute the corresponding ConfigureOneNote function with different arguments.",
-            "hotkeys": [
-                {"key": "F21"},
-                {"key": "Space", "condition": "GetScriptStatus"},
-                {"key": "^Space", "condition": "GetScriptStatus"}
-            ],
-            "section": "🎛 TOGGLE KEYS"
-        },
-        "ToggleAndSend": {
-            "args": [[20, "1", "2"], [22, "^+2", "^+3"], [23, "{Space}", "{1}"], [24, "v", "h"]],
-            "description": "Toggle between sending different key combinations based on the assigned arguments.",
-            "hotkeys": [
-                {"key": "F20"},
-                {"key": "F22"},
-                {"key": "F23"},
-                {"key": "F24"}
-            ],
-            "section": "🎛 TOGGLE KEYS"
         },
         "ToggleProjectMode": {
             "description": "Switch between Project Mode: Extend/Second Screen Only.",
             "hotkeys": [
-                {"key": "F3", "condition": "GetOption1"}
+                {"key": "#+p", "condition": [["GetOption", 1]]}
             ],
             "section": "🛠️ SYSTEM CONFIGURATIONS"
         },
@@ -153,9 +240,16 @@
             "section": "💡 ADDITIONAL FEATURES"
         },
         "overlay.ToggleVisibility": {
-            "description": "Toggle the visibility of the status overlay for the script.",
+            "description": "Toggle visibility of the StatusOverlay for the script.",
             "hotkeys": [
                 {"key": "^!z"}
+            ],
+            "section": "💡 ADDITIONAL FEATURES"
+        },
+        "LangOverlay.ToggleVisibility": {
+            "description": "Toggle visibility of LangOverlay",
+            "hotkeys": [
+                {"key": "!v"}
             ],
             "section": "💡 ADDITIONAL FEATURES"
         }
@@ -175,14 +269,14 @@
             "hotkeys": [
                 {"key": "!f"}
             ],
-            "section": "Other"
+            "section": "🌟 Favorite"
         },
         "LookUp.Toggle": {
             "description": "Toggles the visibility of the LookUp search interface.",
             "hotkeys": [
                 {"key": "!^f"}
             ],
-            "section": "Other"
+            "section": "🌟 Favorite"
         }
     },
     "ShortcutGenerator": {
@@ -191,14 +285,118 @@
             "hotkeys": [
                 {"key": "+!g"}
             ],
-            "section": "Other"
+            "section": "🌟 Favorite"
         },
         "ShortcutGenerator.ChangePath": {
             "description": "Opens a folder picker dialog to select a new default path and updates the GUI and internal state accordingly.",
             "hotkeys": [
                 {"key": "+!x"}
             ],
-            "section": "Other"
+            "section": "🌟 Favorite"
+        }
+    },
+    "CodeSetup": {
+        "WindowManager.ClearWhiteboard": {
+            "description": "Clear Microsoft Whiteboard Canvas and Zoom to 200%",
+            "hotkeys": [
+                {"key": "!^c"}
+            ],
+            "section": "🚀 Productivity"
+        },
+        "WindowManager.Layout1": {
+            "description": "Layout 1: VSCode (2/2) + Chrome (2/2)",
+            "hotkeys": [
+                {"key": "^!1"}
+            ],
+            "section": "🖥️ Window Layouts"
+        },
+        "WindowManager.Layout1Alt": {
+            "description": "Layout 1': VSCode (2/3) + Chrome (1/3)",
+            "hotkeys": [
+                {"key": "^!+1"}
+            ],
+            "section": "🖥️ Window Layouts"
+        },
+        "WindowManager.Layout2": {
+            "description": "Layout 2: Whiteboard (2/2) + Chrome (2/2)",
+            "hotkeys": [
+                {"key": "^!2"}
+            ],
+            "section": "🖥️ Window Layouts"
+        },
+        "WindowManager.Layout2Alt": {
+            "description": "Layout 2': Whiteboard (2/3) + Chrome (1/3)",
+            "hotkeys": [
+                {"key": "^!+2"}
+            ],
+            "section": "🖥️ Window Layouts"
+        },
+        "WindowManager.Layout3": {
+            "description": "Layout 3: VSCode (2/2) + Whiteboard (2/2)",
+            "hotkeys": [
+                {"key": "^!3"}
+            ],
+            "section": "🖥️ Window Layouts"
+        },
+        "WindowManager.Layout3Alt": {
+            "description": "Layout 3': Whiteboard (2/2) + VSCode (2/2)",
+            "hotkeys": [
+                {"key": "^!+3"}
+            ],
+            "section": "🖥️ Window Layouts"
+        },
+        "WindowManager.Layout4": {
+            "description": "Layout 4: Whiteboard (1/2) + VSCode (1/4) + Chrome (1/4)",
+            "hotkeys": [
+                {"key": "^!4"}
+            ],
+            "section": "🖥️ Window Layouts"
+        },
+        "WindowManager.Layout4Alt": {
+            "description": "Layout 4': VSCode (1/2) + Whiteboard (1/4) + Chrome (1/4)",
+            "hotkeys": [
+                {"key": "^!+4"}
+            ],
+            "section": "🖥️ Window Layouts"
+        },
+        "WindowManager.ResetDefault": {
+            "description": "Reset Default Layout Settings",
+            "hotkeys": [
+                {"key": "^!0"}
+            ],
+            "section": "⚙️ Settings"
+        },
+        "WindowManager.Toggle": {
+            "description": "Show Simple Layout GUI",
+            "hotkeys": [
+                {"key": "^!g"},
+                {"key": "+^!g"}
+            ],
+            "args": [1, 2],
+            "section": "⚙️ GUI"
+        }
+    },
+    "Hotstring": {
+        "macro.Toggle": {
+            "description": "Toggle HotstringGUI",
+            "hotkeys": [
+                {"key": "!F1"}
+            ],
+            "section": "🌟 Favorite"
+        },
+        "macro.ToggleAllHotstring": {
+            "description": "Toggle Hotstring",
+            "hotkeys": [
+                {"key": "#h"}
+            ],
+            "section": "🌟 Favorite"
+        },
+        "macro.PromptAddHotstring": {
+            "description": "Promt to Add Hotstring",
+            "hotkeys": [
+                {"key": "#+a"}
+            ],
+            "section": "🌟 Favorite"
         }
     }
 }
