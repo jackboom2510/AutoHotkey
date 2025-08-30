@@ -1,17 +1,12 @@
-#Requires AutoHotkey v2.0+
-#SingleInstance Force
-Persistent()
-
-#Include <ClickTracker>
-#Include <KeyBinding>
+#Include <util\ClickTracker>
+#Include <core\KeyBinding>
 ;@Ahk2Exe-SetMainIcon click.ico
 
 TextAlign_widths := [5]
-
-ClickTracker := ClickTrackerUI()
+ClickTrackerObj := ClickTracker()
 
 StartTracking() {
-    return ClickTracker.isTracking
+    return ClickTrackerObj.isTracking
 }
 BindingScript
 
@@ -28,9 +23,9 @@ A_TrayMenu.Insert("E&xit", "Open File Location", (*) => Run("*open " "C:\Users\j
 A_TrayMenu.SetIcon("Open File Location", "C:\Windows\System32\shell32.dll", 4)
 A_TrayMenu.Insert("E&xit", "Show Hotkeys", (*) => ShowHotkeys())
 A_TrayMenu.SetIcon("Show Hotkeys", "C:\Windows\System32\shell32.dll", 24)
-A_TrayMenu.Insert("E&xit", "StartTracking", (*) => ClickTracker.StartTracking())
+A_TrayMenu.Insert("E&xit", "StartTracking", (*) => ClickTrackerObj.StartTracking())
 A_TrayMenu.Insert("E&xit")
 A_TrayMenu.SetIcon("StartTracking", "C:\Windows\System32\shell32.dll", 44)
-A_TrayMenu.Insert("E&xit", "Show/Hide", (*) => ClickTracker.Toggle())
+A_TrayMenu.Insert("E&xit", "Show/Hide", (*) => ClickTrackerObj.Toggle())
 A_TrayMenu.Default := "Show/Hide"
 A_TrayMenu.ClickCount := 1

@@ -20,13 +20,13 @@
 ; of a tilde tells the script to avoid showing the menu for
 ; unsupported window types.  In other words, if there is no tilde,
 ; the hotkey will always display the menu; and upon selecting a
-; favorite while an unsupported window type is active, a new
+; favorite while an unsupp"orted window type is active, a new
 ; Explorer window will be opened to display the contents of that
 ; folder.
 
 
 g_Hotkey := "!MButton"
-
+second_gHotkey := "!+,"
 
 ; CONFIG: CHOOSE YOUR FAVORITES
 ; Update the special commented section below to list your favorite
@@ -52,7 +52,8 @@ Ahkv2_Documentation ; https://www.autohotkey.com/docs/v2/
 ; Do not make changes below this point unless you want to change
 ; the basic functionality of the script.
 
-#include <KeyBinding>
+#Include <core\KeyBinding>
+#Include <core\UserFuncs>
 ;@Ahk2Exe-SetMainIcon bookmark.ico
 #SingleInstance  ; Needed since the hotkey is dynamically created.
 
@@ -62,7 +63,9 @@ g_Menu := Menu()
 g_window_id := 0
 g_class := ""
 
-Hotkey g_Hotkey, DisplayMenu
+; BindingScript()
+Hotkey(g_Hotkey, (*) => DisplayMenu())
+Hotkey(second_gHotkey, (*) => DisplayMenu())
 
 if SubStr(g_Hotkey, 1, 1) = "~"  ; Show menu only for certain window types.
     g_AlwaysShowMenu := false
@@ -78,34 +81,59 @@ AtStartingPos := false
 FileExt := ""
 loop read, FavoritesFile {
     if FileExt != "Exe" {
-        ; Since the menu items are being read directly from this
-        ; script, skip over all lines until the starting line is
-        ; arrived at.
         if !AtStartingPos {
             if InStr(A_LoopReadLine, "ITEMS IN FAVORITES MENU")
                 AtStartingPos := true
-            continue  ; Start a new loop iteration.
+            continue
         }
-        ; Otherwise, the closing comment symbol marks the end of the list.
         if A_LoopReadLine = "*/"
-            break  ; terminate the loop
+            break
     }
-    if !A_LoopReadLine  ; Blank indicates a separator line.
-    {
-        ; Menu separator lines must also be pushed to the array
-        ; to be compatible with ItemPos:
+
+    if !A_LoopReadLine {
         g_Paths.Push("")
         g_Menu.Add()
-    }
-    else {
+    } else {
         line := StrSplit(A_LoopReadLine, ";", "`s`t")
-        ; Resolve any references to variables within either field, and
-        ; create a new array element containing the path of this favorite:
-        g_Paths.Push(line[2])
+        path := line[2]
+        iconFile := ""
+        iconIndex := 1
+
+        if line.Length >= 3 {
+            if RegExMatch(line[3], 'icon=[`'"](.*)[`'"]', &m) {
+                iconSpec := ExpandEnvVars(m[1])
+                parts := StrSplit(iconSpec, ",")
+                iconFile := Trim(parts[1])
+                if parts.Length >= 2
+                    iconIndex := Trim(parts[2])
+            }
+        }
+
+        g_Paths.Push(path)
         g_Menu.Add(line[1], OpenFavorite)
+
+        if iconFile {
+            if RegExMatch(iconFile, "^https?://([^/]+)", &d) {
+                domain := d[1]
+                GetWebIcon(domain, g_Menu, line[1])
+            } else {
+                try g_Menu.SetIcon(line[1], iconFile, iconIndex)
+            }
+        }
     }
 }
 
+GetWebIcon(domain, menu, itemName) {
+    url := "https://icons.duckduckgo.com/ip3/" domain ".ico"
+    tmpFile := "C:\Users\jackb\Documents\AutoHotkey\temp\favicon_" domain ".ico"
+
+    try {
+        Download(url, tmpFile)
+        menu.SetIcon(itemName, tmpFile)
+    } catch {
+        TrayTip "Không lấy được icon cho: " domain
+    }
+}
 
 ;----Open the selected favorite
 OpenFavorite(ItemName, ItemPos, *) {

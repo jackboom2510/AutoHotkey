@@ -1,4 +1,4 @@
-#Include <KeyBinding>
+#Include <core\KeyBinding>
 SetTitleMatchMode(2)
 ;@Ahk2Exe-SetMainIcon desktop.ico
 class WindowManager {
@@ -252,7 +252,7 @@ SplitPath(scriptPath, &scriptName, &scriptDir)
 A_TrayMenu.Delete()
 A_TrayMenu.AddStandard()
 A_TrayMenu.Insert('&Suspend Hotkeys', 'Recompile Script', (*) => (
-    Run('cmd /c ""C:\Users\jackb\Documents\AutoHotkey\build\ahk2exe-compile.bat" "' scriptPath '" & pause"'),
+    Run('cmd /c ""C:\Users\jackb\Documents\AutoHotkey\bin\build\ahk2exe-compile.bat" "' scriptPath '" & pause"'),
     TrayTip('Compile Success: ' scriptName, 'Success!', 1)
 ))
 if (A_IsCompiled) {

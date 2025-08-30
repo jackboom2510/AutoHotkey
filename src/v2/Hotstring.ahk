@@ -1,17 +1,8 @@
-/*
-* Upcomming Plan:
-* - Category
-* - Search Tool
-* - KeyBinding
-* - Multiple Options
-* - More...
-*/
-#Requires AutoHotkey v2.0+
 #SingleInstance Force
 Persistent
 
-#Include <Log>
-#Include <KeyBinding>
+#include <core\Log>
+#Include <core\KeyBinding>
 ;@Ahk2Exe-SetMainIcon exchange.ico
 
 class HotstringUI {
@@ -71,7 +62,7 @@ class HotstringUI {
         WinSetTransColor(this.gui.BackColor, this.name)
         WinSetTransparent(this.transparency.value, this.name)
         ; OnMessage(0x0200, On_WM_MOUSEMOVE)
-        OnMessage(0x4E, On_WM_NOTIFY)
+        ; OnMessage(0x4E, On_WM_NOTIFY)
         ; OnMessage(0x0216, On_WM_MOVING)
         On_WM_NOTIFY(wParam, lParam, Msg, Hwnd) {
             UDN_DELTAPOS := -722
@@ -253,7 +244,7 @@ class HotstringUI {
         this.defaultFile := this.gui.AddButton(controlOpts 'w150 x+22 yp', "File &mặc định")
         this.editConfigFileBtn := this.gui.AddButton(controlOpts 'w150 x+23 yp', '&Mở File')
     }
-    SetupIML(capacity := 2, iconPath := "C:\Users\jackb\Documents\AutoHotkey\icon\") {
+    SetupIML(capacity := 2, iconPath := "C:\Users\jackb\Documents\AutoHotkey\assets\icon\") {
         this.ImageListID := IL_Create(2)
         IL_Add(this.ImageListID, iconPath 'text.ico')
         IL_Add(this.ImageListID, iconPath 'function.ico')
@@ -702,7 +693,7 @@ A_TrayMenu.Delete()
 A_TrayMenu.AddStandard()
 A_TrayMenu.Insert('&Suspend Hotkeys', 'Recompile Script', (*) => (
     Run(
-        'cmd /c ""C:\Users\jackb\Documents\AutoHotkey\build\ahk2exe-compile.bat" "C:\Users\jackb\Documents\AutoHotkey\src\v2\Hotstring.ahk" & pause"'
+        'cmd /c ""C:\Users\jackb\Documents\AutoHotkey\bin\build\ahk2exe-compile.bat" "C:\Users\jackb\Documents\AutoHotkey\src\v2\Hotstring.ahk" & pause"'
     ),
     TrayTip('Compile Success: Hotstring.ahk', 'Success!', 1)
 ))
@@ -719,7 +710,7 @@ A_TrayMenu.Insert("E&xit", "Show Hotkeys", (*) => ShowHotkeys(, , 4))
 A_TrayMenu.SetIcon("Show Hotkeys", "shell32.dll", 24)
 A_TrayMenu.Insert("E&xit")
 A_TrayMenu.Insert("E&xit", "&Show/&Hide", (*) => macro.Toggle())
-A_TrayMenu.SetIcon("&Show/&Hide", "C:\Users\jackb\Documents\AutoHotkey\icon\exchange.ico")
+A_TrayMenu.SetIcon("&Show/&Hide", "C:\Users\jackb\Documents\AutoHotkey\assets\icon\exchange.ico")
 A_TrayMenu.Insert("E&xit", "AlwaysOnTop", (*) => macro.ToggleAOT())
 A_TrayMenu.Check("AlwaysOnTop")
 

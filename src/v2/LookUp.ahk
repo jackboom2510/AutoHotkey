@@ -3,10 +3,10 @@
 Persistent()
 CoordMode "Mouse", "Screen"
 
-#Include <ClickMacro>
-#Include <HelpGui>
-#Include <KeyBinding>
-#Include <Log>
+#include <core\Log>
+#Include <core\KeyBinding>
+#Include <ui\HelpUI>
+#Include <util\MouseMacro>
 ;@Ahk2Exe-SetMainIcon dictionary.ico
 
 LookUp.CreateGui()

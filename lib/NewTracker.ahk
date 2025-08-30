@@ -1,12 +1,6 @@
-#SingleInstance Force
-#Requires AutoHotkey v2.0.18+
 CoordMode "Mouse", "Screen"
-
-; Global hotkey to toggle tracking
-tracker := ClickTrackerUI()
-!t:: tracker.ToggleTracking()
-
-class ClickTrackerUI {
+tracker := NClickTracker()
+class NClickTracker {
     gui := unset
     guiID := ""
     guiOpts := "+AlwaysOnTop -Resize"
@@ -149,46 +143,46 @@ class ClickTrackerUI {
         code := ''
         code .= "ReplayTestAbsolute() {" "`n"
         if (this.targetWinTitle != '') {
-            code .= Format("    ; Kích hoạt cửa sổ: {}`n", this.targetWinTitle)
-            code .= Format("    WinActivate('ahk_exe {}')`n    Sleep(500)`n", this.targetWinExe)
+            code .= Format("    `; Kích hoạt cửa sổ: {}`n", this.targetWinTitle)
+            code .= Format("    WinActivate('ahk_exe {}')`n    Sleep(500)`n", this.targetWinExe)
         }
         for event in this.events {
             if (event.type == 'MouseClick') {
                 posX := event.x
                 posY := event.y
-                code .= Format("    ClickEventAndSleep({}, {}, '{}')`n", posX, posY, event.button)
+                code .= Format("    ClickEventAndSleep({}, {}, '{}')`n", posX, posY, event.button)
             } else if (event.type == 'KeyDown') {
-                code .= Format("    KeyEventAndSleep('{}')`n", event.key)
+                code .= Format("    KeyEventAndSleep('{}')`n", event.key)
             }
         }
         code .= "}`n`n"
 
         code .= "ReplayTestRelative() {" "`n"
         if (this.targetWinTitle != '') {
-            code .= Format("    ; Kích hoạt cửa sổ: {}`n", this.targetWinTitle)
-            code .= Format("    WinActivate('ahk_exe {}')`n    Sleep(500)`n", this.targetWinExe)
-            code .= '    windowX := ' this.targetWinPos.x '`n'
-            code .= '    windowY := ' this.targetWinPos.y '`n'
+            code .= Format("    `; Kích hoạt cửa sổ: {}`n", this.targetWinTitle)
+            code .= Format("    WinActivate('ahk_exe {}')`n    Sleep(500)`n", this.targetWinExe)
+            code .= '    windowX := ' this.targetWinPos.x '`n'
+            code .= '    windowY := ' this.targetWinPos.y '`n'
         }
         for event in this.events {
             if (event.type == 'MouseClick') {
                 relX := event.x - this.targetWinPos.x
                 relY := event.y - this.targetWinPos.y
-                code .= Format("    ClickEventAndSleep({}, {}, '{}')`n", relX, relY, event.button)
+                code .= Format("    ClickEventAndSleep({}, {}, '{}')`n", relX, relY, event.button)
             } else if (event.type == 'KeyDown') {
-                code .= Format("    KeyEventAndSleep('{}')`n", event.key)
+                code .= Format("    KeyEventAndSleep('{}')`n", event.key)
             }
         }
         code .= "}`n`n"
 
         code .= "ClickEventAndSleep(x, y, button, delay := 200) {" "`n"
-        code .= "    Click(x, y, button)" "`n"
-        code .= "    Sleep(delay)" "`n"
+        code .= "    Click(x, y, button)" "`n"
+        code .= "    Sleep(delay)" "`n"
         code .= "}" "`n`n"
 
         code .= "KeyEventAndSleep(key, delay := 200) {" "`n"
-        code .= "    Send('{' . key . '}')" "`n"
-        code .= "    Sleep(delay)" "`n"
+        code .= "    Send('{' . key . '}')" "`n"
+        code .= "    Sleep(delay)" "`n"
         code .= "}"
 
         this.editBox.Value := code

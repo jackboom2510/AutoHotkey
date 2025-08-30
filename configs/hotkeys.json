@@ -1,13 +1,13 @@
 ﻿{
     "#ClickTracker": {
-        "ClickTracker.ToggleTracking": {
+        "ClickTrackerObj.ToggleTracking": {
             "description": "Initializes tracking by clearing previous data, setting tracking flags, and minimizing the GUI window.",
             "hotkeys": [
-                {"key": "!t"}
+                {"key": "!r"}
             ],
             "section": "⚙️ TRACKING SETTINGS"
         },
-        "ClickTracker.Track": {
+        "ClickTrackerObj.Track": {
             "description": "Captures and stores mouse click coordinates, along with window information on the first click during tracking.",
             "hotkeys": [
                 {"key": "MButton", "condition": "StartTracking"}
@@ -23,8 +23,6 @@
                 "d": {"key": "{WheelRight}", "condition": ["GetScriptStatus"]},
                 "s": {"key": "{WheelDown}", "condition": ["GetScriptStatus"]},
                 "w": {"key": "{WheelUp}", "condition": ["GetScriptStatus"]},
-                "!e": {"key": "!{=}", "condition": ["GetScriptStatus"]},
-                "!q": {"key": "!{-}", "condition": ["GetScriptStatus"]},
                 "^!e": {"key": "^{WheelUp}", "condition": ["GetScriptStatus"]},
                 "^!q": {"key": "^{WheelDown}", "condition": ["GetScriptStatus"]},
                 "^!s": {"key": "{PgDn}", "condition": ["GetScriptStatus"]},
@@ -35,118 +33,179 @@
                 "!d": {"key": "{Right}", "condition": [["GetOption", 3]]},
                 "!s": {"key": "{Down}", "condition": [["GetOption", 3]]},
                 "!w": {"key": "{Up}", "condition": [["GetOption", 3]]},
-                "XButton1 & WheelDown": {"key": "{Left}", "condition": [["GetWindowStatus", [1, "YouTube - Google Chrome"]]]},
-                "XButton1 & WheelUp": {"key": "{Right}", "condition": [["GetWindowStatus", [1, "YouTube - Google Chrome"]]]},
+                "!^a": {"key": "^{Left}", "condition": [["GetOption", 3]]},
+                "!^d": {"key": "^{Right}", "condition": [["GetOption", 3]]},
+                "!^s": {"key": "^{Down}", "condition": [["GetOption", 3]]},
+                "!^w": {"key": "^{Up}", "condition": [["GetOption", 3]]},
+                "XButton2 & WheelDown": {"key": "{Left}", "condition": [["GetOption", 1]]},
+                "XButton2 & WheelUp": {"key": "{Right}", "condition": [["GetOption", 1]]},
+                "XButton1 & WheelDown": {"key": "{Down}", "condition": [["GetOption", 1]]},
+                "XButton1 & WheelUp": {"key": "{Up}", "condition": [["GetOption", 1]]},
+                "XButton1 & LButton": {"key": "{XButton1}", "condition": [["GetOption", 1]]},
+                "XButton1 & RButton": {"key": "{XButton2}", "condition": [["GetOption", 1]]},
+                "^XButton1": {"key": "{XButton1}", "condition": [["GetOption", 1]]},
+                "^XButton2": {"key": "{XButton2}", "condition": [["GetOption", 1]]},
+                "!XButton1": {"key": "{F10}", "condition": [["GetWindowStatus", [1, "ahk_exe Code.exe"]]]},
+                "!XButton2": {"key": "{F11}", "condition": [["GetWindowStatus", [1, "ahk_exe Code.exe"]]]},
                 "!+w": {"key": "+{Home}"},
                 "!+d": {"key": "+{Home}{Del}"},
                 "+Space": {"key": "_", "condition": [["GetOption", 1]]},
                 "+Backspace": {"key": "+^{Right}{Del}", "condition": [["GetOption", 1]]},
                 "!x": {"key": ",", "condition": [["GetWindowStatus", [1, "TechSmith Camtasia 2025"]]]},
                 "!z": {"key": ".", "condition": [["GetWindowStatus", [1, "TechSmith Camtasia 2025"]]]},
-                "!;": {"key": "{Click}", "condition": [["GetOption", 1]]},
-                "!f": {"key": "{Enter}", "condition": [["GetOption", 1]]},
-                "!XButton1": {"key": "{F10}", "condition": [["GetWindowStatus", [1, "ahk_exe Code.exe"]]]},
-                "!XButton2": {"key": "{F11}", "condition": [["GetWindowStatus", [1, "ahk_exe Code.exe"]]]},
-                "!^i": {"key": "{WheelUp}", "condition": [["GetOption", [1]]]},
-                "!^k": {"key": "{WheelDown}", "condition": [["GetOption", [1]]]}
+                "!q": {"key": "{BackSpace}", "condition": [["GetOption", 1]]},
+                "!e": {"key": "{Enter}", "condition": [["GetOption", 1]]},
+                "!+i": {"key": "{WheelUp}", "condition": [["GetOption", 1]]},
+                "!+k": {"key": "{WheelDown}", "condition": [["GetOption", 1]]},
+                "!+j": {"key": "{WheelLeft}", "condition": [["GetOption", 1]]},
+                "!+l": {"key": "{WheelRight}", "condition": [["GetOption", 1]]},
+                "!n": {"key": "{Click}", "condition": [["GetOption", 1]]},
+                "!'": {"key": "{End}{Enter}", "condition": [["GetOption", 1]]}
             },
+            "section": "🤖 SIMULATION"
+        },
+        "Click": {
+            "args": ["R", "M"],
+            "hotkeys": [
+                {"key": "!m", "condition": [["GetOption", 1]]},
+                {"key": "!,", "condition": [["GetOption", 1]]}
+            ],
+            "hasSimilar": true,
             "section": "🤖 SIMULATION"
         },
         "CycleAndExecute": {
             "args": [
                 [1, [["ConfigureOneNote", [2]], ["ConfigureOneNote", [3]]]],
-                [2, [["ConfigureOneNote", [1]], ["ConfigureOneNote", [2]]]],
+                [2, [["ConfigureOneNote", [1]], ["ConfigurleOneNote", [2]]]],
                 [3, [["ConfigureOneNote", [1]], ["ConfigureOneNote", [5]]]],
-                [4, [["DynamicSet", ["moveDistance", 5]], ["DynamicSet", ["moveDistance", 15]]]]
+                [4, [["Send", ["{Click D}"]], ["Send", ["{Click U}"]]]],
+                [5, [["Send", ["{Click D}"]], ["Send", ["{Click U}"]]]],
+                [6, [["Click", ["R D"]], ["Click", ["R U"]]]]
             ],
-            "description": "Toggle and execute the corresponding ConfigureOneNote function with different arguments.",
+            "description": "Cycle And Execute through different configurations.",
             "hotkeys": [ 
                 {"key": "F21"},
-                {"key": "Space", "condition": ["GetScriptStatus"]},
-                {"key": "^Space", "condition": ["GetScriptStatus"]},
-                {"key": "!+;", "condition": [["GetOption", 1]]}
+                {"key": "Space", "condition": [["GetScriptStatus"], ["GetWindowStatus", [1, "OneNote"]]]},
+                {"key": "^Space", "condition": [["GetScriptStatus"], ["GetWindowStatus", [1, "OneNote"]]]},
+                {"key": "!+n", "condition": [["GetOption", 1]]},
+                {"key": "XButton2 & MButton", "condition": [["GetOption", 1]]},
+                {"key": "!+m", "condition": [["GetOption", 1]]}
             ],
+            "hasSimilar": true,
             "section": "⏯️ TOGGLE KEYS"
         },
         "CycleAndSend": {
             "args": [
-                [5, ["1", "2"]],
+                [5, ["{Space}", "{1}"]],
                 [6, ["^+2", "^+3"]],
-                [7, ["{Space}", "{1}"]],
+                [7, ["1", "2"]],
                 [8, ["v", "h"]]
             ],
             "description": "Toggle between sending different key combinations based on the assigned arguments.",
             "hotkeys": [
                 {"key": "F20"},
-                {"key": "F21"},
                 {"key": "F22"},
-                {"key": "F23"}
+                {"key": "F23"},
+                {"key": "F24"}
             ],
+            "hasSimilar": true,
             "section": "⏯️ TOGGLE KEYS"
         },
-        "RunFunctions": {
+        "UserFunc.uCallIf": {
+            "description": "Call a user-defined function if a condition is met.",
+            "args": [
+                [
+                    "moveOverlay.ToggleScript",
+                    ["DynamicSet", "moveDistance", 15],
+                    ["DynamicSet", "moveDistance", 5]
+                ],
+                [
+                    "moveOverlay.ToggleScript",
+                    ["DynamicSet", "moveDistance", 20],
+                    ["DynamicSet", "moveDistance", 10]
+                ]
+            ],
+            "hotkeys": [
+                {"key": "!;", "condition": [["GetOption", 1]]},
+                {"key": "!+;", "condition": [["GetOption", 1]]}
+            ],
+            "hasSimilar": true,
+            "section": "✨ Run"
+        },
+        "UserFunc.uRun": {
             "description": "Run Specific Function with arguments",
             "hotkeys": [
-                {"key": "#p", "condition": [["GetOption", [1]]]},
+                {"key": "#p", "condition": [["GetOption", 1]]},
                 {"key": "#m"},
-                {"key": "1", "condition": [["GetOption", [4]]]},
-                {"key": "2", "condition": [["GetOption", [4]]]},
-                {"key": "3", "condition": [["GetOption", [4]]]},
-                {"key": "z", "condition": [["GetOption", [4]]]},
-                {"key": "x", "condition": [["GetOption", [4]]]},
-                {"key": "c", "condition": [["GetOption", [4]]]},
-                {"key": "4", "condition": [["GetOption", [4]]]},
-                {"key": "!r", "condition": [["GetOption", [4]]]},
-                {"key": "XButton1", "condition": [["GetWindowStatus", [1, "ahk_exe IntoTheDeadOurDarkestDays.exe"]]]},
-                {"key": "XButton2", "condition": [["GetWindowStatus", [1, "ahk_exe IntoTheDeadOurDarkestDays.exe"]]]}
+                {"key": "XButton1", "condition": [["GetWindowStatus", 1, "ahk_exe IntoTheDeadOurDarkestDays.exe"]]},
+                {"key": "XButton2", "condition": [["GetWindowStatus", 1, "ahk_exe IntoTheDeadOurDarkestDays.exe"]]}
             ],
             "args": [
                 [["Run", "*RunAs pwsh"]],
-                [["Run", ["pwsh -NoExit -Command \".\\mysql.exe -ujackb -p;\"", "D:\\2. Program Files\\MySQL\\bin"]]],
-                [["ClickAndSleep", [1336, 624, -1, true, true]]],
-                [["ClickAndSleep", [1438, 564, -1, true, false]]],
-                [["ClickAndSleep", [1537, 617, -1, true, false]]],
-                [["ClickAndSleep", [671, 611, -1, true, true]]],
-                [["ClickAndSleep", [734, 610, -1, true, true]]],
-                [["ClickAndSleep", [1534, 414, -1, true, false]]],
-                [["ClickAndSleep", [1346, 510, -1, true, false]]],
                 [
-                    ["Send", ["{Esc}"]],
-                    ["Sleep", [1000]],
-                    ["ClickAndSleep", [803, 754, 700]],
-                    ["ClickAndSleep", [603, 537, 2000]],
-                    ["ClickAndSleep", [798, 811, 2000]],
-                    ["ClickAndSleep", [990, 425, 2000]],
-                    ["ClickAndSleep", [1146, 609, 4000]],
-                    ["ClickAndSleep", [637, 671, 1000]],
-                    ["ClickAndSleep", [1238, 799]]
+                    ["Run",
+                    "pwsh -NoExit -Command \".\\mysql.exe -ujackb -p;\"",
+                    "D:\\2. Program Files\\MySQL\\bin"]
                 ],
                 [
-                    ["Send", ["{Tab}"]],
-                    ["Sleep", [100]],
-                    ["Send", ["r"]],
-                    ["Send", ["{Tab}"]]
+                    ["Send", "{Tab}"],
+                    ["Sleep", 100],
+                    ["Send", "r"],
+                    ["Send", "{Tab}"]
                 ],
                 [
-                    ["Send", ["{Tab}"]],
-                    ["Sleep", [700]],
-                    ["Send", ["r"]],
-                    ["Send", ["{Tab}"]]
+                    ["Send", "{Tab}"],
+                    ["Sleep", 700],
+                    ["Send", "r"],
+                    ["Send", "{Tab}"]
                 ]
             ],
+            "hasSimilar": true,
             "section": "✨ Run"
         },
-        "ChangeLang": {
+        "GoogleTranslate": {
+            "description": "Translate selected text using Google Translate API and display the result in a TrayTip.",
+            "args": [false, true, true],
+            "hotkeys": [
+                {"key": "!t", "condition": [["GetOption", 1]]},
+                {"key": "!+t", "condition": [["GetOption", 1]]},
+                {"key": "XButton2 & RButton", "condition": [["GetOption", 1]]}
+            ],
+            "section": "⚡ UTILITIES"
+        },
+        "PowerToyRun": {
+            "description": "Search for selected text using PowerToy Run.",
+            "hotkeys": [
+                {"key": "XButton2 & LButton", "condition": [["GetOption", 1]]},
+                {"key": "!f", "condition": [["GetOption", 1]]},
+                {"key": "!^t", "condition": [["GetOption", 1]]}
+            ],
+            "args": [
+                ["??", "", true],
+                ["??", "", true],
+                ["def", "", true]
+            ],
+            "section": "⚡ UTILITIES"
+        },
+        "MoveWindow": {
+            "description": "Move the active window to another monitor.",
+            "hotkeys": [
+                {"key": "#`", "condition": [["GetOption", 1]]}
+            ],
+            "section": "🛠️ SYSTEM CONFIGURATIONS"
+        },
+        "ChangeLangLayout": {
             "description": "Switch between Language Layout: Vietnamese/English.",
-            "hotkeys": [{ "key": "CapsLock", "condition": [["GetOption", [1]]] }],
+            "hotkeys": [{ "key": "CapsLock", "condition": [["GetOption", 1]] }],
+            "args": [true],
             "section": "🛠️ SYSTEM CONFIGURATIONS"
         },
         "ConfigureDrawboardPDF": {
             "args": [1, 2],
             "description": "Configure settings for Drawboard PDF with two modes.",
             "hotkeys": [
-                {"key": "^!c", "condition": [["GetWindowStatus", [1, "Drawboard PDF"]]]},
-                {"key": "^!+c", "condition": [["GetWindowStatus", [1, "Drawboard PDF"]]]}
+                {"key": "1", "condition": [["GetScriptStatus"], ["GetWindowStatus", [1, "Drawboard PDF"]]]},
+                {"key": "2", "condition": [["GetScriptStatus"], ["GetWindowStatus", [1, "Drawboard PDF"]]]}
             ],
             "section": "🖥️ DEVICES SETTINGS"
         },
@@ -164,10 +223,10 @@
             "args": [1, 2, 3, 4],
             "description": "Configure OneNote with different arguments (1 to 4). The Space and Ctrl+Space also work as toggles.",
             "hotkeys": [
-                {"key": "1", "condition": ["GetScriptStatus"]},
-                {"key": "2", "condition": ["GetScriptStatus"]},
-                {"key": "3", "condition": ["GetScriptStatus"]},
-                {"key": "4", "condition": ["GetScriptStatus"]}
+                {"key": "1", "condition": [["GetScriptStatus"], ["GetWindowStatus", [1, "OneNote"]]]},
+                {"key": "2", "condition": [["GetScriptStatus"], ["GetWindowStatus", [1, "OneNote"]]]},
+                {"key": "3", "condition": [["GetScriptStatus"], ["GetWindowStatus", [1, "OneNote"]]]},
+                {"key": "4", "condition": [["GetScriptStatus"], ["GetWindowStatus", [1, "OneNote"]]]}
             ],
             "hasSimilar": true,
             "section": "🖥️ DEVICES SETTINGS"
@@ -188,6 +247,23 @@
             ],
             "section": "⚡ UTILITIES"
         },
+        "GetBrowserInfo": {
+            "description": "Get the title of the active browser window.",
+            "hotkeys": [
+                {"key": "!+c"}
+            ],
+            "args": [
+                ["title", "A_Clipboard", 5]
+            ],
+            "section": "⚡ UTILITIES"
+        },
+        "AddJavaClass": {
+            "description": "Add a new Java file to the project.",
+            "hotkeys": [
+                {"key": "^!j"}
+            ],
+            "section": "⚡ UTILITIES"
+        },
         "InputBoxForAutoSendToggle": {
             "description": "Toggle auto-send feature for continuous key input based on user input in a dialog box.",
             "hotkeys": [
@@ -201,22 +277,23 @@
                 ["i", "k", "j", "l", "Alt", 5],
                 ["i", "k", "j", "l", "Alt", 5],
                 ["i", "k", "j", "l", "Alt", 5],
-                ["i", "k", "j", "l", "Alt", 5]
+                ["i", "k", "j", "l", "Alt", 5],
+                ["Up", "Down", "Left", "Right", "", 5],
+                ["Up", "Down", "Left", "Right", "", 5],
+                ["Up", "Down", "Left", "Right", "", 5],
+                ["Up", "Down", "Left", "Right", "", 5]
             ],
             "hotkeys": [
                 {"key": "!i", "condition": [["GetOption", 1]]},
-                {"key": "!j", "condition": [["GetOption", 1]]},
                 {"key": "!k", "condition": [["GetOption", 1]]},
-                {"key": "!l", "condition": [["GetOption", 1]]}
+                {"key": "!j", "condition": [["GetOption", 1]]},
+                {"key": "!l", "condition": [["GetOption", 1]]},
+                {"key": "Up", "condition": [["GetOption", 3]]},
+                {"key": "Down", "condition": [["GetOption", 3]]},
+                {"key": "Left", "condition": [["GetOption", 3]]},
+                {"key": "Right", "condition": [["GetOption", 3]]}
             ],
             "section": "🤖 SIMULATION"
-        },
-        "TimerUI": {
-            "description": "Quick Set Coundown via FlowLauncher.",
-            "hotkeys": [
-                {"key": "!+t", "condition": [["GetOption", 1]]}
-            ],
-            "section": "⚡ UTILITIES"
         },
         "ToggleProjectMode": {
             "description": "Switch between Project Mode: Extend/Second Screen Only.",
@@ -258,7 +335,8 @@
         "DisplayMenu": {
             "description": "Displays the favorite menu, allowing users to access their favorite folders and files quickly.",
             "hotkeys": [
-                {"key": "!MButton"}
+                {"key": "!MButton"},
+                {"key": "!^,"}
             ],
             "section": "🌟 Favorite"
         }
@@ -279,15 +357,15 @@
             "section": "🌟 Favorite"
         }
     },
-    "ShortcutGenerator": {
-        "ShortcutGenerator.AddShortcut": {
+    "ShortcutToolObj": {
+        "ShortcutToolObj.AddShortcut": {
             "description": "Creates a shortcut to the currently active Chrome tab's URL in the selected folder, formatting the title and launching File Explorer as needed.",
             "hotkeys": [
                 {"key": "+!g"}
             ],
             "section": "🌟 Favorite"
         },
-        "ShortcutGenerator.ChangePath": {
+        "ShortcutToolObj.ChangePath": {
             "description": "Opens a folder picker dialog to select a new default path and updates the GUI and internal state accordingly.",
             "hotkeys": [
                 {"key": "+!x"}

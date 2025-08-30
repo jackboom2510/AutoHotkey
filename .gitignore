@@ -15,7 +15,7 @@ logs/
 
 # Build artifacts
 /dist/
-/build/
+/bin/build/
 /out/
 /node_modules/
 /*.exe

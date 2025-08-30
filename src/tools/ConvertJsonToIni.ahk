@@ -1,5 +1,5 @@
 #Requires AutoHotkey v2.0
-#Include <cJSON>  ; Thư viện JSON xử lý AHK v2 (có thể dùng zLib hoặc chuẩn riêng)
+#Include <core\cJSON>  ; Thư viện JSON xử lý AHK v2 (có thể dùng zLib hoặc chuẩn riêng)
 
 JsonToIni(jsonFile, iniFile) {
     if !FileExist(jsonFile) {
