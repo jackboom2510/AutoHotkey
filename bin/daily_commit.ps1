@@ -12,7 +12,7 @@ param(
     [string]$RepoPath = 'C:\Users\jackb\Documents\AutoHotkey',
 
     # File lưu trạng thái Counter & Ngày
-    [string]$DataFile = 'C:\Users\jackb\Documents\AutoHotkey\.daily_commit_data.json'
+    [string]$DataFile = 'C:\Users\jackb\Documents\AutoHotkey\configs\.daily_commit_data.json'
 )
 
 # 1. Đảm bảo DataFile tồn tại, nếu chưa có thì khởi tạo:
