@@ -10,7 +10,7 @@ class NotificationUI {
     transparencyValue := 225
     charLimit := 50
     timeout := 10
-    __New(what := '', title := A_ScriptName, setupFlags := 't10 ra rb', options := '', args*) {
+    __New(what := '', title := A_ScriptName, setupFlags := 't10 ra rb s', options := '', args*) {
         if (this.guiID && WinExist('ahk_class AutoHotkeyGUI ahk_id ' this.guiID)) {
             return
         }
@@ -43,13 +43,14 @@ class NotificationUI {
             this.title.SetFont(this.defaultTitleFont*)
         }
         this.content := this.gui.AddEdit(Format('+Wrap -VScroll w{}', this.guiPos.w - 25), wrappedText)
-        this.guiPos.h += 25
+        this.guiPos.h += 30 ; Low Margin
         if (RegExMatch(setupFlags, '\br?(a|after)\b')) {
             this.AfterSetup()
             if (RegExMatch(setupFlags, '\br(a|after)\b'))
                 NotificationUI.Prototype.DefineProp("AfterSetup", { Call: (*) => {} })
         }
-        SoundPlay("D:\3. Downloads\Music\mixkit-positive-notification-951.wav")
+        if (RegExMatch(setupFlags, '\b(s|sound)\b'))
+            SoundPlay("D:\3. Downloads\Music\mixkit-positive-notification-951.wav")
         this.Show("NoActivate")
         WinSetTransColor(this.defaultBackgroundColor, title)
         WinSetTransparent(this.transparencyValue, title)
@@ -62,6 +63,9 @@ class NotificationUI {
     AfterSetup() {
     }
     WordWrap(text, limit) {
+        if (StrLen(text) - 1 < 2 * limit) {
+            text := RegExReplace(text, "\n->", " ->")
+        }
         pattern := '\n|[ \t]+|\S+'
         words := []
         pos := 1
@@ -119,8 +123,8 @@ class NotificationUI {
             screenW := A_ScreenWidth
             screenH := A_ScreenHeight
         }
-        xPos := screenW - this.guiPos.w
-        yPos := screenH - this.guiPos.h
+        xPos := screenW - this.guiPos.w - 10
+        yPos := screenH - this.guiPos.h - 50
         if (this.timeout = 0) {
             yPos -= 40
             xPos -= 20

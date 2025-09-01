@@ -51,11 +51,11 @@ try {
         Write-Host "✅ $msg"
     }
     else {
-        Write-Host "ℹ️ Không có thay đổi để commit."
+        Write-Host "No change to commit!"
     }
 }
 catch {
-    Write-Error "❌ Lỗi khi chạy git: $_"
+    Write-Error "Error while git add .: $_"
 }
 finally {
     Pop-Location

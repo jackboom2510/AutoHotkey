@@ -54,13 +54,21 @@
                 "!x": {"key": ",", "condition": [["GetWindowStatus", [1, "TechSmith Camtasia 2025"]]]},
                 "!z": {"key": ".", "condition": [["GetWindowStatus", [1, "TechSmith Camtasia 2025"]]]},
                 "!q": {"key": "{BackSpace}", "condition": [["GetOption", 1]]},
+                "!^q": {"key": "^{Backspace}", "condition": [["GetOption", 1]]},
                 "!e": {"key": "{Enter}", "condition": [["GetOption", 1]]},
+                "!^e": {"key": "^{Enter}", "condition": [["GetOption", 1]]},
                 "!+i": {"key": "{WheelUp}", "condition": [["GetOption", 1]]},
                 "!+k": {"key": "{WheelDown}", "condition": [["GetOption", 1]]},
                 "!+j": {"key": "{WheelLeft}", "condition": [["GetOption", 1]]},
                 "!+l": {"key": "{WheelRight}", "condition": [["GetOption", 1]]},
                 "!n": {"key": "{Click}", "condition": [["GetOption", 1]]},
-                "!'": {"key": "{End}{Enter}", "condition": [["GetOption", 1]]}
+                "!'": {"key": "{End}{Enter}", "condition": [["GetOption", 1]]},
+                "!End": {"key": "{WheelDown}", "condition": [["GetOption", 1]]},
+                "!Home": {"key": "{WheelUp}", "condition": [["GetOption", 1]]},
+                "j": {"key": "z", "condition": [["GetWindowStatus", [1, "Stick It To The Stickman"]]]},
+                "k": {"key": "x", "condition": [["GetWindowStatus", [1, "Stick It To The Stickman"]]]},
+                "l": {"key": "c", "condition": [["GetWindowStatus", [1, "Stick It To The Stickman"]]]}
+
             },
             "section": "🤖 SIMULATION"
         },
@@ -213,9 +221,9 @@
             "args": [2, 3, 1],
             "description": "Configure monitor settings based on the argument value.",
             "hotkeys": [
-                {"key": "+!1", "condition": [["GetWindowStatus", [0, "ahk_exe Code.exe"]]]},
-                {"key": "+!2", "condition": [["GetWindowStatus", [0, "ahk_exe Code.exe"]]]},
-                {"key": "+!3", "condition": [["GetWindowStatus", [0, "ahk_exe Code.exe"]]]}
+                {"key": "+!1", "condition": [["GetWindowStatus", [0, "ahk_exe Code.exe"]], ["GetWindowStatus", [0, "ahk_exe Cursor.exe"]]]},
+                {"key": "+!2", "condition": [["GetWindowStatus", [0, "ahk_exe Code.exe"]], ["GetWindowStatus", [0, "ahk_exe Cursor.exe"]]]},
+                {"key": "+!3", "condition": [["GetWindowStatus", [0, "ahk_exe Code.exe"], ["GetWindowStatus", [0, "ahk_exe Cursor.exe"]]]]}
             ],
             "section": "🖥️ DEVICES SETTINGS"
         },

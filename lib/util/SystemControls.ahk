@@ -1,4 +1,5 @@
 #Include <ui\StatusOverlay>
+#Include <ui\NotificationUI>
 global currentProjectMode := false
 global EN := "0x0409"
 global VI := "0x042A"
@@ -46,11 +47,11 @@ ToggleProjectMode() {
     displaySwitchPath := A_WinDir . "\System32\DisplaySwitch.exe"
     if (currentProjectMode = 0) {
         Run displaySwitchPath " /extend"
-        TrayTip "Switched to: Extend (Desktop duplicated and extended to second screen)", "Project Mode"
+        NotificationUI "Switched to: Extend (Desktop duplicated and extended to second screen)", "Project Mode"
         OutputDebug "Switched to: Extend Mode"
     } else {
         Run displaySwitchPath " /external"
-        TrayTip "Switched to: Second screen only (Only the external display is active)", "Project Mode"
+        NotificationUI "Switched to: Second screen only (Only the external display is active)", "Project Mode"
         OutputDebug "Switched to: Second Screen Only Mode"
     }
 }

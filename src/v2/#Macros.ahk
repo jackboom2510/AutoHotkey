@@ -9,6 +9,7 @@
 #Include <util\Timer>
 #Include utils.ahk
 
+
 overlay := StatusOverlay(, 'y863 w18 h24 bg1Green bg2Red')
 options := KeyBindingUI(['Button', 'Hotkeys', 'xp-80 yp w75', (*) => ShowHotkeys(), 'Show Hotkeys'])
 SetTimer (*) => options.Hide(), -3000

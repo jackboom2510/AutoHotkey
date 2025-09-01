@@ -245,7 +245,8 @@ ExpandEnvVars(str) {
 A_TrayMenu.Delete()
 A_TrayMenu.AddStandard()
 A_TrayMenu.Insert("&Suspend Hotkeys", "Reload Script", (*) => Reload())
-A_TrayMenu.Insert("&Suspend Hotkeys", "Edit Script", (*) => Run("*edit " "C:\Users\jackb\Documents\AutoHotkey\src\v2\FavoriteMenu.ahk"
+A_TrayMenu.Insert('&Suspend Hotkeys', 'Edit Script', (*) => Run(
+    '"D:\2. Program Files\cursor\Cursor.exe" "C:\Users\jackb\Documents\AutoHotkey\src\v2\FavoriteMenu.ahk"'
 ))
 A_TrayMenu.Insert("&Suspend Hotkeys")
 A_TrayMenu.Insert("E&xit")

@@ -7,6 +7,7 @@ Persistent
 #Include <core\Log>
 GoogleTranslate(isSelected := true, from := "en", to := "vi", notificationFormat := "{}`n-> {}") {
     if (isSelected) {
+        ; global startTranslateTime := A_TickCount
         oldClipboard := A_Clipboard
         A_Clipboard := ""
         Send "^c"
@@ -71,7 +72,7 @@ GoogleTranslate(isSelected := true, from := "en", to := "vi", notificationFormat
             if (StrSplit(textToTranslate, ' `t`n').Length <= 5)
                 NotificationUI.Prototype.DefineProp("AfterSetup", { Call: AfterSetup })
             NotificationUI(Format(notificationFormat, textToTranslate, translatedText), Format(
-                'Google Translate {} -> {}', from, to), 't10 ra w')
+                'Google Translate {} -> {}', from, to), 't10 ra')
         }
         catch as e {
             NotificationUI("Error parsing JSON: " e.Message)
@@ -80,31 +81,33 @@ GoogleTranslate(isSelected := true, from := "en", to := "vi", notificationFormat
 }
 
 AfterSetup(this) {
-    content := this.fullPromt
-    RegExMatch(content, "(.*)(\s+|\n)?->", &word)
-    word := word[1]
-    phonetics := []
-    words := StrSplit(word, ' ')
-    for token in StrSplit(word, ' ')
-        phonetics.Push(GetPhonetics(token))
-    if (phonetics.Length != 0) {
-        fullPhonetics := ""
-        for idx, token in phonetics {
-            if (token = " " || idx = phonetics.Length || token = "")
-                continue
-            token := RegExReplace(token, '/', '')
-            fullPhonetics .= token
-            if (idx != phonetics.Length)
-                fullPhonetics .= ' '
+    if (RegExMatch(this.fullPromt, "(.*)(\s+|\n)?->", &word)) {
+        word := word[1]
+        words := StrSplit(word, ' ')
+        phonetics := []
+        for token in StrSplit(word, ' ')
+            phonetics.Push(GetPhonetics(token))
+        if (phonetics.Length != 0) {
+            fullPhonetics := ""
+            for idx, token in phonetics {
+                token := RegExReplace(token, '/', '')
+                fullPhonetics .= token
+            }
+            fullPhonetics := RTrim(fullPhonetics)
+            if (fullPhonetics != '' && fullPhonetics != ' ') {
+                this.gui.AddEdit("r2 +VScroll w" this.guiPos.w - 25, '/' fullPhonetics '/')
+                this.guiPos.h += 60
+            }
         }
-        ; if (fullPhonetics != '' && fullPhonetics != ' ') {
-            this.gui.AddEdit("r2 +VScroll w" this.guiPos.w - 25, '/' fullPhonetics '/')
-            this.guiPos.h += 60
-        ; }
+        playBtn := this.gui.AddButton("Center h30 w" this.guiPos.w - 25, "🔊 Audio")
+        playBtn.OnEvent("Click", (*) => PlayAudio(word))
+        this.guiPos.h += 30
+        PlayAudio(word)
+        ; global startTranslateTime
+        ; this.StatusBar := this.gui.AddStatusBar()
+        ; this.StatusBar.SetText("Running time: " A_TickCount - startTranslateTime)
+        ; this.guiPos.h += 30
     }
-    playBtn := this.gui.AddButton("Center h30 w" this.guiPos.w - 25, "🔊 Audio")
-    playBtn.OnEvent("Click", (*) => PlayAudio(word))
-    this.guiPos.h += 30
 }
 
 GetPhonetics(word) {
@@ -127,7 +130,7 @@ GetPhonetics(word) {
 
 PlayAudio(word) {
     url := "https://translate.google.com/translate_tts?ie=UTF-8&tl=en&client=tw-ob&q=" UrlEncode(word)
-    tmp := A_Temp "\tts.mp3"
+    tmp := "C:\Users\jackb\Documents\AutoHotkey\temp\tts.mp3"
     try {
         Download(url, tmp)
         SoundPlay(tmp)
