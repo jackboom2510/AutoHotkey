@@ -48,7 +48,7 @@ try {
         $ts = Get-Date -Format 'HH:mm - dd/MM/yyyy'
         $msg = "Daily Commit #$($state.Counter) ($ts)"
         git commit -m $msg
-        Write-Host "✅ $msg"
+        Write-Host "$msg"
     }
     else {
         Write-Host "No change to commit!"

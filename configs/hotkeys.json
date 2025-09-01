@@ -119,7 +119,7 @@
             "hasSimilar": true,
             "section": "⏯️ TOGGLE KEYS"
         },
-        "UserFunc.uCallIf": {
+        "UserFuncs.uCallIf": {
             "description": "Call a user-defined function if a condition is met.",
             "args": [
                 [
@@ -140,7 +140,7 @@
             "hasSimilar": true,
             "section": "✨ Run"
         },
-        "UserFunc.uRun": {
+        "UserFuncs.uRun": {
             "description": "Run Specific Function with arguments",
             "hotkeys": [
                 {"key": "#p", "condition": [["GetOption", 1]]},

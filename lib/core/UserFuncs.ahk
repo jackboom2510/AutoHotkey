@@ -12,7 +12,7 @@ Slice(this, start := 1, end := "") {
     return out
 }
 
-class UserFunc {
+class UserFuncs {
     ; --- Universal Call ---
     static uCall(callable, args*) {
         if callable is Func || callable is BoundFunc
@@ -29,14 +29,14 @@ class UserFunc {
     }
     ; --- IfCall ---
     static uCallIf(condition, trueDo := "", falseDo := "", args*) {
-        result := UserFunc.uCall(condition, args*)
+        result := UserFuncs.uCall(condition, args*)
         if result && trueDo {
             args2 := (trueDo.Length = 1) ? [] : (trueDo[2] is Array ? trueDo[2] : trueDo.Slice(2))
-            return UserFunc.uCall(trueDo[1], args2*)
+            return UserFuncs.uCall(trueDo[1], args2*)
         }
         else if !result && falseDo {
             args2 := (falseDo.Length = 1) ? [] : (falseDo[2] is Array ? falseDo[2] : falseDo.Slice(2))
-            return UserFunc.uCall(falseDo[1], args2*)
+            return UserFuncs.uCall(falseDo[1], args2*)
         }
     }
     ; --- Multi-call with modes ---
@@ -48,13 +48,13 @@ class UserFunc {
                 acc := ""
                 for idx, fn in calls {
                     args2 := (fn.Length = 1) ? [] : (fn[2] is Array ? fn[2] : fn.Slice(2))
-                    acc := (idx = 1) ? UserFunc.uCall(fn[1], args2*) : UserFunc.uCall(fn[1], acc, args2*)
+                    acc := (idx = 1) ? UserFuncs.uCall(fn[1], args2*) : UserFuncs.uCall(fn[1], acc, args2*)
                 }
                 return acc
             default:
                 for fn in calls {
                     args2 := (fn.Length = 1) ? [] : (fn[2] is Array ? fn[2] : fn.Slice(2))
-                    results.Push(UserFunc.uCall(fn[1], args2*))
+                    results.Push(UserFuncs.uCall(fn[1], args2*))
                 }
                 switch mode {
                     case "first": return results[1]
@@ -72,14 +72,14 @@ class UserFunc {
                         for r in results
                             out .= r
                         return out
-                    default: throw Error("UserFunc.uCalls: unknown mode → " mode)
+                    default: throw Error("UserFuncs.uCalls: unknown mode → " mode)
                 }
         }
     }
     static uRun(calls*) {
         for fn in calls {
             args2 := (fn.Length = 1) ? [] : (fn[2] is Array ? fn[2] : fn.Slice(2))
-            UserFunc.uCall(fn[1], args2*)
+            UserFuncs.uCall(fn[1], args2*)
         }
     }
 }

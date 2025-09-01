@@ -8,10 +8,16 @@ moveOverlay := StatusOverlay(
     Format('bg1{} tx1{} bg2{} tx2{} y{}',
         "FF5722", "ffffff",   ; trạng thái >>
         "4A90E2", "ffffff",   ; trạng thái >
-        42
+        32,
     ),
     'p{OnIcon}>>', 'p{OffIcon}>'
 )
+
+moveOverlay.statusTextControl.OnEvent("Click", (*) => UserFuncs.uCallIf(
+    "moveOverlay.ToggleScript",
+    ["DynamicSet", "moveDistance", 15],
+    ["DynamicSet", "moveDistance", 5]
+))
 
 MoveMouseByPixels(upKey, downKey, leftKey, rightKey, modifierKey, freq := 25) {
     global moveDistance, mouseSpeed
@@ -23,9 +29,10 @@ MoveMouseByPixels(upKey, downKey, leftKey, rightKey, modifierKey, freq := 25) {
         global isMovingByKey, moveDistance, mouseSpeed
         if modifierKey = "" || GetKeyState(modifierKey, "P") {
             if isMovingByKey := (x := moveDistance * (GetKeyState(rightKey, "P") - GetKeyState(leftKey, "P")))
-            | (y := moveDistance * (GetKeyState(downKey, "P") - GetKeyState(upKey, "P"))) {
+                | (y := moveDistance * (GetKeyState(downKey, "P") - GetKeyState(upKey, "P"))) {
                 MouseMove x, y, mouseSpeed, "R"
-            } else {
+            }
+            else {
                 try SetTimer , 0
             }
         } else {

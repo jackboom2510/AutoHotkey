@@ -34,7 +34,7 @@ A_TrayMenu.Insert('&Suspend Hotkeys', 'Recompile Script', (*) => (
 ))
 if (A_IsCompiled) {
     A_TrayMenu.Insert('&Suspend Hotkeys', 'Reload Script', (*) => Reload())
-    A_TrayMenu.Insert('&Suspend Hotkeys', 'Edit Script', (*) => Run('*edit ' scriptPath))
+    A_TrayMenu.Insert('&Suspend Hotkeys', 'Edit Script', (*) => Run('"D:\2. Program Files\cursor\Cursor.exe" "' scriptPath '"'))
     A_TrayMenu.Insert('&Suspend Hotkeys')
 }
 A_TrayMenu.Insert('E&xit')
