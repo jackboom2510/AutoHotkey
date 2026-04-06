@@ -1,8 +1,6 @@
-#SingleInstance Force
-Persistent
-
-#include <core\Log>
+#Include <core\Core>
 #Include <core\KeyBinding>
+
 ;@Ahk2Exe-SetMainIcon exchange.ico
 
 class HotstringUI {
@@ -10,23 +8,21 @@ class HotstringUI {
     name := "Macro"
     guiOpts := "AlwaysOnTop"
     isAlwaysOnTop := true
-    guiPos := {
-        x: 1,
-        y: 1,
-        w: 0,
-        h: 0
-    }
-    transparency := {
-        value: 255,
-        min: 1,
-        max: 255,
-        step: 15
-    }
-    defaultConfigPath := "C:\Users\jackb\Documents\AutoHotkey\configs\hotstring.config"
+    guiPos := { x: 1, y: 1, w: 0, h: 0 }
+    transparency := { value: 255, min: 1, max: 255, step: 15 }
+    defaultConfigPath := "D:\Documents\AutoHotkey\configs\hotstring.config"
     defaultCheckboxState := true
     case_sensitive := false
-    hstrOpts := ['', 'T', 'T*', 'ST', 'ST*', '*', 'More...']
-    hstrOpt := "ST*"
+    hstrOpts := [
+        '',
+        'T',
+        'T*',
+        'ST',
+        'ST*',
+        '*',
+        'More...'
+    ]
+    hstrOpt := "T*"
 
     __New(options := "", args*) {
         if (this.hasProp("guiID")) {
@@ -111,32 +107,6 @@ class HotstringUI {
         }
 
     }
-    OriginalLoadConfig(configPath := this.defaultConfigPath) {
-        idx := 1
-        loop parse FileRead(configPath, "UTF-8"), '`n', '`r' {
-            if RegExMatch(A_LoopField, '^\*\*\*(.*)\*\*\*') {
-                RegExMatch(A_LoopField, '^\*\*\*(.*)\*\*\*', &setting)
-                setting := StrSplit(setting[1], ':', , 2)
-                this.%setting[1]% := (setting[2] = "true") || (setting[2] = "1")
-                this.settings[setting[1]] := setting[2]
-                continue
-            }
-            try {
-                text := A_LoopField
-                if (text != "") {
-                    pair := StrSplit(text, ':', , 2)
-                    this.hotstringMap[pair[1]] := [pair[2], idx]
-                    this.hotstringCB.Push([this.defaultCheckboxState, pair[1]])
-                    idx := idx + 1
-                }
-            }
-            catch as err {
-                errMsg := "Error: " err.Message
-                TrayTip("Wrong File! Try Again!`nError when read line " A_index ': "' A_LoopField '"', errMsg, 3)
-                return
-            }
-        }
-    }
     LoadConfig(configPath := this.defaultConfigPath) {
         idx := 1
         fileContent := FileRead(configPath, "UTF-8")
@@ -149,14 +119,36 @@ class HotstringUI {
                 i++
                 continue
             }
+
+            ; --- Xử lý dòng cấu hình ***
             if RegExMatch(currentLine, '^\*\*\*(.*)\*\*\*') {
                 RegExMatch(currentLine, '^\*\*\*(.*)\*\*\*', &setting)
                 setting := StrSplit(setting[1], ':', , 2)
-                this.%setting[1]% := (setting[2] = "true") || (setting[2] = "1") ? true : setting[2]
-                this.settings[setting[1]] := setting[2]
+
+                key := Trim(setting[1])
+                rawValue := Trim(setting[2])
+                value := ""
+
+                ; --- Xử lý boolean / number / string
+                if (rawValue = "true")
+                    value := true
+                else if (rawValue = "false")
+                    value := false
+                else if RegExMatch(rawValue, '^\d+$')  ; integer
+                    value := rawValue + 0
+                else if RegExMatch(rawValue, '^".*"$') ; string có ngoặc kép
+                    value := SubStr(rawValue, 2, StrLen(rawValue) - 2)
+                else
+                    value := rawValue ; fallback: giữ nguyên string
+
+                ; --- Gán vào object
+                this.%key% := value
+                this.settings[key] := value
                 i++
                 continue
             }
+
+            ; --- Xử lý hotstring bình thường ---
             try {
                 pair := StrSplit(currentLine, ':', , 2)
                 if (pair.Length < 2) {
@@ -166,10 +158,11 @@ class HotstringUI {
 
                 hotstringTrigger := pair[1]
                 hotstringReplacement := pair[2]
+
+                ; --- Hotstring nhiều dòng ---
                 if (Trim(hotstringReplacement) = "(") {
                     multiLineContent := []
                     i++
-
                     while (i <= lines.Length) {
                         nextLine := lines[i]
                         if (Trim(nextLine) = "") {
@@ -194,8 +187,16 @@ class HotstringUI {
                             hotstringReplacement .= '`n'
                     }
                 }
-                this.hotstringMap[hotstringTrigger] := [hotstringReplacement, idx]
-                this.hotstringCB.Push([this.defaultCheckboxState, hotstringTrigger])
+
+                ; --- Lưu vào map
+                this.hotstringMap[hotstringTrigger] := [
+                    hotstringReplacement,
+                    idx
+                ]
+                this.hotstringCB.Push([
+                    this.defaultCheckboxState,
+                    hotstringTrigger
+                ])
                 idx := idx + 1
             }
             catch as err {
@@ -212,7 +213,10 @@ class HotstringUI {
         this.gui.AddText(controlOpts 'w95 x+10 yp', "&Cài đặt")
         this.replace := this.gui.AddEdit(controlOpts 'w90 xm+5 r2 VScroll')
         this.by := this.gui.AddEdit(controlOpts "w390 yp r2 VScroll")
-        this.opts := this.gui.AddDropDownList(controlOpts "w105 yp vopts Choose2", this.hstrOpts)
+        if !this.hstrOpts.IndexOf(this.hstrOpt)
+            this.hstrOpts.InsertAt(2, this.hstrOpt)
+        this.opts := this.gui.AddDropDownList(controlOpts "w105 yp vopts Choose" this.hstrOpts.IndexOf(this.hstrOpt),
+        this.hstrOpts)
         this.hstrOpt := this.opts.text
         this.SetupUpListView
 
@@ -224,16 +228,27 @@ class HotstringUI {
         this.editBtn := this.gui.AddButton(controlOpts 'w100 xp yp', "&Sửa")
         this.delBtn := this.gui.AddButton(controlOpts 'w100', "&Xóa")
 
-        this.gui.AddText('xm y+10', 'View Mode').SetFont('italic')
-        this.lv_viewMode := this.gui.AddDDL('x+10 yp-5 w80 Choose1', ['Default', 'List', 'Icon', 'Icon Small'])
+        this.gui.AddText('xm y+10', 'View Mode')
+        .SetFont('italic')
+        this.lv_viewMode := this.gui.AddDDL('x+10 yp-5 w80 Choose1', [
+            'Default',
+            'List',
+            'Icon',
+            'Icon Small'
+        ])
         ; this.lv_filterBy := this.gui.AddDDL('x+10 yp-5 w100 Choose1', ['Default', 'List', 'Icon', 'Icon Small'])
-        this.lv_filter := this.gui.AddDDL('x+10 yp w80 Choose1', ['All', 'Text', 'Fucntion'])
+        this.lv_filter := this.gui.AddDDL('x+10 yp w80 Choose1', [
+            'All',
+            'Text',
+            'Fucntion'
+        ])
         this.lv_search := this.gui.AddEdit('yp w250 r1', 'Search')
         this.lv_search.SetFont('italic')
 
         this.caseSen := this.gui.AddCheckbox(controlOpts 'xm', "Tự động đổi chữ hoa theo phím tắt")
         this.caseSen.Value := this.case_sensitive
-        this.gui.AddText(controlOpts 'w400', "(Định nghĩa: vn=việt nam, Auto: VN=VIỆT NAM, Vn=Việt nam)").SetFont(
+        this.gui.AddText(controlOpts 'w400', "(Định nghĩa: vn=việt nam, Auto: VN=VIỆT NAM, Vn=Việt nam)")
+        .SetFont(
             'italic')
         this.gui.AddText(controlOpts 'w70', "File gõ tắt:")
         this.file := this.gui.AddText(controlOpts "yp", this.defaultConfigPath)
@@ -244,7 +259,7 @@ class HotstringUI {
         this.defaultFile := this.gui.AddButton(controlOpts 'w150 x+22 yp', "File &mặc định")
         this.editConfigFileBtn := this.gui.AddButton(controlOpts 'w150 x+23 yp', '&Mở File')
     }
-    SetupIML(capacity := 2, iconPath := "C:\Users\jackb\Documents\AutoHotkey\assets\icon\") {
+    SetupIML(capacity := 2, iconPath := "D:\Documents\AutoHotkey\assets\icon\") {
         this.ImageListID := IL_Create(2)
         IL_Add(this.ImageListID, iconPath 'text.ico')
         IL_Add(this.ImageListID, iconPath 'function.ico')
@@ -253,7 +268,10 @@ class HotstringUI {
         this.SetupIML()
 
         this.listView := this.gui.AddListView(
-            'xm w500 r10 Checked -Hdr -Multi', ['1', '2']
+            'xm w500 r10 Checked -Hdr -Multi', [
+                '1',
+                '2'
+            ]
         )
         this.listView.SetImageList(this.ImageListID)
         for key, value in this.hotstringMap
@@ -355,7 +373,10 @@ class HotstringUI {
                 for idx, val in this.hstrOpts {
                     if (idx = this.hstrOpts.Length) {
                         this.hstrOpts.InsertAt(idx, newVal)
-                        this.opts.Add([newVal, "More..."])
+                        this.opts.Add([
+                            newVal,
+                            "More..."
+                        ])
                         this.opts.Choose(idx)
                         loop this.listView.GetCount() {
                             i := A_Index
@@ -416,6 +437,7 @@ class HotstringUI {
                 hstr := this.listView.GetText(A_index, 1) ":" this.listView.GetText(A_Index, 2)
                 WriteFile(filePath, hstr, 0, 'l')
             }
+            ; ChooseFile(this.defaultConfigPath)
         }
         Del(replace, by) {
             if (this.hotstringMap.Has(replace) && this.hotstringMap[replace][1] = by) {
@@ -495,15 +517,18 @@ class HotstringUI {
         if (notExists) {
             this.addBtn.Enabled := true
             this.addBtn.Visible := true
-        } else if (existsAndDiffers) {
+        }
+        else if (existsAndDiffers) {
             this.editBtn.Enabled := true
             this.editBtn.Visible := true
             this.addBtn.Visible := true
-        } else if (existsAndMatches) {
+        }
+        else if (existsAndMatches) {
             this.delBtn.Enabled := true
             this.editBtn.Visible := true
             this.addBtn.Visible := true
-        } else {
+        }
+        else {
             this.addBtn.Visible := true
             this.editBtn.Visible := true
         }
@@ -513,8 +538,15 @@ class HotstringUI {
         if (!this.hotstringMap.Has(replace)) {
             idx := this.hotstringCB.Length + 1
             UserHotstring(this.hstrOpt, replace, by, 1)
-            this.hotstringMap[replace] := [by, idx]
-            this.hotstringCB.Push([true, replace])
+            this.hotstringMap[replace] := [
+                by,
+                idx
+            ]
+            this.hotstringCB.Push([
+                true,
+                replace
+            ]),
+            Notify("Đã gán thành công hotstring:" this.hstrOpt ":" replace "::" by, , "+ s t5 ci"),
             this.AddLV(replace, by)
             this.listView.Modify(idx, 'Check')
         }
@@ -568,12 +600,7 @@ class HotstringUI {
         ParseArgs(args*)
         return
         ParseOptions(options) {
-            flags := {
-                w: "(\d+)",
-                h: "(\d+)",
-                x: "(\d+)",
-                y: "(\d+)",
-            }
+            flags := { w: "(\d+)", h: "(\d+)", x: "(\d+)", y: "(\d+)", }
             for flag, regex in flags.OwnProps() {
                 while RegExMatch(options, flag . "\{" . regex . "}", &Match) {
                     switch flag {
@@ -600,7 +627,8 @@ class HotstringUI {
                     if (key) {
                         this.%Match[1]% := Match[2]
                     }
-                } else {
+                }
+                else {
                     TrayTip ":x: Invalid argument format in args."
                     OutputDebug ":x: Invalid argument format in args: " arg
                 }
@@ -618,6 +646,10 @@ class HotstringUI {
         if (this.guiPos.h != 0)
             displayOptions .= Format("h{} ", this.guiPos.h)
         this.gui.Show(displayOptions options)
+        if this.allOn
+            this.stopBtn.Focus()
+        else
+            this.resetBtn.Focus()
     }
 
     Toggle() {
@@ -642,14 +674,12 @@ class HotstringUI {
     ToggleAllHotstring() {
         if (this.allOn) {
             SoundBeep(200, 100)
-            ToolTip("Phím tắt đã tắt!")
-            SetTimer(ToolTip, -1500)
+            Notify("Phím tắt đã tắt!", , "+ t2 cDC0E0E")
             this.StopAll()
         }
         else {
             SoundBeep(1000, 100)
-            ToolTip("Phím tắt đã bật!")
-            SetTimer(ToolTip, -1500)
+            Notify("Phím tắt đã bật!", , "+ t2 cCBF3BB")
             this.ResetAll()
         }
         this.allOn := !this.allOn
@@ -661,6 +691,7 @@ UserHotstring(hstrOpt := "", abb := "", full := "", state := -1) {
         RegExMatch(full, '^%\s*(?P<funcExp>.*)', &fn)
         full := fn.funcExp
         ; _wl("Đã gán thành công hotstring [" state "] :" hstrOpt ":" abb "::" full)
+        ; Notify("Đã gán thành công hotstring [" state "] :" hstrOpt ":" abb "::" full, , "+ s t5 ci")
         ; Outputdebug("Đã gán thành công hotstring [" state "] :" hstrOpt ":" abb "::" full)
         Hotstring(':' hstrOpt ':' abb, (*) => RunParsedCode(full), state)
     }
@@ -669,7 +700,7 @@ UserHotstring(hstrOpt := "", abb := "", full := "", state := -1) {
     return
 }
 RunParsedCode(expr, *) {
-    tempFile := 'C:\Users\jackb\Documents\AutoHotkey\temp' "\run_temp.ahk"
+    tempFile := 'D:\Documents\AutoHotkey\temp' "\run_temp.ahk"
     fileObj := FileOpen(tempFile, 'w', 'UTF-8')
     code := Format("
     (
@@ -688,30 +719,31 @@ RunParsedCode(expr, *) {
 
 macro := HotstringUI()
 BindingScript()
+SetTimer (*) => macro.gui.Hide(), -3000
 
 A_TrayMenu.Delete()
 A_TrayMenu.AddStandard()
 A_TrayMenu.Insert('&Suspend Hotkeys', 'Recompile Script', (*) => (
     Run(
-        'cmd /c ""C:\Users\jackb\Documents\AutoHotkey\bin\build\ahk2exe-compile.bat" "C:\Users\jackb\Documents\AutoHotkey\src\v2\Hotstring.ahk" & pause"'
+        'cmd /c ""D:\Documents\AutoHotkey\bin\build\ahk2exe-compile.bat" "D:\Documents\AutoHotkey\src\v2\Hotstring.ahk" & pause"'
     ),
     TrayTip('Compile Success: Hotstring.ahk', 'Success!', 1)
 ))
 if (A_IsCompiled) {
     A_TrayMenu.Insert("&Suspend Hotkeys", "Reload Script", (*) => Reload())
     A_TrayMenu.Insert('&Suspend Hotkeys', 'Edit Script', (*) => Run(
-        '"D:\2. Program Files\cursor\Cursor.exe" "C:\Users\jackb\Documents\AutoHotkey\src\v2\Hotstring.ahk"'
+        'edit* "D:\Documents\AutoHotkey\src\v2\Hotstring.ahk"'
     ))
     A_TrayMenu.Insert("&Suspend Hotkeys")
 }
 A_TrayMenu.Insert("E&xit")
-A_TrayMenu.Insert("E&xit", "&Open File Location", (*) => Run("*open " "C:\Users\jackb\Documents\AutoHotkey\src\v2\"))
+A_TrayMenu.Insert("E&xit", "&Open File Location", (*) => Run("*open " "D:\Documents\AutoHotkey\src\v2\"))
 A_TrayMenu.SetIcon("&Open File Location", "shell32.dll", 4)
 A_TrayMenu.Insert("E&xit", "Show Hotkeys", (*) => ShowHotkeys(, , 4))
 A_TrayMenu.SetIcon("Show Hotkeys", "shell32.dll", 24)
 A_TrayMenu.Insert("E&xit")
 A_TrayMenu.Insert("E&xit", "&Show/&Hide", (*) => macro.Toggle())
-A_TrayMenu.SetIcon("&Show/&Hide", "C:\Users\jackb\Documents\AutoHotkey\assets\icon\exchange.ico")
+A_TrayMenu.SetIcon("&Show/&Hide", "D:\Documents\AutoHotkey\assets\icon\exchange.ico")
 A_TrayMenu.Insert("E&xit", "AlwaysOnTop", (*) => macro.ToggleAOT())
 A_TrayMenu.Check("AlwaysOnTop")
 

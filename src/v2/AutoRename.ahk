@@ -5,7 +5,7 @@ Persistent()
 ;@Ahk2Exe-SetMainIcon rename.ico
 
 class AutoRenameTool {
-    configFile := 'file:///C:\Users\jackb\Documents\AutoHotkey\configs\config.ini'
+    configFile := 'file:///D:\Documents\AutoHotkey\configs\config.ini'
     name := 'AutoRenameTool'
     maxRecent := 10
     recentArray := []

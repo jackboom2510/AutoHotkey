@@ -1,5 +1,5 @@
 #Include <ui\StatusOverlay>
-#Include <ui\NotificationUI>
+#Include <core\Core>
 global currentProjectMode := false
 global EN := "0x0409"
 global VI := "0x042A"
@@ -37,7 +37,7 @@ ChangeHKL(what := EN) {
 ChangeLangLayout(soundEnabled := true, lang1 := EN, lang2 := VI) {
     ChangeHKL((CurrentLLayout = lang1) ? lang2 : lang1)
     HotIf (*) => soundEnabled
-    SoundPlay('C:\Users\jackb\Documents\AutoHotkey\assets\sound\success_sfx.wav')
+    SoundPlay('D:\Documents\AutoHotkey\assets\sound\success_sfx.wav')
     HotIf
     LangOverlay.ToggleScript()
 }
@@ -47,11 +47,26 @@ ToggleProjectMode() {
     displaySwitchPath := A_WinDir . "\System32\DisplaySwitch.exe"
     if (currentProjectMode = 0) {
         Run displaySwitchPath " /extend"
-        NotificationUI "Switched to: Extend (Desktop duplicated and extended to second screen)", "Project Mode"
+        Notify "Switched to: Extend (Desktop duplicated and extended to second screen)", "Project Mode"
         OutputDebug "Switched to: Extend Mode"
-    } else {
+    }
+    else {
         Run displaySwitchPath " /external"
-        NotificationUI "Switched to: Second screen only (Only the external display is active)", "Project Mode"
+        Notify "Switched to: Second screen only (Only the external display is active)", "Project Mode"
         OutputDebug "Switched to: Second Screen Only Mode"
     }
+}
+
+SetDPI(scale) {
+    dpiValue := 96 * (scale / 100)
+    RegWrite("REG_DWORD", dpiValue, "HKEY_CURRENT_USER\Control Panel\Desktop\WindowMetrics", "AppliedDPI")
+
+    DllCall("SendMessageTimeout"
+        , "Ptr", 0xFFFF    ; HWND_BROADCAST
+        , "UInt", 0x1A     ; WM_SETTINGCHANGE
+        , "Ptr", 0
+        , "Str", "WindowMetrics"
+        , "UInt", 2        ; SMTO_ABORTIFHUNG
+        , "UInt", 5000
+        , "Ptr*", 0)
 }

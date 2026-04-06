@@ -24,7 +24,6 @@
 ; Explorer window will be opened to display the contents of that
 ; folder.
 
-
 g_Hotkey := "!MButton"
 second_gHotkey := "!+,"
 
@@ -39,14 +38,13 @@ ITEMS IN FAVORITES MENU <-- Do not change this string.
 Desktop      ; %USERPROFILE%\Desktop
 Favorites    ; %USERPROFILE%\Favorites
 Documents    ; %USERPROFILE%\Documents
-AutoHotkey   ; C:\Users\jackb\Documents\AutoHotkey
+AutoHotkey   ; D:\Documents\AutoHotkey
 
 Program Files; %PROGRAMFILES%
 
 Convertio.co ; https://convertio.co/vn/
 Ahkv2_Documentation ; https://www.autohotkey.com/docs/v2/
 */
-
 
 ; END OF CONFIGURATION SECTION
 ; Do not make changes below this point unless you want to change
@@ -71,7 +69,7 @@ if SubStr(g_Hotkey, 1, 1) = "~"  ; Show menu only for certain window types.
     g_AlwaysShowMenu := false
 
 if A_IsCompiled {  ; Read the menu items from an external file.
-    FavoritesFile := "C:\Users\jackb\Documents\AutoHotkey\configs\favorites.ini"
+    FavoritesFile := "D:\Documents\AutoHotkey\configs\favorites.ini"
 }
 else  ; Read the menu items directly from this script file.
     FavoritesFile := A_ScriptFullPath
@@ -125,7 +123,7 @@ loop read, FavoritesFile {
 
 GetWebIcon(domain, menu, itemName) {
     url := "https://icons.duckduckgo.com/ip3/" domain ".ico"
-    tmpFile := "C:\Users\jackb\Documents\AutoHotkey\temp\favicon_" domain ".ico"
+    tmpFile := "D:\Documents\AutoHotkey\temp\favicon_" domain ".ico"
 
     try {
         Download(url, tmpFile)
@@ -196,7 +194,6 @@ OpenFavorite(ItemName, ItemPos, *) {
     Run "explorer " path  ; Might work on more systems without double quotes.
 }
 
-
 ;----Display the menu
 DisplayMenu(*) {
     ; These first few variables are set here and used by OpenFavorite:
@@ -221,14 +218,13 @@ GetActiveExplorerTab(hwnd := WinExist("A")) {
         try activeTab := ControlGetHwnd("TabWindowClass1", hwnd) ; IE
     for w in ComObject("Shell.Application").Windows {
         if w.hwnd != hwnd
-            continue
-        if activeTab { ; The window has tabs, so make sure this is the right one.
-            static IID_IShellBrowser := "{000214E2-0000-0000-C000-000000000046}"
-            shellBrowser := ComObjQuery(w, IID_IShellBrowser, IID_IShellBrowser)
-            ComCall(3, shellBrowser, "uint*", &thisTab := 0)
-            if thisTab != activeTab
-                continue
-        }
+            if activeTab { ; The window has tabs, so make sure this is the right one.
+                static IID_IShellBrowser := "{000214E2-0000-0000-C000-000000000046}"
+                shellBrowser := ComObjQuery(w, IID_IShellBrowser, IID_IShellBrowser)
+                ComCall(3, shellBrowser, "uint*", &thisTab := 0)
+                if thisTab != activeTab
+                    continue
+            }
         return w
     }
 }
@@ -246,11 +242,11 @@ A_TrayMenu.Delete()
 A_TrayMenu.AddStandard()
 A_TrayMenu.Insert("&Suspend Hotkeys", "Reload Script", (*) => Reload())
 A_TrayMenu.Insert('&Suspend Hotkeys', 'Edit Script', (*) => Run(
-    '"D:\2. Program Files\cursor\Cursor.exe" "C:\Users\jackb\Documents\AutoHotkey\src\v2\FavoriteMenu.ahk"'
+    'edit* "D:\Documents\AutoHotkey\src\v2\FavoriteMenu.ahk"'
 ))
 A_TrayMenu.Insert("&Suspend Hotkeys")
 A_TrayMenu.Insert("E&xit")
-A_TrayMenu.Insert("E&xit", "Open File Location", (*) => Run("*open " "C:\Users\jackb\Documents\AutoHotkey\src\v2\"))
+A_TrayMenu.Insert("E&xit", "Open File Location", (*) => Run("*open " "D:\Documents\AutoHotkey\src\v2\"))
 A_TrayMenu.SetIcon("Open File Location", "C:\Windows\System32\shell32.dll", 4)
 A_TrayMenu.Insert("E&xit", "Help", (*) => ShowHotkeys())
 A_TrayMenu.SetIcon("Help", "C:\Windows\System32\shell32.dll", 24)

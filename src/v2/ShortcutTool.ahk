@@ -1,20 +1,20 @@
 ﻿#Requires AutoHotkey v2.0
 #SingleInstance Force
 Persistent()
-;@Ahk2Exe-SetMainIcon C:\Users\jackb\Documents\AutoHotkey\assets\icon\internet.ico
+;@Ahk2Exe-SetMainIcon D:\Documents\AutoHotkey\assets\icon\internet.ico
 
 #Include <core\KeyBinding>
-#Include <util\ShortcutTool>
+#Include <macro\ShortcutTool>
 
 ShortcutToolObj := ShortcutTool()
 BindingScript()
 
-scriptPath := 'C:\Users\jackb\Documents\AutoHotkey\src\v2\#Macros.ahk'
+scriptPath := 'D:\Documents\AutoHotkey\src\v2\Macros.ahk'
 SplitPath(scriptPath, &scriptName, &scriptDir)
 A_TrayMenu.Delete()
 A_TrayMenu.AddStandard()
 A_TrayMenu.Insert('&Suspend Hotkeys', 'Recompile Script', (*) => (
-    Run('cmd /c ""C:\Users\jackb\Documents\AutoHotkey\bin\build\ahk2exe-compile.bat" "' scriptPath '" & pause"'),
+    Run('cmd /c ""D:\Documents\AutoHotkey\bin\build\ahk2exe-compile.bat" "' scriptPath '" & pause"'),
     TrayTip('Compile Success: ' scriptName, 'Success!', 1)
 ))
 if (A_IsCompiled) {

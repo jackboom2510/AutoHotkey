@@ -1,7 +1,9 @@
 class StatusOverlay {
+    static instances := []
+    static globalVisible := true
     gui := ""
     guiTitle := "Status Overlay"
-    guiOpts := "+AlwaysOnTop -Caption +ToolWindow"
+    guiOpts := "+AlwaysOnTop -Caption +ToolWindow +E0x20"
     guiWidth := 18
     guiHeight := 24
     xPos := 0
@@ -21,6 +23,7 @@ class StatusOverlay {
         this.ParseOptions(options)
         this.ParseArgs(args*)
         this.Show()
+        StatusOverlay.instances.Push(this)
     }
     Show() {
         if (this.gui) {
@@ -303,5 +306,32 @@ class StatusOverlay {
         this.statusTextControl.Opt("+Center")
 
         return True
+    }
+    static ToggleAll(toState := "", exceptions := []) {
+        for idx, exc in exceptions {
+            if (exc is String)
+                exceptions[idx] := %exceptions[idx]%
+        }
+        if (toState = "") {
+            this.globalVisible := !this.globalVisible
+        } else {
+            this.globalVisible := toState
+        }
+
+        for inst in this.instances {
+            skip := false
+            for exc in exceptions {
+                if (inst = exc) {
+                    skip := true
+                    break
+                }
+            }
+            if (skip)
+                continue
+            if (this.globalVisible)
+                inst.gui.Show()
+            else
+                inst.gui.Hide()
+        }
     }
 }

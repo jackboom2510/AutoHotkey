@@ -204,7 +204,7 @@ class NClickTracker {
     }
 
     ExportScript() {
-        filePath := 'C:\Users\jackb\Documents\AutoHotkey\test\test.ahk'
+        filePath := 'D:\Documents\AutoHotkey\test\test.ahk'
         header := "#Requires AutoHotkey v2.0.18+" "`n" "#SingleInstance Force" "`n" "Persistent()" "`n`n"
         FileDelete filePath
         FileAppend header, filePath

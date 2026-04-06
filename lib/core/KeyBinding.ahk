@@ -1,6 +1,6 @@
 #Include <core\cJSON>
 #Include <ui\HelpUI>
-hotkeysJSON := "C:\Users\jackb\Documents\AutoHotkey\configs\hotkeys.json"
+hotkeysJSON := "D:\Documents\AutoHotkey\configs\hotkeys.json"
 scripts := cJSON.LoadFile(hotkeysJSON, "UTF-8")
 TextAlign_widths := [2. 3, 5, 8, 15, 20]
 
@@ -36,7 +36,7 @@ BindingScript(input := A_ScriptName, hideTimer := 3) {
                 }
                 catch as Err {
                     OutputDebug "❌ Error running when running " fullFn[1] '.' fullFn[2] ': ' Err.Message
-                    FileOpen("C:\Users\jackb\Documents\AutoHotkey\configs\error_log.txt", 'a').Write(
+                    FileOpen("D:\Documents\AutoHotkey\configs\error_log.txt", 'a').Write(
                         "Error writing to file: " Err.Message "`n")
                 }
             }

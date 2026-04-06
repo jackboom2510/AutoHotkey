@@ -1,4 +1,4 @@
-#include <core\Log>
+#Include <core\Core>
 class HelpUI {
     guiOpts := "+AlwaysOnTop +Resize -DPIScale -Caption"
     __New(title := "🧩 Script Hotkey Help", sections := [], hideTimer := 0, lineLimit := 4) {
@@ -10,7 +10,9 @@ class HelpUI {
         this.LSection := []
         this.RSection := []
         if (title != "") {
-            this.gui.AddText("h30", TextAlign(title, [110], 'r')).SetFont("s12 bold cBlue", "Segoe UI") ; Center title
+            this.gui.AddText("h30", TextAlign(title, [
+                110
+            ], 'r')).SetFont("s12 bold cBlue", "Segoe UI") ; Center title
         }
         currentY := 0
         column1X := 20
@@ -20,7 +22,9 @@ class HelpUI {
 
         for idx, section in sections {
             {
-                sectionTitle := section.HasOwnProp("title") ? TextAlign(section.title, [100], 'r') : ""
+                sectionTitle := section.HasOwnProp("title") ? TextAlign(section.title, [
+                    100
+                ], 'r') : ""
                 unconditionalLines := section.HasOwnProp("unconditionalLines") ? section.unconditionalLines : ""
                 conditionalLines := section.HasOwnProp("conditionalLines") ? section.conditionalLines : ""
                 currentYLeft := 0

@@ -1,5 +1,14 @@
+#Include <core\Core>
+#Include <ui\StatusOverlay>
 global currentKey := ""
 global toggleASend := false
+; Checkbox := [
+;__New(flagCB := "", input_cb := [], args*)
+;     ["Utilities", 1],
+;     [""]
+;     ["Alternative MoveKey", 1],
+;     ["Alternative WheelKey"]
+; ]
 class KeyBindingUI {
     ui := unset
     guiID := ""
@@ -15,10 +24,39 @@ class KeyBindingUI {
     transparencyStep := 15
     transparencyEdit := ""
     transparencyUpDown := ""
-    Checkbox := ["", "", "", ""]
+    lastToggleTime := []
+    Checkbox := [
+        [
+            "Utilities",
+            1
+        ],
+        [
+            ""
+        ],
+        [
+            "Alternative MoveKey",
+            1
+        ],
+        [
+            "Alternative WheelKey"
+        ],
+        [
+            "Monitor Navigate"
+        ],
+        [
+            "Flex Configure"
+        ],
+        [
+            "Alter Click (Down)"
+        ],
+        [
+            "Alternative Copy",
+            1
+        ]
+    ]
     ApplyBtn := ""
     AdditionCtr := []
-    __New(Addition*) {
+    __New(flagCB := "", input_cb := [], args*) {
         if (this.guiID) {
             if (WinExist(this.name " ahk_id " this.guiID))
                 return
@@ -27,53 +65,90 @@ class KeyBindingUI {
         this.guiID := this.ui.hwnd
         this.ui.SetFont("s10", "Verdana")
         this.ui.BackColor := "E0FFFF"
-        this.SetupAll(Addition*)
+        this.SetupAll(flagCB, input_cb, args*)
         this.Show()
-        WinSetTransColor(this.ui.BackColor, this.name)
-        WinSetTransparent(this.transparency, this.name)
-        OnMessage(0x0200, ObjBindMethod(this, "On_WM_MOUSEMOVE"))
-        OnMessage(0x004E, ObjBindMethod(this, "On_WM_NOTIFY"))
+        try WinSetTransColor(this.ui.BackColor, this.name)
+        try WinSetTransparent(this.transparency, this.name)
+        ; OnMessage(0x0200, ObjBindMethod(this, "On_WM_MOUSEMOVE"))
+        ; OnMessage(0x004E, ObjBindMethod(this, "On_WM_NOTIFY"))
         ; OnMessage(0x0100, ObjBindMethod(this, "On_WM_KEYDOWN"))
     }
-    SetUpAll(Addition*) {
-        SetupControls
-        SetupEvents
-        SetupToolTips
-        if (Addition.Length != 0) {
-            for idx, ctrl in Addition {
-                if (ctrl.has(1) && ctrl.has(2) && ctrl.has(3)) {
-                    this.AdditionCtr.Push(this.ui.Add(ctrl[1], ctrl[3], ctrl[2]))
-                }
-                else {
-                    debugStr := "Missing some parameters:`n"
-                    if (!ctrl.has(1))
-                        debugStr .= "- ControlType`n"
-                    if (!ctrl.has(3))
-                        debugStr .= "- Text`n"
-                    if (!ctrl.has(2))
-                        debugStr .= "- Options"
-                    TrayTip(debugStr, "Error!", 3)
-                    OutputDebug(debugStr)
-                }
-                if (ctrl.has(4))
-                    this.AdditionCtr[idx].OnEvent("Click", ctrl[4])
-                if (ctrl.has(5))
-                    this.AdditionCtr[idx].ToolTip := ctrl[5]
+    SetUpAll(flagCB := "", input_cb := [], args*) {
+        if (flagCB = '' || flagCB = 'back') {
+            for , ele in input_cb {
+                this.Checkbox.Push(ele)
             }
         }
+        else if (flagCB = 'front') {
+            for , ele in this.Checkbox {
+                input_cb.Push(ele)
+            }
+            this.Checkbox := input_cb
+        }
+        else if (flagCB = 'replace') {
+            this.Checkbox := input_cb
+        }
+        MoreControls_Original(args*)
+        SetupControls
+        ; MoreControls(args*)
+        SetupEvents
         return
-        SetupControls() {
-            this.tittle := this.ui.AddText("x100 w100 h22", "Options")
-            this.tittle.SetFont("s12 Bold c6200ff", "Verdana")
-            this.Checkbox[1] := this.ui.AddCheckbox("xm", "Utilities")
-            this.Checkbox[1].Value := 1
-            this.Checkbox[2] := this.ui.AddCheckbox("xm", "Disable PgUp && PgDown")
-            this.Checkbox[2].Value := 1
-            this.Checkbox[3] := this.ui.AddCheckbox("xm", "Alternative MoveKey")
-            this.Checkbox[3].Value := 1
-            this.Checkbox[4] := this.ui.AddCheckbox("xm", "The King Is Watching")
-            this.Checkbox[4].Value := 0
-            this.ui.AddEdit("xm w75 +Right").ToolTip := "Adjust " this.name "'s transparency (" this.transparencyMin "–" this
+        MoreControls_Original(args*) {
+            if (args.Length != 0) {
+                for idx, ctrl in args {
+                    if (ctrl.has(1) && ctrl.has(2) && ctrl.has(3)) {
+                        this.AdditionCtr.Push(this.ui.Add(ctrl[1], ctrl[3], ctrl[2]))
+                    }
+                    else {
+                        debugStr := "Missing some parameters:`n"
+                        if (!ctrl.has(1))
+                            debugStr .= "- ControlType`n"
+                        if (!ctrl.has(3))
+                            debugStr .= "- Text`n"
+                        if (!ctrl.has(2))
+                            debugStr .= "- Options"
+                        TrayTip(debugStr, "Error!", 3)
+                        OutputDebug(debugStr)
+                    }
+                    if (ctrl.has(4))
+                        this.AdditionCtr[idx].OnEvent("Click", ctrl[4])
+                    if (ctrl.has(5))
+                        this.AdditionCtr[idx].ToolTip := ctrl[5]
+                }
+            }
+        }
+        MoreControls(pos, args*) {
+            for idx, ctrl in args {
+                renderPos := ctrl.Has(6) ? ctrl[6] : "back"
+                if (renderPos != pos)
+                    continue
+
+                if (ctrl.Has(1) && ctrl.Has(2) && ctrl.Has(3)) {
+                    c := this.ui.Add(ctrl[1], ctrl[3], ctrl[2])
+                    this.AdditionCtr.Push(c)
+                } else {
+                    TrayTip("Missing parameters", "Error")
+                    continue
+                }
+
+                if (ctrl.Has(4))
+                    c.OnEvent("Click", ctrl[4])
+                if (ctrl.Has(5))
+                    c.ToolTip := ctrl[5]
+            }
+        }
+        SetupControls(args*) {
+            this.title := this.ui.AddText("x100 w100 h22", "Options")
+            this.title.SetFont("s12 Bold c6200ff", "Verdana")
+            for idx, ele in this.Checkbox {
+                this.lastToggleTime.Push(0)
+                this.Checkbox[idx] := this.ui.AddCheckbox("xm", ele[1])
+                this.Checkbox[idx].Value := (ele.has(2) ? ele[2] : 0)
+                if (ele.has(3))
+                    this.Checkbox[idx].ToolTip := ele[3]
+            }
+            this.ui.AddEdit("xm w75 +Right")
+            .ToolTip := "Adjust " this.name "'s transparency (" this.transparencyMin "–" this
             .transparencyMax ")."
             this.transparencyUpDown := this.ui.AddUpDown("Range" this.transparencyMin "-" this.transparencyMax,
                 this.transparency)
@@ -81,12 +156,6 @@ class KeyBindingUI {
         }
         SetupEvents() {
             this.ApplyBtn.OnEvent("Click", (*) => this.ui.Hide())
-        }
-        SetupToolTips() {
-            this.ui.ToolTip := "Select checkboxes and press Apply."
-            this.Checkbox[1].ToolTip := "Hotkeys for Utilities (Timer, ChangeProjectMode)"
-            this.Checkbox[2].ToolTip := "Diasble/Enable PageUp && PageDown"
-            this.Checkbox[3].ToolTip := "Use Alt + wasd <-> Arrows Keys"
         }
     }
     Show(xpos := this.xpos, ypos := this.ypos, guiWidth := this.guiWidth, guiHeight := this.guiHeight, option*) {
@@ -107,6 +176,20 @@ class KeyBindingUI {
     }
     Hide() {
         this.ui.Hide()
+    }
+    ToggleCheckbox(id := 1, cooldown := 2000) {
+        now := A_TickCount
+        if now - this.lastToggleTime[id] < cooldown {
+            SoundBeep
+            return
+        }
+        this.lastToggleTime[id] := now
+        this.Checkbox[id].Value := !this.Checkbox[id].Value
+        Notify.Prototype.DefineProp("InitSetup", { Call: (this) => (this.defaultWidth := 300) })
+        if this.Checkbox[id].Value
+            Notify("On", this.Checkbox[id].Text || Format("Option[{}]", id), "+ t2 c73AF6F")
+        else
+            Notify("Off", this.Checkbox[id].Text || Format("Option[{}]", id), "+ t2 cE67E22")
     }
     Toggle() {
         if WinExist('ahk_id ' this.ui.hwnd)
@@ -195,14 +278,16 @@ FormatSendKeys(keySpec) {
                         keys .= FormatKey(part)
             }
         }
-    } else {
+    }
+    else {
         i := 1
         while i <= StrLen(keySpec) {
             c := SubStr(keySpec, i, 1)
             if (c = "!" || c = "^" || c = "+" || c = "#") {
                 mods .= c
                 i++
-            } else {
+            }
+            else {
                 break
             }
         }
@@ -230,9 +315,38 @@ InputBoxForAutoSendToggle() {
         currentKey := FormatSendKeys(result.Value)
         ToolTip("Gửi tự động phím: " . currentKey)
         SetTimer(Send(currentKey), 1000)
-    } else {
+    }
+    else {
         ToolTip("Dừng gửi phím: " . currentKey)
         SetTimer(Send(currentKey), 0)
     }
     SetTimer(ToolTip, -1500)
 }
+
+; numKeyOverlay := StatusOverlay(
+;     'NumKey Overlay',
+;     Format('bg1{} tx1{} bg2{} tx2{} x{}',
+;         "009688", "ffffff",
+;         "9C27B0", "ffffff",
+;         22,
+;     ),
+;     'p{OnIcon}🔢', 'p{OffIcon}🔟'
+; )
+
+; ToggleNumKeyOverlay() {
+;     numKeyOverlay.ToggleScript()
+;     SoundPlay("D:\Downloads\Music\computer-mouse-click-352734.mp3")
+; }
+
+; #HotIf numKeyOverlay.isScriptEnabled
+; 1::Numpad1
+; 2::Numpad2
+; 3::Numpad3
+; 4::Numpad4
+; 5::Numpad5
+; 6::Numpad6
+; 7::Numpad7
+; 8::Numpad8
+; 9::Numpad9
+; 0::Numpad0
+; #HotIf

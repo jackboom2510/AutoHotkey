@@ -1,488 +1,799 @@
 ﻿{
-    "#ClickTracker": {
-        "ClickTrackerObj.ToggleTracking": {
-            "description": "Initializes tracking by clearing previous data, setting tracking flags, and minimizing the GUI window.",
-            "hotkeys": [
-                {"key": "!r"}
-            ],
-            "section": "⚙️ TRACKING SETTINGS"
-        },
-        "ClickTrackerObj.Track": {
-            "description": "Captures and stores mouse click coordinates, along with window information on the first click during tracking.",
-            "hotkeys": [
-                {"key": "MButton", "condition": "StartTracking"}
-            ],
-            "section": "🖱️ ClickTracking"
-        }
-    },
-    "#Macros": {
-        "Send": { 
-            "description": "Send specific key combinations based on the hotkey pressed.",
-            "hotkeys": {
-                "a": {"key": "{WheelLeft}", "condition": ["GetScriptStatus"]},
-                "d": {"key": "{WheelRight}", "condition": ["GetScriptStatus"]},
-                "s": {"key": "{WheelDown}", "condition": ["GetScriptStatus"]},
-                "w": {"key": "{WheelUp}", "condition": ["GetScriptStatus"]},
-                "^!e": {"key": "^{WheelUp}", "condition": ["GetScriptStatus"]},
-                "^!q": {"key": "^{WheelDown}", "condition": ["GetScriptStatus"]},
-                "^!s": {"key": "{PgDn}", "condition": ["GetScriptStatus"]},
-                "^!w": {"key": "{PgUp}", "condition": ["GetScriptStatus"]},
-                "^e": {"key": "^{=}", "condition": ["GetScriptStatus"]},
-                "^q": {"key": "^{-}", "condition": ["GetScriptStatus"]},
-                "!a": {"key": "{Left}", "condition": [["GetOption", 3]]},
-                "!d": {"key": "{Right}", "condition": [["GetOption", 3]]},
-                "!s": {"key": "{Down}", "condition": [["GetOption", 3]]},
-                "!w": {"key": "{Up}", "condition": [["GetOption", 3]]},
-                "!^a": {"key": "^{Left}", "condition": [["GetOption", 3]]},
-                "!^d": {"key": "^{Right}", "condition": [["GetOption", 3]]},
-                "!^s": {"key": "^{Down}", "condition": [["GetOption", 3]]},
-                "!^w": {"key": "^{Up}", "condition": [["GetOption", 3]]},
-                "XButton2 & WheelDown": {"key": "{Left}", "condition": [["GetOption", 1]]},
-                "XButton2 & WheelUp": {"key": "{Right}", "condition": [["GetOption", 1]]},
-                "XButton1 & WheelDown": {"key": "{Down}", "condition": [["GetOption", 1]]},
-                "XButton1 & WheelUp": {"key": "{Up}", "condition": [["GetOption", 1]]},
-                "XButton1 & LButton": {"key": "{XButton1}", "condition": [["GetOption", 1]]},
-                "XButton1 & RButton": {"key": "{XButton2}", "condition": [["GetOption", 1]]},
-                "^XButton1": {"key": "{XButton1}", "condition": [["GetOption", 1]]},
-                "^XButton2": {"key": "{XButton2}", "condition": [["GetOption", 1]]},
-                "!XButton1": {"key": "{F10}", "condition": [["GetWindowStatus", [1, "ahk_exe Code.exe"]]]},
-                "!XButton2": {"key": "{F11}", "condition": [["GetWindowStatus", [1, "ahk_exe Code.exe"]]]},
-                "!+w": {"key": "+{Home}"},
-                "!+d": {"key": "+{Home}{Del}"},
-                "+Space": {"key": "_", "condition": [["GetOption", 1]]},
-                "+Backspace": {"key": "+^{Right}{Del}", "condition": [["GetOption", 1]]},
-                "!x": {"key": ",", "condition": [["GetWindowStatus", [1, "TechSmith Camtasia 2025"]]]},
-                "!z": {"key": ".", "condition": [["GetWindowStatus", [1, "TechSmith Camtasia 2025"]]]},
-                "!q": {"key": "{BackSpace}", "condition": [["GetOption", 1]]},
-                "!^q": {"key": "^{Backspace}", "condition": [["GetOption", 1]]},
-                "!e": {"key": "{Enter}", "condition": [["GetOption", 1]]},
-                "!^e": {"key": "^{Enter}", "condition": [["GetOption", 1]]},
-                "!+i": {"key": "{WheelUp}", "condition": [["GetOption", 1]]},
-                "!+k": {"key": "{WheelDown}", "condition": [["GetOption", 1]]},
-                "!+j": {"key": "{WheelLeft}", "condition": [["GetOption", 1]]},
-                "!+l": {"key": "{WheelRight}", "condition": [["GetOption", 1]]},
-                "!n": {"key": "{Click}", "condition": [["GetOption", 1]]},
-                "!'": {"key": "{End}{Enter}", "condition": [["GetOption", 1]]},
-                "!End": {"key": "{WheelDown}", "condition": [["GetOption", 1]]},
-                "!Home": {"key": "{WheelUp}", "condition": [["GetOption", 1]]},
-                "j": {"key": "z", "condition": [["GetWindowStatus", [1, "Stick It To The Stickman"]]]},
-                "k": {"key": "x", "condition": [["GetWindowStatus", [1, "Stick It To The Stickman"]]]},
-                "l": {"key": "c", "condition": [["GetWindowStatus", [1, "Stick It To The Stickman"]]]}
-
-            },
-            "section": "🤖 SIMULATION"
-        },
-        "Click": {
-            "args": ["R", "M"],
-            "hotkeys": [
-                {"key": "!m", "condition": [["GetOption", 1]]},
-                {"key": "!,", "condition": [["GetOption", 1]]}
-            ],
-            "hasSimilar": true,
-            "section": "🤖 SIMULATION"
-        },
-        "CycleAndExecute": {
-            "args": [
-                [1, [["ConfigureOneNote", [2]], ["ConfigureOneNote", [3]]]],
-                [2, [["ConfigureOneNote", [1]], ["ConfigurleOneNote", [2]]]],
-                [3, [["ConfigureOneNote", [1]], ["ConfigureOneNote", [5]]]],
-                [4, [["Send", ["{Click D}"]], ["Send", ["{Click U}"]]]],
-                [5, [["Send", ["{Click D}"]], ["Send", ["{Click U}"]]]],
-                [6, [["Click", ["R D"]], ["Click", ["R U"]]]]
-            ],
-            "description": "Cycle And Execute through different configurations.",
-            "hotkeys": [ 
-                {"key": "F21"},
-                {"key": "Space", "condition": [["GetScriptStatus"], ["GetWindowStatus", [1, "OneNote"]]]},
-                {"key": "^Space", "condition": [["GetScriptStatus"], ["GetWindowStatus", [1, "OneNote"]]]},
-                {"key": "!+n", "condition": [["GetOption", 1]]},
-                {"key": "XButton2 & MButton", "condition": [["GetOption", 1]]},
-                {"key": "!+m", "condition": [["GetOption", 1]]}
-            ],
-            "hasSimilar": true,
-            "section": "⏯️ TOGGLE KEYS"
-        },
-        "CycleAndSend": {
-            "args": [
-                [5, ["{Space}", "{1}"]],
-                [6, ["^+2", "^+3"]],
-                [7, ["1", "2"]],
-                [8, ["v", "h"]]
-            ],
-            "description": "Toggle between sending different key combinations based on the assigned arguments.",
-            "hotkeys": [
-                {"key": "F20"},
-                {"key": "F22"},
-                {"key": "F23"},
-                {"key": "F24"}
-            ],
-            "hasSimilar": true,
-            "section": "⏯️ TOGGLE KEYS"
-        },
-        "UserFuncs.uCallIf": {
-            "description": "Call a user-defined function if a condition is met.",
-            "args": [
-                [
-                    "moveOverlay.ToggleScript",
-                    ["DynamicSet", "moveDistance", 15],
-                    ["DynamicSet", "moveDistance", 5]
-                ],
-                [
-                    "moveOverlay.ToggleScript",
-                    ["DynamicSet", "moveDistance", 20],
-                    ["DynamicSet", "moveDistance", 10]
-                ]
-            ],
-            "hotkeys": [
-                {"key": "!;", "condition": [["GetOption", 1]]},
-                {"key": "!+;", "condition": [["GetOption", 1]]}
-            ],
-            "hasSimilar": true,
-            "section": "✨ Run"
-        },
-        "UserFuncs.uRun": {
-            "description": "Run Specific Function with arguments",
-            "hotkeys": [
-                {"key": "#p", "condition": [["GetOption", 1]]},
-                {"key": "#m"},
-                {"key": "XButton1", "condition": [["GetWindowStatus", 1, "ahk_exe IntoTheDeadOurDarkestDays.exe"]]},
-                {"key": "XButton2", "condition": [["GetWindowStatus", 1, "ahk_exe IntoTheDeadOurDarkestDays.exe"]]}
-            ],
-            "args": [
-                [["Run", "*RunAs pwsh"]],
-                [
-                    ["Run",
-                    "pwsh -NoExit -Command \".\\mysql.exe -ujackb -p;\"",
-                    "D:\\2. Program Files\\MySQL\\bin"]
-                ],
-                [
-                    ["Send", "{Tab}"],
-                    ["Sleep", 100],
-                    ["Send", "r"],
-                    ["Send", "{Tab}"]
-                ],
-                [
-                    ["Send", "{Tab}"],
-                    ["Sleep", 700],
-                    ["Send", "r"],
-                    ["Send", "{Tab}"]
-                ]
-            ],
-            "hasSimilar": true,
-            "section": "✨ Run"
-        },
-        "GoogleTranslate": {
-            "description": "Translate selected text using Google Translate API and display the result in a TrayTip.",
-            "args": [false, true, true],
-            "hotkeys": [
-                {"key": "!t", "condition": [["GetOption", 1]]},
-                {"key": "!+t", "condition": [["GetOption", 1]]},
-                {"key": "XButton2 & RButton", "condition": [["GetOption", 1]]}
-            ],
-            "section": "⚡ UTILITIES"
-        },
-        "PowerToyRun": {
-            "description": "Search for selected text using PowerToy Run.",
-            "hotkeys": [
-                {"key": "XButton2 & LButton", "condition": [["GetOption", 1]]},
-                {"key": "!f", "condition": [["GetOption", 1]]},
-                {"key": "!^t", "condition": [["GetOption", 1]]}
-            ],
-            "args": [
-                ["??", "", true],
-                ["??", "", true],
-                ["def", "", true]
-            ],
-            "section": "⚡ UTILITIES"
-        },
-        "MoveWindow": {
-            "description": "Move the active window to another monitor.",
-            "hotkeys": [
-                {"key": "#`", "condition": [["GetOption", 1]]}
-            ],
-            "section": "🛠️ SYSTEM CONFIGURATIONS"
-        },
-        "ChangeLangLayout": {
-            "description": "Switch between Language Layout: Vietnamese/English.",
-            "hotkeys": [{ "key": "CapsLock", "condition": [["GetOption", 1]] }],
-            "args": [true],
-            "section": "🛠️ SYSTEM CONFIGURATIONS"
-        },
-        "ConfigureDrawboardPDF": {
-            "args": [1, 2],
-            "description": "Configure settings for Drawboard PDF with two modes.",
-            "hotkeys": [
-                {"key": "1", "condition": [["GetScriptStatus"], ["GetWindowStatus", [1, "Drawboard PDF"]]]},
-                {"key": "2", "condition": [["GetScriptStatus"], ["GetWindowStatus", [1, "Drawboard PDF"]]]}
-            ],
-            "section": "🖥️ DEVICES SETTINGS"
-        },
-        "ConfigureMonitorSettings": {
-            "args": [2, 3, 1],
-            "description": "Configure monitor settings based on the argument value.",
-            "hotkeys": [
-                {"key": "+!1", "condition": [["GetWindowStatus", [0, "ahk_exe Code.exe"]], ["GetWindowStatus", [0, "ahk_exe Cursor.exe"]]]},
-                {"key": "+!2", "condition": [["GetWindowStatus", [0, "ahk_exe Code.exe"]], ["GetWindowStatus", [0, "ahk_exe Cursor.exe"]]]},
-                {"key": "+!3", "condition": [["GetWindowStatus", [0, "ahk_exe Code.exe"], ["GetWindowStatus", [0, "ahk_exe Cursor.exe"]]]]}
-            ],
-            "section": "🖥️ DEVICES SETTINGS"
-        },
-        "ConfigureOneNote": {
-            "args": [1, 2, 3, 4],
-            "description": "Configure OneNote with different arguments (1 to 4). The Space and Ctrl+Space also work as toggles.",
-            "hotkeys": [
-                {"key": "1", "condition": [["GetScriptStatus"], ["GetWindowStatus", [1, "OneNote"]]]},
-                {"key": "2", "condition": [["GetScriptStatus"], ["GetWindowStatus", [1, "OneNote"]]]},
-                {"key": "3", "condition": [["GetScriptStatus"], ["GetWindowStatus", [1, "OneNote"]]]},
-                {"key": "4", "condition": [["GetScriptStatus"], ["GetWindowStatus", [1, "OneNote"]]]}
-            ],
-            "hasSimilar": true,
-            "section": "🖥️ DEVICES SETTINGS"
-        },
-        "ConfigurePenSettings": {
-            "args": [1, 2],
-            "description": "Configure pen settings for two different modes.",
-            "hotkeys": [
-                {"key": "+!q"},
-                {"key": "+!e"}
-            ],
-            "section": "🖥️ DEVICES SETTINGS"
-        },
-        "CopyProcessDirectory": {
-            "description": "Copy the directory of the active process and display the path in the tooltip.",
-            "hotkeys": [
-                {"key": "#^c"}
-            ],
-            "section": "⚡ UTILITIES"
-        },
-        "GetBrowserInfo": {
-            "description": "Get the title of the active browser window.",
-            "hotkeys": [
-                {"key": "!+c"}
-            ],
-            "args": [
-                ["title", "A_Clipboard", 5]
-            ],
-            "section": "⚡ UTILITIES"
-        },
-        "AddJavaClass": {
-            "description": "Add a new Java file to the project.",
-            "hotkeys": [
-                {"key": "^!j"}
-            ],
-            "section": "⚡ UTILITIES"
-        },
-        "InputBoxForAutoSendToggle": {
-            "description": "Toggle auto-send feature for continuous key input based on user input in a dialog box.",
-            "hotkeys": [
-                {"key": "!+s", "condition": ["GetScriptStatus"]}
-            ],
-            "section": "⚡ UTILITIES"
-        },
-        "MoveMouseByPixels": {
-            "description": "Move the mouse cursor by a specified number of pixels.",
-            "args": [
-                ["i", "k", "j", "l", "Alt", 5],
-                ["i", "k", "j", "l", "Alt", 5],
-                ["i", "k", "j", "l", "Alt", 5],
-                ["i", "k", "j", "l", "Alt", 5],
-                ["Up", "Down", "Left", "Right", "", 5],
-                ["Up", "Down", "Left", "Right", "", 5],
-                ["Up", "Down", "Left", "Right", "", 5],
-                ["Up", "Down", "Left", "Right", "", 5]
-            ],
-            "hotkeys": [
-                {"key": "!i", "condition": [["GetOption", 1]]},
-                {"key": "!k", "condition": [["GetOption", 1]]},
-                {"key": "!j", "condition": [["GetOption", 1]]},
-                {"key": "!l", "condition": [["GetOption", 1]]},
-                {"key": "Up", "condition": [["GetOption", 3]]},
-                {"key": "Down", "condition": [["GetOption", 3]]},
-                {"key": "Left", "condition": [["GetOption", 3]]},
-                {"key": "Right", "condition": [["GetOption", 3]]}
-            ],
-            "section": "🤖 SIMULATION"
-        },
-        "ToggleProjectMode": {
-            "description": "Switch between Project Mode: Extend/Second Screen Only.",
-            "hotkeys": [
-                {"key": "#+p", "condition": [["GetOption", 1]]}
-            ],
-            "section": "🛠️ SYSTEM CONFIGURATIONS"
-        },
-        "options.Toggle": {
-            "description": "Show/Hide the Options menu to Enable/Disable Hotkeys.",
-            "hotkeys": [
-                {"key": "F1"}
-            ],
-            "section": "💡 ADDITIONAL FEATURES"
-        },
-        "overlay.ToggleScript": {
-            "description": "Toggle the activation and deactivation of the script, enabling or disabling hotkeys.",
-            "hotkeys": [
-                {"key": "^!x"}
-            ],
-            "section": "💡 ADDITIONAL FEATURES"
-        },
-        "overlay.ToggleVisibility": {
-            "description": "Toggle visibility of the StatusOverlay for the script.",
-            "hotkeys": [
-                {"key": "^!z"}
-            ],
-            "section": "💡 ADDITIONAL FEATURES"
-        },
-        "LangOverlay.ToggleVisibility": {
-            "description": "Toggle visibility of LangOverlay",
-            "hotkeys": [
-                {"key": "!v"}
-            ],
-            "section": "💡 ADDITIONAL FEATURES"
-        }
-    },
-    "FavoriteMenu": {
-        "DisplayMenu": {
-            "description": "Displays the favorite menu, allowing users to access their favorite folders and files quickly.",
-            "hotkeys": [
-                {"key": "!MButton"},
-                {"key": "!^,"}
-            ],
-            "section": "🌟 Favorite"
-        }
-    },
-    "LookUp": {
-        "LookUp.SearchFromClipBoard": {
-            "description": "Searches for the content of the clipboard in the configured search engine.",
-            "hotkeys": [
-                {"key": "!f"}
-            ],
-            "section": "🌟 Favorite"
-        },
-        "LookUp.Toggle": {
-            "description": "Toggles the visibility of the LookUp search interface.",
-            "hotkeys": [
-                {"key": "!^f"}
-            ],
-            "section": "🌟 Favorite"
-        }
-    },
-    "ShortcutToolObj": {
-        "ShortcutToolObj.AddShortcut": {
-            "description": "Creates a shortcut to the currently active Chrome tab's URL in the selected folder, formatting the title and launching File Explorer as needed.",
-            "hotkeys": [
-                {"key": "+!g"}
-            ],
-            "section": "🌟 Favorite"
-        },
-        "ShortcutToolObj.ChangePath": {
-            "description": "Opens a folder picker dialog to select a new default path and updates the GUI and internal state accordingly.",
-            "hotkeys": [
-                {"key": "+!x"}
-            ],
-            "section": "🌟 Favorite"
-        }
-    },
-    "CodeSetup": {
-        "WindowManager.ClearWhiteboard": {
-            "description": "Clear Microsoft Whiteboard Canvas and Zoom to 200%",
-            "hotkeys": [
-                {"key": "!^c"}
-            ],
-            "section": "🚀 Productivity"
-        },
-        "WindowManager.Layout1": {
-            "description": "Layout 1: VSCode (2/2) + Chrome (2/2)",
-            "hotkeys": [
-                {"key": "^!1"}
-            ],
-            "section": "🖥️ Window Layouts"
-        },
-        "WindowManager.Layout1Alt": {
-            "description": "Layout 1': VSCode (2/3) + Chrome (1/3)",
-            "hotkeys": [
-                {"key": "^!+1"}
-            ],
-            "section": "🖥️ Window Layouts"
-        },
-        "WindowManager.Layout2": {
-            "description": "Layout 2: Whiteboard (2/2) + Chrome (2/2)",
-            "hotkeys": [
-                {"key": "^!2"}
-            ],
-            "section": "🖥️ Window Layouts"
-        },
-        "WindowManager.Layout2Alt": {
-            "description": "Layout 2': Whiteboard (2/3) + Chrome (1/3)",
-            "hotkeys": [
-                {"key": "^!+2"}
-            ],
-            "section": "🖥️ Window Layouts"
-        },
-        "WindowManager.Layout3": {
-            "description": "Layout 3: VSCode (2/2) + Whiteboard (2/2)",
-            "hotkeys": [
-                {"key": "^!3"}
-            ],
-            "section": "🖥️ Window Layouts"
-        },
-        "WindowManager.Layout3Alt": {
-            "description": "Layout 3': Whiteboard (2/2) + VSCode (2/2)",
-            "hotkeys": [
-                {"key": "^!+3"}
-            ],
-            "section": "🖥️ Window Layouts"
-        },
-        "WindowManager.Layout4": {
-            "description": "Layout 4: Whiteboard (1/2) + VSCode (1/4) + Chrome (1/4)",
-            "hotkeys": [
-                {"key": "^!4"}
-            ],
-            "section": "🖥️ Window Layouts"
-        },
-        "WindowManager.Layout4Alt": {
-            "description": "Layout 4': VSCode (1/2) + Whiteboard (1/4) + Chrome (1/4)",
-            "hotkeys": [
-                {"key": "^!+4"}
-            ],
-            "section": "🖥️ Window Layouts"
-        },
-        "WindowManager.ResetDefault": {
-            "description": "Reset Default Layout Settings",
-            "hotkeys": [
-                {"key": "^!0"}
-            ],
-            "section": "⚙️ Settings"
-        },
-        "WindowManager.Toggle": {
-            "description": "Show Simple Layout GUI",
-            "hotkeys": [
-                {"key": "^!g"},
-                {"key": "+^!g"}
-            ],
-            "args": [1, 2],
-            "section": "⚙️ GUI"
-        }
-    },
-    "Hotstring": {
-        "macro.Toggle": {
-            "description": "Toggle HotstringGUI",
-            "hotkeys": [
-                {"key": "!F1"}
-            ],
-            "section": "🌟 Favorite"
-        },
-        "macro.ToggleAllHotstring": {
-            "description": "Toggle Hotstring",
-            "hotkeys": [
-                {"key": "#h"}
-            ],
-            "section": "🌟 Favorite"
-        },
-        "macro.PromptAddHotstring": {
-            "description": "Promt to Add Hotstring",
-            "hotkeys": [
-                {"key": "#+a"}
-            ],
-            "section": "🌟 Favorite"
-        }
-    }
+	"ClickTracker": {
+		"ClickTrackerObj.ToggleTracking": {
+			"description": "Initializes tracking by clearing previous data, setting tracking flags, and minimizing the GUI window.",
+			"hotkeys": [{ "key": "!r" }],
+			"section": "⚙️ TRACKING SETTINGS"
+		},
+		"ClickTrackerObj.Track": {
+			"description": "Captures and stores mouse click coordinates, along with window information on the first click during tracking.",
+			"hotkeys": [{ "key": "MButton", "condition": "StartTracking" }],
+			"section": "🖱️ ClickTracking"
+		}
+	},
+	"Macros": {
+		"Send": {
+			"description": "Send specific key combinations based on the hotkey pressed.",
+			"hotkeys": {
+				"a": { "key": "{WheelLeft}", "condition": ["GetScriptStatus"] },
+				"d": { "key": "{WheelRight}", "condition": ["GetScriptStatus"] },
+				"s": { "key": "{WheelDown}", "condition": ["GetScriptStatus"] },
+				"w": { "key": "{WheelUp}", "condition": ["GetScriptStatus"] },
+				"^!e": { "key": "^{WheelUp}", "condition": ["GetScriptStatus"] },
+				"^!q": { "key": "^{WheelDown}", "condition": ["GetScriptStatus"] },
+				"^!s": { "key": "{PgDn}", "condition": ["GetScriptStatus"] },
+				"^!w": { "key": "{PgUp}", "condition": ["GetScriptStatus"] },
+				"^e": { "key": "^{=}", "condition": ["GetScriptStatus"] },
+				"^q": { "key": "^{-}", "condition": ["GetScriptStatus"] },
+				"!a": { "key": "{Left}", "condition": [["GetOption", 3]] },
+				"!d": { "key": "{Right}", "condition": [["GetOption", 3]] },
+				"!s": { "key": "{Down}", "condition": [["GetOption", 3]] },
+				"!w": { "key": "{Up}", "condition": [["GetOption", 3]] },
+				"!^a": { "key": "^{Left}", "condition": [["GetOption", 3]] },
+				"!^d": { "key": "^{Right}", "condition": [["GetOption", 3]] },
+				"!^s": { "key": "^{Down}", "condition": [["GetOption", 3]] },
+				"!^w": { "key": "^{Up}", "condition": [["GetOption", 3]] },
+				"XButton2 & WheelDown": {
+					"key": "{WheelLeft}",
+					"condition": [["GetOption", 1]]
+				},
+				"XButton2 & WheelUp": {
+					"key": "{WheelRight}",
+					"condition": [["GetOption", 1]]
+				},
+				"XButton1 & WheelDown": {
+					"key": "{Down}",
+					"condition": [["GetOption", 1]]
+				},
+				"XButton1 & WheelUp": {
+					"key": "{Up}",
+					"condition": [["GetOption", 1]]
+				},
+				"XButton2 & LButton": {
+					"key": "{XButton1}",
+					"condition": [["GetOption", 1]]
+				},
+				"XButton2 & RButton": {
+					"key": "{XButton2}",
+					"condition": [["GetOption", 1]]
+				},
+				"^XButton1": { "key": "{l}", "condition": [["GetOption", 1]] },
+				"^XButton2": { "key": "{p}", "condition": [["GetOption", 1]] },
+				"!XButton1": {
+					"key": "{F10}",
+					"condition": [["GetWindowStatus", [1, "ahk_exe Code.exe"]]]
+				},
+				"!XButton2": {
+					"key": "{F11}",
+					"condition": [["GetWindowStatus", [1, "ahk_exe Code.exe"]]]
+				},
+				"!+w": { "key": "+{Home}", "condition": [["GetOption", 1]] },
+				"!+a": { "key": "+^{Left}", "condition": [["GetOption", 1]] },
+				"!+d": { "key": "+^{Right}", "condition": [["GetOption", 1]] },
+				"!+q": { "key": "^{Backspace}", "condition": [["GetOption", 1]] },
+				"+Space": {
+					"key": "_",
+					"condition": [
+						["GetOption", 1],
+						["GetWindowStatus", [0, "MySQL Workbench"]]
+					]
+				},
+				"+Backspace": {
+					"key": "+^{Right}{Del}",
+					"condition": [["GetOption", 1]]
+				},
+				"!q": { "key": "{BackSpace}", "condition": [["GetOption", 1]] },
+				"!e": { "key": "{Enter}", "condition": [["GetOption", 1]] },
+				"!+i": { "key": "{WheelUp}", "condition": [["GetOption", 1]] },
+				"!+k": { "key": "{WheelDown}", "condition": [["GetOption", 1]] },
+				"!+j": { "key": "{WheelLeft}", "condition": [["GetOption", 1]] },
+				"!+l": { "key": "{WheelRight}", "condition": [["GetOption", 1]] },
+				"!n": { "key": "{Click}", "condition": [["GetOption", 1]] },
+				"!End": { "key": "{WheelDown}", "condition": [["GetOption", 1]] },
+				"!Home": { "key": "{WheelUp}", "condition": [["GetOption", 1]] },
+				"j": {
+					"key": "c",
+					"condition": [["GetWindowStatus", [1, "Stick It To The Stickman"]]]
+				},
+				"k": {
+					"key": "v",
+					"condition": [["GetWindowStatus", [1, "Stick It To The Stickman"]]]
+				},
+				"l": {
+					"key": "b",
+					"condition": [["GetWindowStatus", [1, "Stick It To The Stickman"]]]
+				},
+				"Numpad1": {
+					"key": "i",
+					"condition": [["GetWindowStatus", [1, "Stick It To The Stickman"]]]
+				},
+				"Numpad2": {
+					"key": "o",
+					"condition": [["GetWindowStatus", [1, "Stick It To The Stickman"]]]
+				},
+				"Numpad3": {
+					"key": "p",
+					"condition": [["GetWindowStatus", [1, "Stick It To The Stickman"]]]
+				},
+				"Up": { "key": "{WheelUp}", "condition": [["GetOption", 4]] },
+				"Down": { "key": "{WheelDown}", "condition": [["GetOption", 4]] },
+				"Left": { "key": "{WheelLeft}", "condition": [["GetOption", 4]] },
+				"Right": { "key": "{WheelRight}", "condition": [["GetOption", 4]] },
+				"+Up": { "key": "{WheelUp 2}", "condition": [["GetOption", 4]] },
+				"+Down": { "key": "{WheelDown 2}", "condition": [["GetOption", 4]] },
+				"Home": { "key": "{WheelUp}", "condition": [["GetOption", 4]] },
+				"End": { "key": "{WheelDown}", "condition": [["GetOption", 4]] },
+				"+PgUp": { "key": "{PgUp}", "condition": [["GetOption", 4]] },
+				"+PgDn": { "key": "{PgDn}", "condition": [["GetOption", 4]] },
+				"PgUp": { "key": "{WheelUp 2}", "condition": [["GetOption", 4]] },
+				"PgDn": { "key": "{WheelDown 2}", "condition": [["GetOption", 4]] },
+				"^+!F9": { "key": "^w", "condition": [["GetOption", 1]] },
+				"!F8": {
+					"key": "{Browser_Home}",
+					"condition": [
+						["GetOption", 1],
+						["GetWindowStatus", [0, "ahk_exe Code.exe"]]
+					]
+				},
+				"!F9": {
+					"key": "{Media_Play_Pause}",
+					"condition": [
+						["GetOption", 1],
+						["GetWindowStatus", [0, "ahk_exe Code.exe"]]
+					]
+				}
+			},
+			"section": "🤖 SIMULATION"
+		},
+		"SearchName": {
+			"description": "Search for a specific name.",
+			"hotkeys": [
+				{ "key": "XButton1 & MButton", "condition": [["GetOption", 4]] }
+			],
+			"section": "🤖 SIMULATION"
+		},
+		"ModifyNum": {
+			"description": "Modify the number at the cursor position (increase by default).",
+			"hotkeys": [
+				{ "key": "XButton2 & MButton", "condition": [["GetOption", 1]] },
+				{ "key": "XButton1 & MButton", "condition": [["GetOption", 1]] },
+				{ "key": "!F9", "condition": [["GetOption", 1]] },
+				{ "key": "^!F9", "condition": [["GetOption", 1]] }
+			],
+			"args": [
+				[true, true, 0, 100],
+				[false, true, 0, 100],
+				[true, false, 0, 100],
+				[false, false, 0, 100]
+			],
+			"section": "🤖 SIMULATION"
+		},
+		"MouseJump": {
+			"description": "Move mouse cursor to another monitor while maintaining relative position.",
+			"hotkeys": [{ "key": "!'", "condition": [["GetOption", 1]] }],
+			"section": "🤖 SIMULATION"
+		},
+		"Click": {
+			"args": ["R", "M"],
+			"hotkeys": [
+				{ "key": "!m", "condition": [["GetOption", 1]] },
+				{ "key": "!,", "condition": [["GetOption", 1]] }
+			],
+			"hasSimilar": true,
+			"section": "🤖 SIMULATION"
+		},
+		"CycleAndExecute": {
+			"args": [
+				[
+					1,
+					[
+						["ConfigureOneNote", [2]],
+						["ConfigureOneNote", [3]]
+					]
+				],
+				[
+					2,
+					[
+						["ConfigureOneNote", [1]],
+						["ConfigurleOneNote", [2]]
+					]
+				],
+				[
+					3,
+					[
+						["ConfigureOneNote", [1]],
+						["ConfigureOneNote", [5]]
+					]
+				],
+				[
+					4,
+					[
+						["Send", ["{Click D}"]],
+						["Send", ["{Click U}"]]
+					]
+				],
+				[
+					5,
+					[
+						["Send", ["{Click D}"]],
+						["Send", ["{Click D}"]]
+					]
+				],
+				[
+					6,
+					[
+						["Click", ["R D"]],
+						["Click", ["R U"]]
+					]
+				],
+				[
+					7,
+					[
+						["Click", ["R D"]],
+						["Click", ["R D"]]
+					]
+				],
+				[
+					8,
+					[
+						["ConfigureSamsungNotes", [1]],
+						["ConfigureSamsungNotes", [3]]
+					]
+				]
+			],
+			"description": "Cycle And Execute through different configurations.",
+			"hotkeys": [
+				{
+					"key": "!F5",
+					"condition": [
+						["GetScriptStatus"],
+						["GetWindowStatus", [1, "OneNote"]]
+					]
+				},
+				{
+					"key": "Space",
+					"condition": [
+						["GetScriptStatus"],
+						["GetWindowStatus", [1, "OneNote"]]
+					]
+				},
+				{
+					"key": "^Space",
+					"condition": [
+						["GetScriptStatus"],
+						["GetWindowStatus", [1, "OneNote"]]
+					]
+				},
+				{ "key": "!+n", "condition": [["GetOption", 1]] },
+				{ "key": "XButton1 & LButton", "condition": [["GetOption", 1]] },
+				{ "key": "!+m", "condition": [["GetOption", 1]] },
+				{ "key": "XButton1 & RButton", "condition": [["GetOption", 1]] },
+				{
+					"key": "!F5",
+					"condition": [
+						["GetOption", [6]],
+						["GetWindowStatus", [1, "Samsung Notes"]]
+					]
+				}
+			],
+			"hasSimilar": true,
+			"section": "⏯️ TOGGLE KEYS"
+		},
+		"WinMaximize": {
+			"description": "Maximize the specific window.",
+			"hotkeys": [
+				{
+					"key": "F7",
+					"condition": [["GetOption", 1]]
+				}
+			],
+			"args": [["ahk_exe Spotify.exe"]],
+			"section": "⚡ UTILITIES"
+		},
+		"CloseManual": {
+			"description": "Close the current window or application.",
+			"hotkeys": [{ "key": "!^F4", "condition": [["GetOption", 1]] }],
+			"args": [[false]],
+			"section": "🤖 SIMULATION"
+		},
+		"CycleAndSend": {
+			"args": [
+				[10, ["v", "h"]],
+				[11, ["1", "2"]],
+				[13, ["{1}", "{7}"]],
+				[14, ["{4}", "{5}"]],
+				[15, ["p", "e"]]
+			],
+			"description": "Toggle between sending different key combinations based on the assigned arguments.",
+			"hotkeys": [
+				{
+					"key": "!F5",
+					"condition": [["GetWindowStatus", [1, "ahk_exe Acrobat.exe"]]]
+				},
+				{
+					"key": "!F9",
+					"condition": [
+						["GetWindowStatus", [1, "Drawboard PDF"], "GetScriptStatus"]
+					]
+				},
+				{
+					"key": "!F5",
+					"condition": [
+						["GetWindowStatus", [1, "excalidraw ahk_exe Obsidian.exe"]]
+					]
+				},
+				{
+					"key": "MButton",
+					"condition": [["GetWindowStatus", [1, "Drawboard PDF"]]]
+				},
+				{ "key": "!F9", "condition": [["GetOption", 2]] }
+			],
+			"hasSimilar": true,
+			"section": "⏯️ TOGGLE KEYS"
+		},
+		"UserFuncs.uCallIf": {
+			"description": "Call a user-defined function if a condition is met.",
+			"args": [
+				[
+					"moveOverlay.ToggleScript",
+					["DynamicSet", "moveDistance", 15],
+					["DynamicSet", "moveDistance", 5]
+				],
+				[
+					"moveOverlay.ToggleScript",
+					["DynamicSet", "moveDistance", 20],
+					["DynamicSet", "moveDistance", 10]
+				]
+			],
+			"hotkeys": [
+				{ "key": "!;", "condition": [["GetOption", 1]] },
+				{ "key": "!+;", "condition": [["GetOption", 1]] }
+			],
+			"hasSimilar": true,
+			"section": "✨ Run"
+		},
+		"UserFuncs.uRun": {
+			"description": "Run Specific Function with arguments",
+			"hotkeys": [
+				{ "key": "#p", "condition": [["GetOption", 1]] },
+				{ "key": "#+p", "condition": [["GetOption", 1]] },
+				{
+					"key": "#m",
+					"condition": [
+						["GetOption", 1],
+						["GetWindowStatus", [0, "ahk_exe Macros.exe"]]
+					]
+				},
+				{
+					"key": "#n",
+					"condition": [
+						["GetOption", 1],
+						["GetWindowStatus", [0, "ahk_exe Macros.exe"]]
+					]
+				}
+			],
+			"args": [
+				[["Run", "wt"]],
+				[
+					[
+						"Run",
+						[
+							"powershell -Command \"Start-Process wt -Verb RunAs\"",
+							null,
+							"Hide"
+						]
+					]
+				],
+				[["WinMaximize", "A"]],
+				[["WinMinimize", "A"]]
+			],
+			"hasSimilar": true,
+			"section": "✨ Run"
+		},
+		"GoogleTranslate": {
+			"description": "Translate selected text using Google Translate API and display the result in a TrayTip.",
+			"args": [-1, 0, 1, 1],
+			"hotkeys": [
+				{ "key": "!t", "condition": [["GetOption", 1]] },
+				{ "key": "!+t", "condition": [["GetOption", 4]] },
+				{ "key": "XButton2 & XButton1", "condition": [["GetOption", 1]] },
+				{ "key": "!F9", "condition": [["GetOption", 4]] }
+			],
+			"section": "⚡ UTILITIES"
+		},
+		"PowerToyRun": {
+			"description": "Search for selected text using PowerToy Run.",
+			"hotkeys": [
+				{ "key": "XButton1 & XButton2", "condition": [["GetOption", 1]] },
+				{ "key": "#f", "condition": [["GetOption", 1]] },
+				{ "key": "!^t", "condition": [["GetOption", 1]] }
+			],
+			"args": [
+				["??", "", true],
+				["??", "", true],
+				["def", "", true]
+			],
+			"section": "⚡ UTILITIES"
+		},
+		"MoveWindow": {
+			"description": "Move the active window to another monitor.",
+			"hotkeys": [{ "key": "#`", "condition": [["GetOption", 1]] }],
+			"section": "🛠️ SYSTEM CONFIGURATIONS"
+		},
+		"ConfigureDrawboardPDF": {
+			"args": [1, 2],
+			"description": "Configure settings for Drawboard PDF with two modes.",
+			"hotkeys": [
+				{
+					"key": "1",
+					"condition": [
+						["GetScriptStatus"],
+						["GetWindowStatus", [1, "Drawboard PDF"]]
+					]
+				},
+				{
+					"key": "2",
+					"condition": [
+						["GetScriptStatus"],
+						["GetWindowStatus", [1, "Drawboard PDF"]]
+					]
+				}
+			],
+			"section": "🖥️ DEVICES SETTINGS"
+		},
+		"ConfigureMonitorSettings": {
+			"args": [2, 3, 1],
+			"description": "Configure monitor settings based on the argument value.",
+			"hotkeys": [
+				{
+					"key": "+!1",
+					"condition": [
+						["GetOption", 5],
+						["GetWindowStatus", [0, "ahk_exe Code.exe"]],
+						["GetWindowStatus", [0, "ahk_exe datagrip64.exe"]],
+						["GetWindowStatus", [0, "ahk_exe pycharm64.exe"]],
+						["GetWindowStatus", [0, "ahk_exe idea64.exe"]],
+						["GetWindowStatus", [0, "ahk_exe webstorm64.exe"]]
+					]
+				},
+				{
+					"key": "+!2",
+					"condition": [
+						["GetOption", 5],
+						["GetWindowStatus", [0, "ahk_exe Code.exe"]],
+						["GetWindowStatus", [0, "ahk_exe datagrip64.exe"]],
+						["GetWindowStatus", [0, "ahk_exe pycharm64.exe"]],
+						["GetWindowStatus", [0, "ahk_exe idea64.exe"]],
+						["GetWindowStatus", [0, "ahk_exe webstorm64.exe"]]
+					]
+				},
+				{
+					"key": "+!3",
+					"condition": [
+						["GetOption", 5],
+						["GetWindowStatus", [0, "ahk_exe Code.exe"]],
+						["GetWindowStatus", [0, "ahk_exe datagrip64.exe"]],
+						["GetWindowStatus", [0, "ahk_exe pycharm64.exe"]],
+						["GetWindowStatus", [0, "ahk_exe idea64.exe"]],
+						["GetWindowStatus", [0, "ahk_exe webstorm64.exe"]]
+					]
+				}
+			],
+			"section": "🖥️ DEVICES SETTINGS"
+		},
+		"ConfigureOneNote": {
+			"args": [1, 2, 3, 4],
+			"description": "Configure OneNote with different arguments (1 to 4). The Space and Ctrl+Space also work as toggles.",
+			"hotkeys": [
+				{
+					"key": "1",
+					"condition": [
+						["GetScriptStatus"],
+						["GetWindowStatus", [1, "OneNote"]]
+					]
+				},
+				{
+					"key": "2",
+					"condition": [
+						["GetScriptStatus"],
+						["GetWindowStatus", [1, "OneNote"]]
+					]
+				},
+				{
+					"key": "3",
+					"condition": [
+						["GetScriptStatus"],
+						["GetWindowStatus", [1, "OneNote"]]
+					]
+				},
+				{
+					"key": "4",
+					"condition": [
+						["GetScriptStatus"],
+						["GetWindowStatus", [1, "OneNote"]]
+					]
+				}
+			],
+			"hasSimilar": true,
+			"section": "🖥️ DEVICES SETTINGS"
+		},
+		"GetBrowserInfo": {
+			"description": "Get the title of the active browser window.",
+			"hotkeys": [{ "key": "!+c" }],
+			"args": [["title", "A_Clipboard", 5]],
+			"section": "⚡ UTILITIES"
+		},
+		"CopyMousePos": {
+			"description": "Copy the current mouse cursor position to the clipboard.",
+			"hotkeys": [{ "key": "^MButton", "condition": [["GetOption", 5]] }],
+			"section": "⚡ UTILITIES"
+		},
+		"CopyProcessDirectory": {
+			"description": "Copy the directory of the current process to the clipboard.",
+			"hotkeys": [{ "key": "#!c" }],
+			"section": "⚡ UTILITIES"
+		},
+		"AddCodeFile": {
+			"description": "Add a new code file to the project (Automate based on problemsID).",
+			"hotkeys": [{ "key": "^!+n" }],
+			"section": "⚡ UTILITIES"
+		},
+		"CopyProblemID": {
+			"description": "Copy the Problem ID from the current code file to the clipboard.",
+			"hotkeys": [
+				{
+					"key": "^!c",
+					"condition": [["GetOption", 1]]
+				}
+			],
+			"section": "⚡ UTILITIES"
+		},
+		"UploadSrcCode": {
+			"description": "Upload the source code of the current problem to a remote server or repository.",
+			"hotkeys": [
+				{
+					"key": "#^!c",
+					"condition": [["GetOption", 1]]
+				}
+			],
+			"section": "⚡ UTILITIES"
+		},
+		"ModifiedCopy": {
+			"description": "Copy selected text with modifications (e.g., removing extra spaces or formatting).",
+			"hotkeys": [
+				{
+					"key": "#c",
+					"condition": [["GetOption", 8]]
+				}
+			],
+			"args": [
+				[
+					[
+						["hdh", "hệ điều hành"],
+						["HDH", "Hệ Điều Hành"],
+						["", "`n- "],
+						["ƣ", "ư"]
+					],
+					true,
+					null,
+					null
+				]
+			],
+			"section": "⚡ UTILITIES"
+		},
+		"InputBoxForAutoSendToggle": {
+			"description": "Toggle auto-send feature for continuous key input based on user input in a dialog box.",
+			"hotkeys": [
+				{
+					"key": "!+s",
+					"condition": [["GetScriptStatus"]]
+				}
+			],
+			"section": "⚡ UTILITIES"
+		},
+		"MoveMouseByPixels": {
+			"description": "Move the mouse cursor by a specified number of pixels.",
+			"args": [
+				["i", "k", "j", "l", "Alt", 5],
+				["i", "k", "j", "l", "Alt", 5],
+				["i", "k", "j", "l", "Alt", 5],
+				["i", "k", "j", "l", "Alt", 5],
+				["Up", "Down", "Left", "Right", "", 5],
+				["Up", "Down", "Left", "Right", "", 5],
+				["Up", "Down", "Left", "Right", "", 5],
+				["Up", "Down", "Left", "Right", "", 5]
+			],
+			"hotkeys": [
+				{ "key": "!i", "condition": [["GetOption", 1]] },
+				{ "key": "!k", "condition": [["GetOption", 1]] },
+				{ "key": "!j", "condition": [["GetOption", 1]] },
+				{ "key": "!l", "condition": [["GetOption", 1]] },
+				{ "key": "Up", "condition": [["GetOption", 2]] },
+				{ "key": "Down", "condition": [["GetOption", 2]] },
+				{ "key": "Left", "condition": [["GetOption", 2]] },
+				{ "key": "Right", "condition": [["GetOption", 2]] }
+			],
+			"section": "🤖 SIMULATION"
+		},
+		"ToggleProjectMode": {
+			"description": "Switch between Project Mode: Extend/Second Screen Only.",
+			"hotkeys": [{ "key": "#!p", "condition": [["GetOption", 1]] }],
+			"section": "🛠️ SYSTEM CONFIGURATIONS"
+		},
+		"options.Toggle": {
+			"description": "Show/Hide the Options menu to Enable/Disable Hotkeys.",
+			"hotkeys": [{ "key": "F1" }],
+			"section": "💡 ADDITIONAL FEATURES"
+		},
+		"options.ToggleCheckbox": {
+			"description": "Toggle the checkbox state for the selected option in the Options menu.",
+			"hotkeys": [
+				{ "key": ">!1" },
+				{ "key": ">!2" },
+				{ "key": ">!3" },
+				{ "key": ">!4" },
+				{ "key": ">!5" },
+				{ "key": ">!6" },
+				{ "key": ">!7" },
+				{ "key": ">!8" },
+				{ "key": ">!9" }
+			],
+			"args": [[1], [2], [3], [4], [5], [6], [7], [8], [9]],
+			"section": "💡 ADDITIONAL FEATURES"
+		},
+		"overlay.ToggleScript": {
+			"description": "Toggle the activation and deactivation of the script, enabling or disabling hotkeys.",
+			"hotkeys": [{ "key": "^!x" }],
+			"section": "💡 ADDITIONAL FEATURES"
+		},
+		"overlay.ToggleVisibility": {
+			"description": "Toggle visibility of the StatusOverlay for the script.",
+			"hotkeys": [{ "key": "^!z" }],
+			"section": "💡 ADDITIONAL FEATURES"
+		},
+		"StatusOverlay.ToggleAll": {
+			"description": "Toggle visibility of All Status Overlay Instances for the script.",
+			"hotkeys": [{ "key": "!v" }],
+			"args": [["", ["overlay"]]],
+			"section": "💡 ADDITIONAL FEATURES"
+		},
+		"ChangeLangLayout": {
+			"descriptiton": "Change keyboard layout between English and Vietnamese.",
+			"hotkeys": [{ "key": "CapsLock", "condition": [["GetScriptStatus"]] }],
+			"section": "🛠️ SYSTEM CONFIGURATIONS"
+		},
+		"MyNumpad.Toggle": {
+			"description": "Toggle NumPad/NumKey mode.",
+			"hotkeys": [{ "key": "^Capslock" }],
+			"section": "⚡ UTILITIES"
+		},
+		"SendToVault": {
+			"description": "Send the current window to the Vault application.",
+			"hotkeys": [{ "key": "#^c" }],
+			"section": "⚡ UTILITIES"
+		},
+		"FlexConfigure": {
+			"description": "Configure Flex settings with different modes.",
+			"hotkeys": [
+				{ "key": "<!1", "condition": [["GetOption", 6]] },
+				{ "key": "<!2", "condition": [["GetOption", 6]] },
+				{ "key": "<!3", "condition": [["GetOption", 6]] },
+				{ "key": "<!4", "condition": [["GetOption", 6]] },
+				{ "key": "<!5", "condition": [["GetOption", 6]] }
+			],
+			"args": [[1], [2], [3], [4], [5]],
+			"section": "🖥️ DEVICES SETTINGS"
+		}
+	},
+	"FavoriteMenu": {
+		"DisplayMenu": {
+			"description": "Displays the favorite menu, allowing users to access their favorite folders and files quickly.",
+			"hotkeys": [{ "key": "!MButton" }, { "key": "!^," }],
+			"section": "🌟 Favorite"
+		}
+	},
+	"LookUp": {
+		"LookUp.SearchFromClipBoard": {
+			"description": "Searches for the content of the clipboard in the configured search engine.",
+			"hotkeys": [{ "key": "!f" }],
+			"section": "🌟 Favorite"
+		},
+		"LookUp.Toggle": {
+			"description": "Toggles the visibility of the LookUp search interface.",
+			"hotkeys": [{ "key": "!^f" }],
+			"section": "🌟 Favorite"
+		},
+		"LookUp.FocusSearchBar": {
+			"description": "Focus the search bar in the LookUp interface.",
+			"hotkeys": [{ "key": "!z" }],
+			"section": "🌟 Favorite"
+		}
+	},
+	"ShortcutTool": {
+		"ShortcutToolObj.AddShortcut": {
+			"description": "Creates a shortcut to the currently active Chrome tab's URL in the selected folder, formatting the title and launching File Explorer as needed.",
+			"hotkeys": [{ "key": "+!g" }],
+			"section": "🌟 Favorite"
+		},
+		"ShortcutToolObj.ChangePath": {
+			"description": "Opens a folder picker dialog to select a new default path and updates the GUI and internal state accordingly.",
+			"hotkeys": [{ "key": "+!x" }],
+			"section": "🌟 Favorite"
+		}
+	},
+	"CodeSetup": {
+		"WindowManager.ClearWhiteboard": {
+			"description": "Clear Microsoft Whiteboard Canvas and Zoom to 200%",
+			"hotkeys": [{ "key": "!^c" }],
+			"section": "🚀 Productivity"
+		},
+		"WindowManager.Layout1": {
+			"description": "Layout 1: VSCode (2/2) + Chrome (2/2)",
+			"hotkeys": [{ "key": "^!1" }],
+			"section": "🖥️ Window Layouts"
+		},
+		"WindowManager.Layout1Alt": {
+			"description": "Layout 1': VSCode (2/3) + Chrome (1/3)",
+			"hotkeys": [{ "key": "^!+1" }],
+			"section": "🖥️ Window Layouts"
+		},
+		"WindowManager.Layout2": {
+			"description": "Layout 2: Whiteboard (2/2) + Chrome (2/2)",
+			"hotkeys": [{ "key": "^!2" }],
+			"section": "🖥️ Window Layouts"
+		},
+		"WindowManager.Layout2Alt": {
+			"description": "Layout 2': Whiteboard (2/3) + Chrome (1/3)",
+			"hotkeys": [{ "key": "^!+2" }],
+			"section": "🖥️ Window Layouts"
+		},
+		"WindowManager.Layout3": {
+			"description": "Layout 3: VSCode (2/2) + Whiteboard (2/2)",
+			"hotkeys": [{ "key": "^!3" }],
+			"section": "🖥️ Window Layouts"
+		},
+		"WindowManager.Layout3Alt": {
+			"description": "Layout 3': Whiteboard (2/2) + VSCode (2/2)",
+			"hotkeys": [{ "key": "^!+3" }],
+			"section": "🖥️ Window Layouts"
+		},
+		"WindowManager.Layout4": {
+			"description": "Layout 4: Whiteboard (1/2) + VSCode (1/4) + Chrome (1/4)",
+			"hotkeys": [{ "key": "^!4" }],
+			"section": "🖥️ Window Layouts"
+		},
+		"WindowManager.Layout4Alt": {
+			"description": "Layout 4': VSCode (1/2) + Whiteboard (1/4) + Chrome (1/4)",
+			"hotkeys": [{ "key": "^!+4" }],
+			"section": "🖥️ Window Layouts"
+		},
+		"WindowManager.ResetDefault": {
+			"description": "Reset Default Layout Settings",
+			"hotkeys": [{ "key": "^!0" }],
+			"section": "⚙️ Settings"
+		},
+		"WindowManager.Toggle": {
+			"description": "Show Simple Layout GUI",
+			"hotkeys": [{ "key": "^!g" }, { "key": "+^!g" }],
+			"args": [1, 2],
+			"section": "⚙️ GUI"
+		}
+	},
+	"Hotstring": {
+		"macro.Toggle": {
+			"description": "Toggle HotstringGUI",
+			"hotkeys": [{ "key": "!F1" }],
+			"section": "🌟 Favorite"
+		},
+		"macro.ToggleAllHotstring": {
+			"description": "Toggle Hotstring",
+			"hotkeys": [{ "key": "#h" }],
+			"section": "🌟 Favorite"
+		},
+		"macro.PromptAddHotstring": {
+			"description": "Promt to Add Hotstring",
+			"hotkeys": [{ "key": "#+a" }],
+			"section": "🌟 Favorite"
+		}
+	}
 }

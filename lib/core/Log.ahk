@@ -1,12 +1,25 @@
-globalLogFile := "C:\Users\jackb\Documents\AutoHotkey\configs\log.txt"
-globalLogJson := "C:\Users\jackb\Documents\AutoHotkey\configs\log.json"
-errorLogFile := "C:\Users\jackb\Documents\AutoHotkey\configs\error_log.txt"
-TextAlign_widths := [1, 3, 5, 7, 9, 10, 14, 16, 17, 20, 24]
+globalLogFile := "D:\Documents\AutoHotkey\configs\log.txt"
+globalLogJson := "D:\Documents\AutoHotkey\configs\log.json"
+errorLogFile := "D:\Documents\AutoHotkey\configs\error_log.txt"
+TextAlign_widths := [
+    1,
+    3,
+    5,
+    7,
+    9,
+    10,
+    14,
+    16,
+    17,
+    20,
+    24
+]
+INDENT_CHAR := '  '
 
 erf := EraseFile
 reghk := RegexHotkey
 fm := _Format
-_fma := _Format.Bind(',`n', 0, 'args')
+toString := _Format.Bind(',`n', 0, 'args')
 _pl := _Format.Bind(',`n', 0, 'plain')
 _t := _Format.Bind(, 0, 't')
 _pr := _Format.Bind(, 0, 'pr')
@@ -35,8 +48,8 @@ OpenFile(file := globalLogFile, mode := "a", encoding := "UTF-8") {
         return FileOpen(file, mode, encoding)
     }
     catch as Err {
-        TrayTip "Can't open '" file "'."
-            . "`n`n" Type(Err) ": " Err.Message
+        Notify("Can't open '" file "'."
+            . "`n`n" Type(Err) ": " Err.Message, , "+ ce")
         return false
     }
 }
@@ -325,13 +338,17 @@ TextAlign(text, widths := TextAlign_widths, align := "l", padChar := " ", fixedR
     }
 }
 
-Repeat(count := 1, str := '`t') {
+Repeat(count := 1, str := INDENT_CHAR) {
     if (count < 0)
         count := 0
     out := ""
     loop count
         out .= str
     return out
+}
+
+StrRepeat(str := INDENT_CHAR, count := 1) {
+    return Repeat(count, str)
 }
 
 JoinArgs(sep := ", ", args*) {
@@ -341,6 +358,7 @@ JoinArgs(sep := ", ", args*) {
     }
     return out
 }
+StrJoin := JoinArgs
 
 SortStringArrayByLength(arr, delimiter := "`n") {
 

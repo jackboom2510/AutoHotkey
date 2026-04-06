@@ -7,7 +7,7 @@
             "CoordMode 'Mouse'",
             "Persistent",
             "",
-            "#Include <Log>",
+            "#Include <core\\Log>",
             "",
             "mygui := Gui('AlwaysOnTop Resize -DPIScale', 'Test')",
             "mygui.SetFont('s12', 'Arial')",
@@ -25,7 +25,7 @@
             "CoordMode 'Mouse'",
             "Persistent",
             "",
-            "#Include <Log>",
+            "#Include <core\\Log>",
             "$0",
             "Esc:: ExitApp()",
         ]

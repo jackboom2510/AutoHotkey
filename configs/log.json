@@ -131,4 +131,22 @@
 		xác suất thống kê,
 		33
 	]
+}{
+	"basePath": D:\Documents\AutoHotkey\src\v2,
+	"ext": txt,
+	"filePath": D:\Documents\AutoHotkey\src\v2\HELLOFILE_HELLO_FILE.txt,
+	"id": HELLOFILE,
+	"problem": HELLO_FILE
+}{
+	"basePath": D:\Documents\AutoHotkey\release,
+	"ext": txt,
+	"filePath": D:\Documents\AutoHotkey\release\HELLOFILE_HELLO_FILE.txt,
+	"id": HELLOFILE,
+	"problem": HELLO_FILE
+}{
+	"basePath": D:\Documents\AutoHotkey\release,
+	"ext": txt,
+	"filePath": D:\Documents\AutoHotkey\release\HELLOFILE_HELLO_FILE.txt,
+	"id": HELLOFILE,
+	"problem": HELLO_FILE
 }

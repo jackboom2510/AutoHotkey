@@ -9,10 +9,10 @@
 
 param(
     # Thư mục gốc của repo (chứa .git)
-    [string]$RepoPath = 'C:\Users\jackb\Documents\AutoHotkey',
+    [string]$RepoPath = 'D:\Documents\AutoHotkey',
 
     # File lưu trạng thái Counter & Ngày
-    [string]$DataFile = 'C:\Users\jackb\Documents\AutoHotkey\configs\.daily_commit_data.json'
+    [string]$DataFile = 'D:\Documents\AutoHotkey\configs\.daily_commit_data.json'
 )
 
 # 1. Đảm bảo DataFile tồn tại, nếu chưa có thì khởi tạo:

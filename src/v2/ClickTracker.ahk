@@ -1,8 +1,10 @@
-#Include <util\ClickTracker>
+#Include <macro\ClickTracker>
 #Include <core\KeyBinding>
 ;@Ahk2Exe-SetMainIcon click.ico
 
-TextAlign_widths := [5]
+TextAlign_widths := [
+    5
+]
 ClickTrackerObj := ClickTracker()
 
 StartTracking() {
@@ -15,12 +17,12 @@ A_TrayMenu.AddStandard()
 if (A_IsCompiled) {
     A_TrayMenu.Insert("&Suspend Hotkeys", "Reload Script", (*) => Reload())
     A_TrayMenu.Insert('&Suspend Hotkeys', 'Edit Script', (*) => Run(
-        '"D:\2. Program Files\cursor\Cursor.exe" "C:\Users\jackb\Documents\AutoHotkey\src\v2\#ClickTracker.ahk"'
+        'edit* "D:\Documents\AutoHotkey\src\v2\ClickTracker.ahk"'
     ))
     A_TrayMenu.Insert("&Suspend Hotkeys")
 }
 A_TrayMenu.Insert("E&xit")
-A_TrayMenu.Insert("E&xit", "Open File Location", (*) => Run("*open " "C:\Users\jackb\Documents\AutoHotkey\src\v2\"))
+A_TrayMenu.Insert("E&xit", "Open File Location", (*) => Run("*open " "D:\Documents\AutoHotkey\src\v2\"))
 A_TrayMenu.SetIcon("Open File Location", "C:\Windows\System32\shell32.dll", 4)
 A_TrayMenu.Insert("E&xit", "Show Hotkeys", (*) => ShowHotkeys())
 A_TrayMenu.SetIcon("Show Hotkeys", "C:\Windows\System32\shell32.dll", 24)

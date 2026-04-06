@@ -1,0 +1,6 @@
+{
+	"bin_folder": "D:\\Documents\\AutoHotkey\\bin\\",
+	"usb_bat": "D:\\Documents\\AutoHotkey\\bin\\scrcpy_connect.bat",
+	"wifi_bat": "D:\\Documents\\AutoHotkey\\bin\\wifi_scrcpy_connect.bat",
+	"phone_ip_address": "192.168.100.133"
+}

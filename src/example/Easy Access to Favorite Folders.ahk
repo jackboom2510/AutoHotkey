@@ -36,7 +36,7 @@ ITEMS IN FAVORITES MENU <-- Do not change this string.
 Desktop      ; %USERPROFILE%\Desktop
 Favorites    ; %USERPROFILE%\Favorites
 Documents    ; %USERPROFILE%\Documents
-AutoHotkey   ; C:\Users\jackb\Documents\AutoHotkey
+AutoHotkey   ; D:\Documents\AutoHotkey
 
 Program Files; %PROGRAMFILES%
 */
@@ -66,15 +66,12 @@ else  ; Read the menu items directly from this script file.
 ;----Read the configuration file.
 AtStartingPos := false
 FileExt := ""
-Loop Read, FavoritesFile
-{
-    if FileExt != "Exe"
-    {
+loop read, FavoritesFile {
+    if FileExt != "Exe" {
         ; Since the menu items are being read directly from this
         ; script, skip over all lines until the starting line is
         ; arrived at.
-        if !AtStartingPos
-        {
+        if !AtStartingPos {
             if InStr(A_LoopReadLine, "ITEMS IN FAVORITES MENU")
                 AtStartingPos := true
             continue  ; Start a new loop iteration.
@@ -90,8 +87,7 @@ Loop Read, FavoritesFile
         g_Paths.Push("")
         g_Menu.Add()
     }
-    else
-    {
+    else {
         line := StrSplit(A_LoopReadLine, ";", "`s`t")
         ; Resolve any references to variables within either field, and
         ; create a new array element containing the path of this favorite:
@@ -102,8 +98,7 @@ Loop Read, FavoritesFile
 
 
 ;----Open the selected favorite
-OpenFavorite(ItemName, ItemPos, *)
-{
+OpenFavorite(ItemName, ItemPos, *) {
     control_id := 0
     ; Fetch the array element that corresponds to the selected menu item:
     path := g_Paths[ItemPos]
@@ -132,9 +127,8 @@ OpenFavorite(ItemName, ItemPos, *)
         {
             try GetActiveExplorerTab().Navigate(ExpandEnvVars(path))
         }
-        else
-        {
-            ControlClick "ToolbarWindow323", g_window_id,,,, "NA x1 y1"
+        else {
+            ControlClick "ToolbarWindow323", g_window_id, , , , "NA x1 y1"
             ; Wait until the Edit1 control exists:
             while not control_id
                 try control_id := ControlGetHwnd("Edit1", g_window_id)
@@ -166,8 +160,7 @@ OpenFavorite(ItemName, ItemPos, *)
 
 
 ;----Display the menu
-DisplayMenu(*)
-{
+DisplayMenu(*) {
     ; These first few variables are set here and used by OpenFavorite:
     try global g_window_id := WinGetID("A")
     try global g_class := WinGetClass(g_window_id)
@@ -187,14 +180,14 @@ GetActiveExplorerTab(hwnd := WinExist("A")) {
     activeTab := 0
     try activeTab := ControlGetHwnd("ShellTabWindowClass1", hwnd) ; File Explorer (Windows 11)
     catch
-    try activeTab := ControlGetHwnd("TabWindowClass1", hwnd) ; IE
+        try activeTab := ControlGetHwnd("TabWindowClass1", hwnd) ; IE
     for w in ComObject("Shell.Application").Windows {
         if w.hwnd != hwnd
             continue
         if activeTab { ; The window has tabs, so make sure this is the right one.
             static IID_IShellBrowser := "{000214E2-0000-0000-C000-000000000046}"
             shellBrowser := ComObjQuery(w, IID_IShellBrowser, IID_IShellBrowser)
-            ComCall(3, shellBrowser, "uint*", &thisTab:=0)
+            ComCall(3, shellBrowser, "uint*", &thisTab := 0)
             if thisTab != activeTab
                 continue
         }
@@ -202,10 +195,8 @@ GetActiveExplorerTab(hwnd := WinExist("A")) {
     }
 }
 
-ExpandEnvVars(str)
-{
-    if sz:=DllCall("ExpandEnvironmentStrings", "Str", str, "Ptr", 0, "UInt", 0)
-    {
+ExpandEnvVars(str) {
+    if sz := DllCall("ExpandEnvironmentStrings", "Str", str, "Ptr", 0, "UInt", 0) {
         buf := Buffer(sz * 2)
         if DllCall("ExpandEnvironmentStrings", "Str", str, "Ptr", buf, "UInt", sz)
             return StrGet(buf)

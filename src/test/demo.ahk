@@ -1,84 +1,81 @@
+; ================================
+; Temporary Pinned Window System
+; AHK v2.0.18+
+; ================================
 #Requires AutoHotkey v2.0.18+
-#Include <ui\NotificationUI>
-#Include <core\Gdip_All>  ; cần Gdip_All.ahk (thư viện GDI+)
+#SingleInstance Force
+Persistent
 
-^+o:: {
-    ; Bắt đầu chọn
-    ToolTip "Drag to select area..."
-    KeyWait "LButton", "D"
-    MouseGetPos &startX, &startY
+global PinnedWinID := 0
+global ExternalClickCount := 0
+global RequiredClicks := 3    ; Số lần click vào cửa sổ khác để bỏ ghim
 
-    ; Device Context của màn hình
-    hdc := DllCall("GetDC", "ptr", 0, "ptr")
-    pen := DllCall("CreatePen", "int", 0, "int", 2, "uint", 0x0000FF, "ptr") ; đỏ (BGR)
-    oldPen := DllCall("SelectObject", "ptr", hdc, "ptr", pen, "ptr")
+TrayTip('Start Demo')
+; --------------------------------
+; Hotkey để ghim cửa sổ hiện tại
+; --------------------------------
+!`:: {   ; Ctrl + Alt + P
+    global PinnedWinID
+    PinnedWinID := WinGetID("A")
+    ExternalClickCount := 0
+    TrayTip("Pinned!", "Đã ghim cửa sổ: " WinGetTitle(PinnedWinID), 1000)
+}
 
-    UpdateBorder() {
-        static lastX := 0, lastY := 0, lastW := 0, lastH := 0
-        MouseGetPos &mx, &my
-        x := Min(startX, mx), y := Min(startY, my)
-        w := Abs(mx - startX), h := Abs(my - startY)
+; --------------------------------
+; Hook chuột để theo dõi click
+; --------------------------------
+; Low-Level Mouse Hook
+OnMessage(0x0201, OnLButtonDown) ; WM_LBUTTONDOWN
+OnMessage(0x0204, OnRButtonDown) ; WM_RBUTTONDOWN
 
-        ; Xóa border cũ (XOR pen)
-        DllCall("SetROP2", "ptr", hdc, "int", 7) ; R2_NOTXORPEN
-        if (lastW > 0 && lastH > 0)
-            DllCall("Rectangle", "ptr", hdc, "int", lastX, "int", lastY, "int", lastX + lastW, "int", lastY + lastH)
+OnLButtonDown(wParam, lParam, msg, hwnd) {
+    HandleClick()
+}
+OnRButtonDown(wParam, lParam, msg, hwnd) {
+    HandleClick()
+}
 
-        ; Vẽ border mới
-        if (w > 0 && h > 0)
-            DllCall("Rectangle", "ptr", hdc, "int", x, "int", y, "int", x + w, "int", y + h)
-
-        lastX := x, lastY := y, lastW := w, lastH := h
-    }
-
-    SetTimer UpdateBorder, 15
-    KeyWait "LButton"
-    MouseGetPos &endX, &endY
-    SetTimer UpdateBorder, 0
-
-    ; Xóa border cuối cùng
-    UpdateBorder()
-
-    ; Dọn dẹp pen/DC
-    DllCall("SelectObject", "ptr", hdc, "ptr", oldPen)
-    DllCall("DeleteObject", "ptr", pen)
-    DllCall("ReleaseDC", "ptr", 0, "ptr", hdc)
-    ToolTip
-
-    ; --- Chụp ảnh vùng ---
-    x := Min(startX, endX), y := Min(startY, endY)
-    w := Abs(endX - startX), h := Abs(endY - startY)
-
-    if (w < 5 || h < 5) {
-        NotificationUI "Vùng chọn quá nhỏ!"
+; --------------------------------
+; Xử lý hành vi click chuột
+; --------------------------------
+HandleClick() {
+    global PinnedWinID, ExternalClickCount, RequiredClicks
+    if (PinnedWinID = 0)
         return
+
+    WinUnderMouse := WinGetID("ahk_id " GetMouseWinID())
+    if (WinUnderMouse != PinnedWinID) {
+        ExternalClickCount += 1
+        DebugTooltip("Count: " ExternalClickCount)
+
+        if (ExternalClickCount >= RequiredClicks) {
+            ; --------------- REMOVE PIN ---------------
+            PinnedWinID := 0
+            ExternalClickCount := 0
+            TrayTip("Pin removed", "Đã bỏ ghim do click đủ số lần.", 1000)
+        } else {
+            ; Ngăn AutoFocus–Optional: ngăn focus vào cửa sổ khác
+            ; ControlFocus("ahk_id " PinnedWinID)
+        }
     }
+}
 
-    if !pToken := Gdip_Startup() {
-        NotificationUI "Không khởi tạo GDI+!"
-        return
-    }
+; --------------------------------
+; Lấy WinID dưới con trỏ chuột
+; --------------------------------
+GetMouseWinID() {
+    static pt := Buffer(8, 0)
+    DllCall("GetCursorPos", "ptr", pt)
+    return DllCall("WindowFromPoint", "int64", NumGet(pt, 0, "int64"))
+}
 
-    pBitmap := Gdip_BitmapFromScreen(x "|" y "|" w "|" h)
-    path := A_Temp "\snip.png"
-    Gdip_SaveBitmapToFile(pBitmap, path)
-    Gdip_DisposeImage(pBitmap)
-    Gdip_Shutdown(pToken)
+; Optional: debug hiển thị số lần click
+DebugTooltip(text) {
+    ToolTip(text, 10, 10)
+    SetTimer(() => ToolTip(), -500)
+}
 
-    ; --- OCR (dùng Windows.Media.Ocr nếu có) ---
-    try {
-        ocr := ComObject("Windows.Media.Ocr.OcrEngine").TryCreateFromUserProfileLanguages()
-        stream := ComObject("Windows.Storage.Streams.InMemoryRandomAccessStream")
-        file := ComObject("Windows.Storage.StorageFile").GetFileFromPathAsync(path).GetResults()
-        stream2 := file.OpenAsync(0).GetResults()
-        decoder := ComObject("Windows.Graphics.Imaging.BitmapDecoder").CreateAsync(stream2).GetResults()
-        bmp := decoder.GetSoftwareBitmapAsync().GetResults()
-        result := ocr.RecognizeAsync(bmp).GetResults()
-        text := result.Text
-    } catch {
-        text := "(OCR failed or not supported on this Windows)"
-    }
-
-    ; --- Hiển thị kết quả ---
-    NotificationUI(text, "OCR Result")
+Esc:: {
+    TrayTip('Exit Demo')
+    ExitApp()
 }

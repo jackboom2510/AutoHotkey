@@ -1,11 +1,11 @@
-#include <core\Log>
+#Include <core\Core>
 #Include <core\Chrome>
 #Include <other\UIA-v2\Lib\UIA_Browser>
 #Include <other\UIA-v2\Lib\UIA>
 waitTime := 300
 class ShortcutTool {
     static gui := unset
-    configFile := "C:\Users\jackb\Documents\AutoHotkey\configs\config.ini"
+    configFile := "D:\Documents\AutoHotkey\configs\config.ini"
 
     defaultPath := ""
     pathLabel := ""
@@ -18,14 +18,7 @@ class ShortcutTool {
     transparencyMin := 50
     transparencyMax := 255
 
-    pathMap := {
-        Desktop: "C:\Users\jackb\Desktop",
-        Documents: "C:\Users\jackb\Documents",
-        Downloads: "C:\Users\jackb\Downloads",
-        Music: "C:\Users\jackb\Music",
-        Pictures: "C:\Users\jackb\Pictures",
-        Videos: "C:\Users\jackb\Videos"
-    }
+    pathMap := { Desktop: "C:\Users\jackb\Desktop", Documents: "C:\Users\jackb\Documents", Downloads: "C:\Users\jackb\Downloads", Music: "C:\Users\jackb\Music", Pictures: "C:\Users\jackb\Pictures", Videos: "C:\Users\jackb\Videos" }
 
     __New() {
         ShortcutTool.gui := Gui("+AlwaysOnTop -Caption +Resize", "Shortcut Tool")
@@ -195,7 +188,9 @@ class ShortcutTool {
     AddPathToDdl() {
         if !(CheckIfValueExists(this.ddlOptions, this.pathLabel.Value)) {
             this.ddlOptions.Push(this.pathLabel.Value)
-            this.ddlPath.Add([this.pathLabel.Value])
+            this.ddlPath.Add([
+                this.pathLabel.Value
+            ])
             this.ddlPath.Choose(this.pathLabel.Value)
             this.SaveDdlOptionsToConfig()
             TrayTip(this.pathLabel.Value, "✅ Đã thêm đường dẫn mới vào danh sách: ")
@@ -307,7 +302,6 @@ class ShortcutTool {
             PrevHwnd := Hwnd
         }
     }
-
 
 }
 

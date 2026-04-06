@@ -3,10 +3,10 @@
 Persistent()
 CoordMode "Mouse", "Screen"
 
-#include <core\Log>
+#Include <core\Core>
 #Include <core\KeyBinding>
 #Include <ui\HelpUI>
-#Include <util\MouseMacro>
+#Include <core\UserFuncs>
 ;@Ahk2Exe-SetMainIcon dictionary.ico
 
 LookUp.CreateGui()
@@ -17,11 +17,11 @@ A_TrayMenu.Delete()
 A_TrayMenu.AddStandard()
 A_TrayMenu.Insert("&Suspend Hotkeys", "Reload Script", (*) => Reload())
 A_TrayMenu.Insert('&Suspend Hotkeys', 'Edit Script', (*) => Run(
-    '"D:\2. Program Files\cursor\Cursor.exe" "C:\Users\jackb\Documents\AutoHotkey\src\v2LookUp.ahk"'
+    'edit* "D:\Documents\AutoHotkey\src\v2\LookUp.ahk"'
 ))
 A_TrayMenu.Insert("&Suspend Hotkeys")
 A_TrayMenu.Insert("E&xit")
-A_TrayMenu.Insert("E&xit", "Open File Location", (*) => Run("*open " "C:\Users\jackb\Documents\AutoHotkey\src\v2\"))
+A_TrayMenu.Insert("E&xit", "Open File Location", (*) => Run("*open " "D:\Documents\AutoHotkey\src\v2\"))
 A_TrayMenu.SetIcon("Open File Location", "C:\Windows\System32\shell32.dll", 4)
 A_TrayMenu.Insert("E&xit", "Show Hotkeys", (*) => ShowHotkeys())
 A_TrayMenu.SetIcon("Show Hotkeys", "C:\Windows\System32\shell32.dll", 24)
@@ -40,8 +40,16 @@ class LookUp {
     static btnSearchFromClipboard := ""
     static dictionaryDdl := ""
     static wordEdit := ""
-    static dictionary := ["hv", "nom", "py"]
-    static dictionaryMap := ["Tra Hán Việt", "Tra Nôm", "Tra Pinyin"]
+    static dictionary := [
+        "hv",
+        "nom",
+        "py"
+    ]
+    static dictionaryMap := [
+        "Tra Hán Việt",
+        "Tra Nôm",
+        "Tra Pinyin"
+    ]
     static transparency := 225
 
     static CreateGui() {
@@ -98,9 +106,9 @@ class LookUp {
         if word != "" {
             LookUp.lookUpWord := word
             Run("https://hvdic.thivien.net/" dic "/" word)
-            Sleep(500)
-            ClickAndSleep(650, 500)
-            TrayTip("✅ " LookUp.dictionaryDdl.Text ": " word)
+            ; Sleep(500)
+            ; ClickAndSleep(650, 500)
+            ; TrayTip("✅ " LookUp.dictionaryDdl.Text ": " word)
         }
         else {
             TrayTip("❌ Clipboard đang trống.", "Lỗi", 16)
@@ -131,5 +139,10 @@ class LookUp {
         }
         else
             LookUp.gui.Hide()
+    }
+    static FocusSearchBar() {
+        LookUp.wordEdit.value := ""
+        WinActivate("LookUp Tool")
+        ControlFocus(LookUp.wordEdit, "LookUp Tool")
     }
 }

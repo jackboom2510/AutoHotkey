@@ -108,7 +108,7 @@ ahk2 [relative-path-to-script.ahk] [relative-path-to-icon.ico]
 
 ```bash
 ahk2 v2/Shortcut\ Generator.ahk icon/internet.ico
-ahk2 v2/#ClickTracker.ahk icon/click.ico
+ahk2 v2/ClickTracker.ahk icon/click.ico
 ahk2 v2/#KeyModifier.ahk icon/settings.ico
 ```
 
